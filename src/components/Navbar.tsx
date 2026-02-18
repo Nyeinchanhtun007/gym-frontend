@@ -41,14 +41,18 @@ export default function Navbar() {
   };
 
   const handleNavClick = (path: string) => {
-    if (path.startsWith("/#") && pathname === "/") {
-      const id = path.replace("/#", "");
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-        setIsOpen(false);
-        return;
+    if (path.startsWith("/#")) {
+      if (pathname === "/") {
+        const id = path.replace("/#", "");
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        navigate(path);
       }
+      setIsOpen(false);
+      return;
     }
     navigate(path);
     setIsOpen(false);
@@ -60,7 +64,7 @@ export default function Navbar() {
     { label: "Trainers", path: "/trainers" },
     { label: "Workouts", path: "/#workouts" },
     { label: "Classes", path: "/classes" },
-    { label: "Pricing", path: "/#pricing" },
+    { label: "Plans", path: "/#pricing" },
   ];
 
   // Prevent scroll when menu is open
@@ -203,7 +207,7 @@ export default function Navbar() {
                     <div className="flex flex-col text-left">
                       <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">
                         {activeMembership
-                          ? `${activeMembership.type} Member`
+                          ? `${activeMembership.planTier} Member`
                           : displayUser.role}
                       </span>
                       <span className="text-lg font-bold text-white leading-none">

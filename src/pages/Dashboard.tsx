@@ -39,25 +39,24 @@ export default function Dashboard() {
     enabled: !!user?.email && !!token,
   });
 
-  const { data: membershipData } = useQuery({
-    queryKey: ["user-membership", user?.id],
+  const { data: userData } = useQuery({
+    queryKey: ["user-details-dashboard", user?.id],
     queryFn: async () => {
-      const res = await fetch(
-        `http://localhost:3000/memberships?search=${user?.email}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      if (!res.ok) throw new Error("Failed to fetch membership");
+      if (!user) return null;
+      const res = await fetch(`http://localhost:3000/users/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch user details");
       return res.json();
     },
     enabled: !!user?.id && !!token,
   });
 
+  const activeMembership = userData?.memberships?.find(
+    (m: any) => m.status === "ACTIVE" || m.status === "PENDING_DOWNGRADE",
+  );
+
   const bookings = bookingsData?.items || [];
-  const currentMembership = membershipData?.items?.[0]; // Get the most recent membership
 
   return (
     <div className="container px-6 py-24 mx-auto pb-40">
@@ -80,9 +79,9 @@ export default function Dashboard() {
         {[
           {
             title: "Evolution Tier",
-            value: currentMembership?.type || "Initiate",
-            sub: currentMembership
-              ? `Expires ${new Date(currentMembership.endDate).toLocaleDateString()}`
+            value: activeMembership?.planTier || "Initiate",
+            sub: activeMembership
+              ? `${activeMembership.dailyClassLimit} Daily / ${activeMembership.monthlyClassLimit > 1000 ? "∞" : activeMembership.monthlyClassLimit} Monthly Sessions`
               : "Guest Access",
             icon: Trophy,
             color: "text-amber-500",

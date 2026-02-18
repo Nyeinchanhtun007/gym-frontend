@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/store/authStore";
 import { motion } from "framer-motion";
 import { ChevronLeft, Mail, Lock, User } from "lucide-react";
 
@@ -14,7 +13,6 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const setAuth = useAuthStore((state) => state.setAuth);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,8 +32,14 @@ export default function Register() {
         throw new Error(data.message || "Registration failed");
       }
 
-      setAuth(data.user, data.access_token || data.token);
-      navigate("/");
+      // Remove automatic login
+      // setAuth(data.user, data.access_token || data.token);
+      navigate("/login", {
+        state: {
+          message:
+            "Registration successful! Please login with your credentials.",
+        },
+      });
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -44,7 +48,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-black selection:bg-[#22c55e] selection:text-black font-sans">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-black font-sans">
       {/* Left Side: Visual Storytelling */}
       <div className="hidden lg:flex relative flex-col justify-center p-12 lg:p-20 overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 z-0">
@@ -61,9 +65,9 @@ export default function Register() {
           animate={{ opacity: 1, y: 0 }}
           className="relative z-20 space-y-6"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-full">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#22c55e]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">
               New Intake Active
             </span>
           </div>
@@ -72,7 +76,7 @@ export default function Register() {
             <h2 className="text-5xl font-black text-white italic tracking-tighter leading-[0.95]">
               LIMITS
               <br />
-              <span className="text-[#22c55e]">DON'T</span>
+              <span className="text-primary">DON'T</span>
               <br />
               EXIST
             </h2>
@@ -103,7 +107,7 @@ export default function Register() {
           >
             <div className="space-y-1">
               <h1 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">
-                Join the <span className="text-[#22c55e]">Movement</span>
+                Join the <span className="text-primary">Movement</span>
               </h1>
               <p className="text-zinc-500 text-[10px] font-medium italic">
                 Create credentials to initiate evolution.
@@ -129,7 +133,7 @@ export default function Register() {
                     type="text"
                     placeholder="John Doe"
                     required
-                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-[#22c55e] focus:border-[#22c55e] transition-all placeholder:text-zinc-700 text-xs font-medium"
+                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-primary focus:border-primary transition-all placeholder:text-zinc-700 text-xs font-medium"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -146,7 +150,7 @@ export default function Register() {
                     type="email"
                     placeholder="name@fitness.com"
                     required
-                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-[#22c55e] focus:border-[#22c55e] transition-all placeholder:text-zinc-700 text-xs font-medium"
+                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-primary focus:border-primary transition-all placeholder:text-zinc-700 text-xs font-medium"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -163,7 +167,7 @@ export default function Register() {
                     type="password"
                     placeholder="••••••••"
                     required
-                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-[#22c55e] focus:border-[#22c55e] transition-all placeholder:text-zinc-700 text-xs font-medium"
+                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-primary focus:border-primary transition-all placeholder:text-zinc-700 text-xs font-medium"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -171,7 +175,7 @@ export default function Register() {
               </div>
 
               <Button
-                className="w-full h-11 bg-[#22c55e] hover:bg-[#16a34a] text-black font-black uppercase tracking-[0.15em] text-[10px] rounded-full transition-all shadow-lg active:scale-[0.98]"
+                className="w-full h-11 bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-[0.15em] text-[10px] rounded-full transition-all shadow-lg active:scale-[0.98]"
                 type="submit"
                 disabled={isLoading}
               >
@@ -192,7 +196,7 @@ export default function Register() {
                       (window.location.href =
                         "http://localhost:3000/auth/google")
                     }
-                    className="flex items-center justify-center gap-2 h-9 rounded-full bg-zinc-900/50 border border-white/5 hover:border-[#22c55e]/30 transition-all group"
+                    className="flex items-center justify-center gap-2 h-9 rounded-full bg-zinc-900/50 border border-white/5 hover:border-primary/30 transition-all group"
                   >
                     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
                       <path
@@ -214,7 +218,7 @@ export default function Register() {
                       (window.location.href =
                         "http://localhost:3000/auth/facebook")
                     }
-                    className="flex items-center justify-center gap-2 h-9 rounded-full bg-zinc-900/50 border border-white/5 hover:border-[#22c55e]/30 transition-all group"
+                    className="flex items-center justify-center gap-2 h-9 rounded-full bg-zinc-900/50 border border-white/5 hover:border-primary/30 transition-all group"
                   >
                     <svg
                       className="w-3.5 h-3.5 text-[#1877F2]"
@@ -235,7 +239,7 @@ export default function Register() {
                   ALREADY AN ATHLETE?{" "}
                   <Link
                     to="/login"
-                    className="text-[#22c55e] hover:text-white font-black transition-all ml-1 underline underline-offset-4 decoration-2"
+                    className="text-primary hover:text-white font-black transition-all ml-1 underline underline-offset-4 decoration-2"
                   >
                     RETURN TO BASE
                   </Link>

@@ -44,25 +44,25 @@
   --popover: oklch(0.12 0.01 250);
   --popover-foreground: oklch(0.95 0.01 250);
   
-  /* Deep Emerald - More sophisticated than neon green */
-  --primary: oklch(0.7 0.18 155);
-  --primary-foreground: oklch(0.1 0.01 250);
+  /* Dark Red Mix - Premium & Strong */
+  --primary: oklch(0.48 0.22 25);
+  --primary-foreground: oklch(0.98 0.01 250);
   
   --secondary: oklch(0.15 0.02 250);
-  --secondary-foreground: oklch(0.95 0.01 250);
+  --secondary-foreground: oklch(0.98 0.01 250);
   
   --muted: oklch(0.18 0.01 250);
   --muted-foreground: oklch(0.65 0.01 250);
   
-  --accent: oklch(0.2 0.05 155);
-  --accent-foreground: oklch(0.7 0.18 155);
+  --accent: oklch(0.25 0.1 25);
+  --accent-foreground: oklch(0.8 0.15 25);
   
   --destructive: oklch(0.55 0.18 25);
   --destructive-foreground: oklch(0.95 0.01 250);
   
   --border: oklch(0.18 0.01 250 / 0.1);
   --input: oklch(0.18 0.01 250 / 0.1);
-  --ring: oklch(0.7 0.18 155);
+  --ring: oklch(0.48 0.22 25);
 }
 
 @layer base {
@@ -89,12 +89,12 @@
   }
 
   .text-neon {
-    @apply text-primary drop-shadow-[0_0_8px_rgba(34,211,238,0.5)];
+    @apply text-primary drop-shadow-[0_0_8px_oklch(0.48_0.22_25_/_0.5)];
   }
 }
 
 ::selection {
-  background-color: oklch(0.75 0.2 195 / 0.3);
-  color: oklch(0.75 0.2 195);
+  background-color: oklch(0.48 0.22 25 / 0.3);
+  color: oklch(0.8 0.15 25);
 }
 

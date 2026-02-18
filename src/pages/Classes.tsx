@@ -118,7 +118,7 @@ export default function Classes() {
   if (isLoading) {
     return (
       <div className="container px-4 py-40 mx-auto text-center">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4 shadow-[0_0_20px_rgba(34,211,238,0.2)]" />
+        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4 shadow-[0_0_20px_oklch(0.48_0.22_25_/_0.2)]" />
         <p className="text-xl font-black tracking-widest uppercase opacity-50 animate-pulse">
           Calibrating Arsenal...
         </p>
@@ -249,7 +249,7 @@ export default function Classes() {
 
                   <CardHeader className="relative -mt-6 z-20 bg-transparent pb-2 px-3">
                     <div className="flex justify-between items-start mb-1">
-                      <span className="bg-primary text-black text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-[0_0_10px_rgba(34,211,238,0.3)]">
+                      <span className="bg-primary text-black text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-[0_0_10px_oklch(0.48_0.22_25_/_0.3)]">
                         {gymClass.name.split(" ")[0]}
                       </span>
                     </div>
@@ -294,7 +294,7 @@ export default function Classes() {
                         handleBooking(gymClass.id);
                       }}
                       disabled={bookingMutation.isPending}
-                      className="w-full font-black uppercase tracking-widest h-9 text-[10px] rounded-lg group/btn group-hover:shadow-[0_0_20px_rgba(34,211,238,0.2)] transition-all"
+                      className="w-full font-black uppercase tracking-widest h-9 text-[10px] rounded-lg group/btn group-hover:shadow-[0_0_20px_oklch(0.48_0.22_25_/_0.2)] transition-all"
                     >
                       {bookingMutation.isPending ? (
                         <Loader2 className="w-5 h-5 animate-spin" />

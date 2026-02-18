@@ -41,7 +41,7 @@ export default function OAuthCallback() {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 border-t-2 border-b-2 border-primary rounded-full shadow-[0_0_15px_rgba(34,211,238,0.5)]"
+            className="absolute inset-0 border-t-2 border-b-2 border-primary rounded-full shadow-[0_0_15px_oklch(0.48_0.22_25_/_0.5)]"
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2 className="w-10 h-10 text-primary opacity-50" />
@@ -61,7 +61,7 @@ export default function OAuthCallback() {
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 2, ease: "easeInOut" }}
-                className="h-full bg-primary shadow-[0_0_10px_rgba(34,211,238,0.8)]"
+                className="h-full bg-primary shadow-[0_0_10px_oklch(0.48_0.22_25_/_0.8)]"
               />
             </div>
           </div>

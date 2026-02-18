@@ -58,7 +58,7 @@ export default function Trainers() {
   if (isLoading) {
     return (
       <div className="container px-4 py-40 mx-auto text-center">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4 shadow-[0_0_20px_rgba(34,211,238,0.2)]" />
+        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4 shadow-[0_0_20px_oklch(0.48_0.22_25_/_0.2)]" />
         <p className="text-xl font-black tracking-widest uppercase opacity-50 animate-pulse">
           Loading Trainers...
         </p>
@@ -172,7 +172,7 @@ export default function Trainers() {
 
                     <CardHeader className="relative -mt-6 z-20 bg-transparent pb-2 px-3">
                       <div className="flex justify-between items-start mb-1">
-                        <span className="bg-primary text-black text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-[0_0_10px_rgba(34,211,238,0.3)]">
+                        <span className="bg-primary text-black text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-[0_0_10px_oklch(0.48_0.22_25_/_0.3)]">
                           TRAINER
                         </span>
                       </div>
@@ -204,7 +204,7 @@ export default function Trainers() {
                           e.stopPropagation();
                           setSelectedTrainer(trainer);
                         }}
-                        className="w-full font-black uppercase tracking-widest h-9 text-[10px] rounded-lg group/btn group-hover:shadow-[0_0_20px_rgba(34,211,238,0.2)] transition-all"
+                        className="w-full font-black uppercase tracking-widest h-9 text-[10px] rounded-lg group/btn group-hover:shadow-[0_0_20px_oklch(0.48_0.22_25_/_0.2)] transition-all"
                       >
                         View Profile
                       </Button>

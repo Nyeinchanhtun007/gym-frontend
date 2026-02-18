@@ -25,6 +25,7 @@ import { AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const [selectedClass, setSelectedClass] = useState<GymClass | null>(null);
+  const [isYearly, setIsYearly] = useState(false);
   const { data: classesData } = useQuery({
     queryKey: ["classes"],
     queryFn: async () => {
@@ -147,7 +148,7 @@ export default function Home() {
   return (
     <div className="flex flex-col overflow-hidden bg-black text-white">
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Background Image with Gradient Overlay */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-10" />
@@ -167,7 +168,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="inline-flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md"
             >
-              <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+              <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_oklch(0.48_0.22_25_/_0.5)]" />
               <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">
                 Elevate Your Potential 24/7
               </span>
@@ -624,40 +625,74 @@ export default function Home() {
           <h2 className="text-xl font-black uppercase tracking-tighter">
             FIND YOUR <span className="text-primary italic">PERFECT</span> PLAN
           </h2>
+
+          {/* Pricing Toggle */}
+          <div className="mt-8 flex justify-center">
+            <div className="relative flex items-center p-1 bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-2xl w-fit">
+              <motion.div
+                layout
+                initial={false}
+                animate={{ x: isYearly ? "100%" : "0%" }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="absolute h-[calc(100%-8px)] w-[calc(50%-4px)] bg-primary rounded-xl z-0"
+                style={{ left: 4 }}
+              />
+              <button
+                onClick={() => setIsYearly(false)}
+                className={`relative z-10 px-8 py-2 rounded-xl transition-colors duration-200 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${!isYearly ? "text-black" : "text-zinc-500 hover:text-white"}`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setIsYearly(true)}
+                className={`relative z-10 px-8 py-2 rounded-xl transition-colors duration-200 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${isYearly ? "text-black" : "text-zinc-500 hover:text-white"}`}
+              >
+                Yearly
+                <span
+                  className={`px-1.5 py-0.5 rounded-full text-[7px] font-black tracking-normal transition-colors ${isYearly ? "bg-black/20 text-black" : "bg-primary/10 text-primary"}`}
+                >
+                  -20%
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
         <div className="flex flex-wrap justify-center gap-8">
           {[
             {
-              name: "Initiate Tier",
-              price: "$29",
+              name: "Basic Tier",
+              monthlyPrice: 30,
+              yearlyPrice: 300,
               featured: false,
               features: [
-                "Access (08:00 - 16:00)",
-                "Essential Equipment",
+                "1 Class per Day",
+                "10 Classes per Month",
                 "Locker Room Access",
                 "Digital Tracking",
-                "Basic Nutrients",
+                "Community Support",
               ],
             },
             {
-              name: "Zenith Tier",
-              price: "$59",
+              name: "Standard Tier",
+              monthlyPrice: 60,
+              yearlyPrice: 600,
               featured: true,
               features: [
-                "24/7 Full Access",
-                "Elite Training Classes",
+                "2 Classes per Day",
+                "25 Classes per Month",
                 "Full Amenities",
                 "4 Guest Passes",
                 "Priority Reservation",
               ],
             },
             {
-              name: "Titan Tier",
-              price: "$99",
+              name: "Premium Tier",
+              monthlyPrice: 100,
+              yearlyPrice: 1000,
               featured: false,
               features: [
-                "Personal Blueprint",
-                "Infinite Guest Access",
+                "5 Classes per Day",
+                "Unlimited Classes",
                 "Recovery Lounge",
                 "Daily Laundry",
                 "Bio-metric Review",
@@ -668,26 +703,54 @@ export default function Home() {
               key={i}
               className={`p-12 text-center transition-all border w-full md:w-[calc(33.33%-1.5rem)] max-w-sm ${plan.featured ? "bg-primary border-primary scale-105 z-10 shadow-2xl" : "bg-zinc-900 border-white/10"}`}
             >
-              <h3 className="text-xl font-black uppercase mb-4 tracking-tighter">
+              <h3 className="text-xl font-black uppercase mb-4 tracking-tighter text-white">
                 {plan.name}
               </h3>
-              <div className="flex items-end justify-center gap-1 mb-8">
-                <span className="text-4xl font-black">{plan.price}</span>
-                <span className="text-[10px] font-bold opacity-60 uppercase tracking-widest">
-                  / Cycle
+              <div className="flex items-end justify-center gap-1 mb-2 h-10 overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={isYearly ? "yearly" : "monthly"}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={`text-4xl font-black ${plan.featured ? "text-black" : "text-white"}`}
+                  >
+                    ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
+                  </motion.span>
+                </AnimatePresence>
+                <span
+                  className={`text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1 ${plan.featured ? "text-black" : "text-white"}`}
+                >
+                  /{isYearly ? "Year" : "Month"}
                 </span>
               </div>
-              <div className="space-y-4 mb-10 text-[10px] font-bold uppercase tracking-widest opacity-80 h-40">
+              <div className="h-6 mb-4">
+                {isYearly && (
+                  <motion.p
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={`text-[9px] font-black tracking-widest uppercase italic ${plan.featured ? "text-black/60" : "text-primary/60"}`}
+                  >
+                    Save ${plan.monthlyPrice * 12 - plan.yearlyPrice} Yearly
+                  </motion.p>
+                )}
+              </div>
+              <div
+                className={`space-y-4 mb-10 text-[10px] font-bold uppercase tracking-widest opacity-80 h-40 ${plan.featured ? "text-black" : "text-white"}`}
+              >
                 {plan.features.map((feature, j) => (
                   <p key={j} className="flex items-center justify-center gap-2">
-                    <span className="w-1 h-1 bg-primary rounded-full shrink-0" />
+                    <span
+                      className={`w-1 h-1 rounded-full shrink-0 ${plan.featured ? "bg-black" : "bg-primary"}`}
+                    />
                     {feature}
                   </p>
                 ))}
               </div>
               <Link to="/memberships" className="block">
                 <Button
-                  className={`${plan.featured ? "bg-white text-black hover:bg-white/90" : "bg-primary text-white hover:bg-primary/90"} w-full h-14 rounded-none font-black uppercase tracking-widest text-[10px]`}
+                  className={`${plan.featured ? "bg-black text-white hover:bg-black/90" : "bg-primary text-black hover:bg-primary/90"} w-full h-14 rounded-none font-black uppercase tracking-widest text-[10px]`}
                 >
                   Acquire Tier
                 </Button>
