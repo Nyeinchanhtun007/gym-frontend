@@ -1,8 +1,10 @@
+export type Role = "USER" | "TRAINER" | "ADMIN";
+
 export interface User {
   id: number;
   email: string;
   name: string;
-  role: "STUDENT" | "TRAINER" | "ADMIN" | "USER";
+  role: Role;
 }
 
 export interface GymClass {
@@ -26,10 +28,13 @@ export interface Trainer {
 
 export interface Membership {
   id: number;
-  type: string;
-  price: number;
-  durationInMonths: number;
+  userId: number;
   startDate: string;
   endDate: string;
+  planTier: string;
+  billingCycle: string;
   status: string;
+  price: number;
+  dailyClassLimit: number;
+  monthlyClassLimit: number;
 }

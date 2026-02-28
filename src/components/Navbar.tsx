@@ -41,6 +41,12 @@ export default function Navbar() {
   };
 
   const handleNavClick = (path: string) => {
+    if (path === "/" && pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setIsOpen(false);
+      return;
+    }
+
     if (path.startsWith("/#")) {
       if (pathname === "/") {
         const id = path.replace("/#", "");
@@ -65,6 +71,9 @@ export default function Navbar() {
     { label: "Workouts", path: "/#workouts" },
     { label: "Classes", path: "/classes" },
     { label: "Plans", path: "/#pricing" },
+    ...(displayUser?.role === "ADMIN"
+      ? [{ label: "Admin", path: "/admin" }]
+      : []),
   ];
 
   // Prevent scroll when menu is open
@@ -83,7 +92,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             to="/"
-            onClick={() => setIsOpen(false)}
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick("/");
+            }}
             className="flex items-center gap-1 font-extrabold text-2xl tracking-tighter group z-50"
           >
             <span className="text-white">YGN</span>

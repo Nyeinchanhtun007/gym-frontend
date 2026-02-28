@@ -25,14 +25,11 @@ export default function Dashboard() {
   const { data: bookingsData } = useQuery({
     queryKey: ["user-bookings", user?.email],
     queryFn: async () => {
-      const res = await fetch(
-        `http://localhost:3000/bookings?search=${user?.email}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await fetch(`http://localhost:3000/bookings`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       if (!res.ok) throw new Error("Failed to fetch bookings");
       return res.json();
     },
@@ -180,7 +177,8 @@ export default function Dashboard() {
                           </p>
                         </div>
                         <p className="text-sm text-white/50 font-medium">
-                          Trainer: {booking.class.trainerId}
+                          Trainer:{" "}
+                          {booking.class.trainer?.name || "Expert Trainer"}
                         </p>
                       </div>
                     </div>

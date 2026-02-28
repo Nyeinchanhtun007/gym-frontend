@@ -21,7 +21,7 @@ export default function Login() {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const [success, setSuccess] = useState("");
-  const setAuth = useAuthStore((state) => state.setAuth);
+  const setAuth = useAuthStore((state: any) => state.setAuth);
 
   useEffect(() => {
     const oauthError = searchParams.get("error");

@@ -7,31 +7,67 @@ import Classes from "./pages/Classes";
 import Trainers from "./pages/Trainers";
 import Memberships from "./pages/Memberships";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminTrainers from "./pages/admin/AdminTrainers";
+import AdminClasses from "./pages/admin/AdminClasses";
+import AdminBookings from "./pages/admin/AdminBookings";
+import AdminMemberships from "./pages/admin/AdminMemberships";
+import AdminPlans from "./pages/admin/AdminPlans";
 import Layout from "./components/layout/Layout";
+import AdminLayout from "./components/layout/AdminLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/auth/callback" element={<OAuthCallback />} />
-          <Route path="/classes" element={<Classes />} />
-          <Route path="/trainers" element={<Trainers />} />
-          <Route path="/memberships" element={<Memberships />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Layout>
+      <Routes>
+        {/* Admin Routes with Sidebar */}
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminLayout>
+                <Routes>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="trainers" element={<AdminTrainers />} />
+                  <Route path="classes" element={<AdminClasses />} />
+                  <Route path="bookings" element={<AdminBookings />} />
+                  <Route path="memberships" element={<AdminMemberships />} />
+                  <Route path="plans" element={<AdminPlans />} />
+                </Routes>
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Public & User Routes with Main Layout */}
+        <Route
+          path="*"
+          element={
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/auth/callback" element={<OAuthCallback />} />
+                <Route path="/classes" element={<Classes />} />
+                <Route path="/trainers" element={<Trainers />} />
+                <Route path="/memberships" element={<Memberships />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </Layout>
+          }
+        />
+      </Routes>
     </Router>
   );
 }

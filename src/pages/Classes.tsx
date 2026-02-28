@@ -71,7 +71,7 @@ export default function Classes() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          userId: parseInt(user.id),
+          userId: user.id,
           classId: classId,
         }),
       });

@@ -1,371 +1,363 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Trainer } from "@/types";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Users,
-  Star,
   Award,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  ShieldCheck,
+  Mail,
+  MapPin,
+  X,
+  Calendar,
+  Zap,
+  Star,
+  LayoutDashboard,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const TRAINER_IMAGES: Record<string, string> = {
-  Default:
-    "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070&auto=format&fit=crop",
-};
-
 export default function Trainers() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
-  const [selectedTrainer, setSelectedTrainer] = useState<Trainer | null>(null);
+  const itemsPerPage = 8;
+  const [selectedTrainer, setSelectedTrainer] = useState<any>(null);
 
-  const {
-    data: trainersData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["trainers"],
+  const { data: trainersData, isLoading } = useQuery({
+    queryKey: ["trainers", currentPage],
     queryFn: async () => {
-      // Use backend filtering for role=TRAINER
       const res = await fetch(
-        "http://localhost:3000/users?role=TRAINER&limit=100",
+        `http://localhost:3000/users/trainers?page=${currentPage}&limit=${itemsPerPage}`,
       );
-      if (!res.ok) throw new Error("Failed to fetch trainers");
-      const data = await res.json();
-      return { items: data.items || [] };
+      if (!res.ok) throw new Error("Communications Link Failure");
+      return res.json();
     },
   });
 
   const trainers = trainersData?.items || [];
-
-  // Pagination calculations
-  const totalPages = Math.ceil(trainers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedTrainers = trainers.slice(startIndex, endIndex);
+  const meta = trainersData?.meta || { totalPages: 1 };
 
   if (isLoading) {
     return (
-      <div className="container px-4 py-40 mx-auto text-center">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4 shadow-[0_0_20px_oklch(0.48_0.22_25_/_0.2)]" />
-        <p className="text-xl font-black tracking-widest uppercase opacity-50 animate-pulse">
-          Loading Trainers...
-        </p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container px-4 py-40 mx-auto text-center">
-        <p className="text-destructive text-lg">
-          Failed to load trainers. Please try again.
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6">
+        <div className="w-16 h-16 rounded-full border-t-2 border-primary animate-spin mb-4" />
+        <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] animate-pulse">
+          Scanning Elite Personnel...
         </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Simplified Background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-30">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/10 blur-[100px] rounded-full" />
+    <div className="min-h-screen bg-black text-white py-24 px-6 md:px-12 relative overflow-hidden">
+      {/* Background Visual Components */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 pointer-events-none" />
       </div>
 
-      <div className="container px-6 mx-auto relative z-10 py-8">
-        {/* Clean Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
-            Our Trainers
-          </h1>
-          <p className="text-white/50 text-sm max-w-2xl">
-            Meet our expert trainers dedicated to helping you achieve your
-            fitness goals
-          </p>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-8 flex items-center gap-4 text-sm"
-        >
-          <div className="text-white/40">
-            <span className="font-bold text-white">{trainers.length}</span>{" "}
-            trainers
-          </div>
-          {totalPages > 1 && (
-            <>
-              <div className="h-4 w-px bg-white/10" />
-              <div className="text-white/40">
-                Page <span className="font-bold text-white">{currentPage}</span>{" "}
-                of <span className="font-bold text-white">{totalPages}</span>
-              </div>
-            </>
-          )}
-        </motion.div>
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Tactical Header */}
+        <header className="mb-16 border-l-4 border-primary pl-8 py-2">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <Zap className="w-5 h-5 text-primary fill-primary animate-pulse" />
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">
+                Active Sector: Instructors
+              </span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase leading-none mb-4">
+              Tactical <span className="text-primary italic">Instructors</span>
+            </h1>
+            <p className="max-w-2xl text-white/40 font-bold uppercase tracking-widest text-xs">
+              Elite Personnel management and deployment diagnostics. These
+              operatives are Tier-1 certified specialists dedicated to your
+              physical optimization.
+            </p>
+          </motion.div>
+        </header>
 
         {/* Trainers Grid */}
         {trainers.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
-          >
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-              <Users className="w-10 h-10 text-white/30" />
-            </div>
-            <h3 className="text-2xl font-black text-white mb-3">
-              No Trainers Yet
+          <div className="py-40 text-center border border-white/5 bg-white/[0.02] rounded-[3rem]">
+            <Users className="w-20 h-20 text-white/5 mx-auto mb-6" />
+            <h3 className="text-2xl font-black uppercase italic text-white/20">
+              No Personnel Detected
             </h3>
-            <p className="text-white/50 text-sm max-w-md mx-auto mb-6">
-              There are currently no trainers in the system. Please add trainers
-              with the TRAINER role to see them here.
-            </p>
-          </motion.div>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {(paginatedTrainers || []).map((trainer: Trainer, i: number) => {
-              const imageUrl = TRAINER_IMAGES["Default"];
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {trainers.map((trainer: any, i: number) => (
+              <motion.div
+                key={trainer.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                onClick={() => setSelectedTrainer(trainer)}
+                className="group relative bg-zinc-950 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer shadow-2xl"
+              >
+                {/* Hero Photo Section */}
+                <div className="relative h-64 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent z-10" />
+                  {trainer.photo ? (
+                    <img
+                      src={trainer.photo}
+                      alt={trainer.name}
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                      <ShieldCheck className="w-24 h-24 text-white/[0.02]" />
+                    </div>
+                  )}
 
-              return (
-                <motion.div
-                  key={trainer.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                >
-                  <Card
-                    onClick={() => setSelectedTrainer(trainer)}
-                    className="h-full flex flex-col glass-card overflow-hidden group border-white/5 cursor-pointer hover:border-primary/30 transition-all active:scale-[0.98]"
-                  >
-                    <div className="h-32 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10" />
-                      <img
-                        src={imageUrl}
-                        alt={trainer.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute top-2 right-2 z-20 glass px-2 py-1 rounded-full flex items-center gap-1">
-                        <Star className="w-3 h-3 text-primary fill-primary" />
-                        <span className="text-[9px] font-black">PRO</span>
+                  {/* Performance Ranking */}
+                  <div className="absolute top-6 left-6 z-20">
+                    <div className="px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md flex items-center gap-2">
+                      <Star className="w-3 h-3 text-primary fill-primary" />
+                      <span className="text-[9px] font-black text-primary uppercase tracking-widest">
+                        Elite Pro
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="absolute top-6 right-6 z-20">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-950/80 border border-white/10 backdrop-blur-md flex items-center justify-center text-white/40 group-hover:text-primary transition-colors">
+                      <Award className="w-5 h-5" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Identity Segment */}
+                <div className="p-8 pt-0 mt-[-2.5rem] relative z-20">
+                  <div className="flex items-end gap-5 mb-6">
+                    <div className="w-20 h-20 rounded-[1.5rem] bg-zinc-950 border-2 border-white/10 p-1 flex-shrink-0 shadow-2xl">
+                      <div className="w-full h-full rounded-xl bg-white/5 border border-white/5 flex items-center justify-center font-black text-2xl text-primary overflow-hidden italic shadow-inner">
+                        {trainer.photo ? (
+                          <img
+                            src={trainer.photo}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          trainer.name?.[0]
+                        )}
                       </div>
                     </div>
-
-                    <CardHeader className="relative -mt-6 z-20 bg-transparent pb-2 px-3">
-                      <div className="flex justify-between items-start mb-1">
-                        <span className="bg-primary text-black text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-[0_0_10px_oklch(0.48_0.22_25_/_0.3)]">
-                          TRAINER
-                        </span>
-                      </div>
-                      <CardTitle className="text-sm font-black tracking-tight group-hover:text-primary transition-colors line-clamp-1">
+                    <div className="pb-2">
+                      <h3 className="text-xl font-black text-white uppercase italic tracking-tighter leading-none mb-1 group-hover:text-primary transition-colors">
                         {trainer.name}
-                      </CardTitle>
-                    </CardHeader>
+                      </h3>
+                      <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">
+                        Sector Instructor
+                      </p>
+                    </div>
+                  </div>
 
-                    <CardContent className="flex-1 px-3 pt-0 pb-2">
-                      <div className="flex items-center justify-between text-[10px] border-t border-white/5 pt-2">
-                        <div className="flex items-center gap-1.5">
-                          <Award className="w-3.5 h-3.5 text-primary" />
-                          <span className="font-bold text-white/80">
-                            {trainer.specialization || "Fitness Expert"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Users className="w-3.5 h-3.5 text-primary" />
-                          <span className="font-bold text-white/80">
-                            {trainer.classes?.length || 0} Classes
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
+                  <div className="grid grid-cols-1 gap-2 border-t border-white/5 pt-6">
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 group-hover:bg-white/[0.05] transition-colors">
+                      <Zap className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">
+                        Master Specialist
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                      <MapPin className="w-3.5 h-3.5 text-white/20" />
+                      <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">
+                        Sector 7 Base
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-                    <CardFooter className="px-3 py-2">
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedTrainer(trainer);
-                        }}
-                        className="w-full font-black uppercase tracking-widest h-9 text-[10px] rounded-lg group/btn group-hover:shadow-[0_0_20px_oklch(0.48_0.22_25_/_0.2)] transition-all"
-                      >
-                        View Profile
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                {/* Scanline Overlay */}
+                <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] z-30 opacity-20" />
+              </motion.div>
+            ))}
           </div>
         )}
 
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-16 flex items-center justify-center gap-2"
-          >
+        {/* Tactical Pagination */}
+        {meta.totalPages > 1 && (
+          <nav className="mt-20 flex items-center justify-center gap-3">
             <button
               onClick={() => setCurrentPage(1)}
               disabled={currentPage === 1}
-              className="w-10 h-10 rounded-xl border border-white/5 bg-white/5 hover:bg-primary hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/5 transition-all flex items-center justify-center group"
+              className="w-12 h-12 rounded-2xl border border-white/5 bg-white/5 hover:bg-primary hover:border-primary disabled:opacity-20 flex items-center justify-center group transition-all"
             >
-              <ChevronsLeft className="w-4 h-4 text-white/50 group-hover:text-black transition-colors" />
+              <ChevronsLeft className="w-5 h-5 text-white/40 group-hover:text-black transition-colors" />
             </button>
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="w-10 h-10 rounded-xl border border-white/5 bg-white/5 hover:bg-primary hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/5 transition-all flex items-center justify-center group"
+              className="w-12 h-12 rounded-2xl border border-white/5 bg-white/5 hover:bg-primary hover:border-primary disabled:opacity-20 flex items-center justify-center group transition-all"
             >
-              <ChevronLeft className="w-4 h-4 text-white/50 group-hover:text-black transition-colors" />
+              <ChevronLeft className="w-5 h-5 text-white/40 group-hover:text-black transition-colors" />
             </button>
 
-            <div className="flex items-center gap-2 mx-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter((page) => {
-                  if (page === 1 || page === totalPages) return true;
-                  if (Math.abs(page - currentPage) <= 1) return true;
-                  return false;
-                })
-                .map((page, index, array) => (
-                  <div key={page} className="flex items-center gap-2">
-                    {index > 0 && array[index - 1] !== page - 1 && (
-                      <span className="text-white/30 font-black">...</span>
-                    )}
-                    <button
-                      onClick={() => setCurrentPage(page)}
-                      className={`min-w-10 h-10 px-3 rounded-xl font-black text-sm transition-all ${
-                        currentPage === page
-                          ? "bg-primary text-black shadow-lg shadow-primary/20 scale-110"
-                          : "border border-white/5 bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  </div>
-                ))}
+            <div className="px-6 py-3 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-white/40">
+              Sector <span className="text-primary italic">{currentPage}</span>{" "}
+              of {meta.totalPages}
             </div>
 
             <button
               onClick={() =>
-                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                setCurrentPage((p) => Math.min(meta.totalPages, p + 1))
               }
-              disabled={currentPage === totalPages}
-              className="w-10 h-10 rounded-xl border border-white/5 bg-white/5 hover:bg-primary hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/5 transition-all flex items-center justify-center group"
+              disabled={currentPage === meta.totalPages}
+              className="w-12 h-12 rounded-2xl border border-white/5 bg-white/5 hover:bg-primary hover:border-primary disabled:opacity-20 flex items-center justify-center group transition-all"
             >
-              <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-black transition-colors" />
+              <ChevronRight className="w-5 h-5 text-white/40 group-hover:text-black transition-colors" />
             </button>
             <button
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-              className="w-10 h-10 rounded-xl border border-white/5 bg-white/5 hover:bg-primary hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white/5 transition-all flex items-center justify-center group"
+              onClick={() => setCurrentPage(meta.totalPages)}
+              disabled={currentPage === meta.totalPages}
+              className="w-12 h-12 rounded-2xl border border-white/5 bg-white/5 hover:bg-primary hover:border-primary disabled:opacity-20 flex items-center justify-center group transition-all"
             >
-              <ChevronsRight className="w-4 h-4 text-white/50 group-hover:text-black transition-colors" />
+              <ChevronsRight className="w-5 h-5 text-white/40 group-hover:text-black transition-colors" />
             </button>
-          </motion.div>
+          </nav>
         )}
+      </div>
 
-        {/* Trainer Detail Modal */}
-        <AnimatePresence>
-          {selectedTrainer && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+      {/* Trainer Profile Diagnostics Modal */}
+      <AnimatePresence>
+        {selectedTrainer && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedTrainer(null)}
+              className="absolute inset-0 bg-black/90 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              className="relative max-w-xl w-full bg-zinc-950 border border-white/10 rounded-[2.5rem] p-7 shadow-[0_0_100px_rgba(255,62,62,0.1)] overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 p-8 text-white/[0.03] pointer-events-none">
+                <ShieldCheck className="w-40 h-40 rotate-12" />
+              </div>
+
+              <button
                 onClick={() => setSelectedTrainer(null)}
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative max-w-2xl w-full bg-zinc-900 border border-white/10 rounded-2xl p-8 shadow-2xl"
+                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors group z-50"
               >
-                <button
-                  onClick={() => setSelectedTrainer(null)}
-                  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-                >
-                  <span className="text-white/50 text-xl">×</span>
-                </button>
+                <X className="w-5 h-5 text-white/40 group-hover:text-white" />
+              </button>
 
-                <div className="space-y-6">
-                  <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full mb-4">
-                      <Star className="w-3 h-3 text-primary fill-primary" />
-                      <span className="text-[9px] font-black uppercase tracking-wider text-primary">
-                        Expert Trainer
+              <div className="relative z-10">
+                <div className="flex flex-col md:flex-row gap-6 items-start mb-6">
+                  <div className="w-24 h-24 rounded-[1.5rem] bg-zinc-900 border-2 border-white/10 p-1 flex-shrink-0 shadow-2xl relative">
+                    <div className="w-full h-full rounded-xl bg-white/5 border border-white/5 flex items-center justify-center font-black text-3xl text-primary overflow-hidden italic">
+                      {selectedTrainer.photo ? (
+                        <img
+                          src={selectedTrainer.photo}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        selectedTrainer.name?.[0]
+                      )}
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+                      <Award className="w-4 h-4 text-black" />
+                    </div>
+                  </div>
+
+                  <div className="pt-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="px-2 py-0.5 bg-primary/10 border border-primary/20 rounded-full text-[8px] font-black text-primary uppercase tracking-widest italic">
+                        PRO Operative
                       </span>
                     </div>
-                    <h2 className="text-3xl font-black text-white mb-2">
+                    <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-none mb-2">
                       {selectedTrainer.name}
                     </h2>
-                    <p className="text-white/50 text-sm">
-                      {selectedTrainer.specialization || "Fitness Expert"}
+                    <p className="text-white/40 font-bold uppercase tracking-[0.2em] text-[9px]">
+                      Master Strength Specialist
                     </p>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/5">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-                        <Award className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/30 block">
-                          Specialization
-                        </span>
-                        <span className="text-sm font-bold text-white">
-                          {selectedTrainer.specialization || "General Fitness"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/5">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-                        <Users className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/30 block">
-                          Active Classes
-                        </span>
-                        <span className="text-sm font-bold text-white">
-                          {selectedTrainer.classes?.length || 0} Classes
-                        </span>
-                      </div>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                  <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
+                    <Mail className="w-4 h-4 text-primary mb-2" />
+                    <span className="text-[8px] font-black uppercase text-white/30 tracking-widest block mb-1">
+                      Communications
+                    </span>
+                    <span className="text-xs font-bold text-white italic truncate block">
+                      {selectedTrainer.email}
+                    </span>
                   </div>
-
-                  <div>
-                    <Button
-                      onClick={() => setSelectedTrainer(null)}
-                      className="w-full h-12 bg-primary text-black font-black uppercase tracking-widest rounded-xl hover:bg-primary/90"
-                    >
-                      Close
-                    </Button>
+                  <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
+                    <Calendar className="w-4 h-4 text-primary mb-2" />
+                    <span className="text-[8px] font-black uppercase text-white/30 tracking-widest block mb-1">
+                      Service Status
+                    </span>
+                    <span className="text-xs font-bold text-white italic capitalize block">
+                      Active Deployment
+                    </span>
                   </div>
                 </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-      </div>
+
+                {/* New: Active Deployments Section */}
+                <div className="p-5 bg-primary/[0.02] border border-primary/10 rounded-[2rem] relative overflow-hidden">
+                  <div className="relative z-10">
+                    <h4 className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-4">
+                      <LayoutDashboard className="w-3.5 h-3.5" /> High-Intensity
+                      Deployments
+                    </h4>
+
+                    <div className="space-y-2">
+                      {selectedTrainer.classes &&
+                      selectedTrainer.classes.length > 0 ? (
+                        selectedTrainer.classes.map((cls: any) => (
+                          <div
+                            key={cls.id}
+                            className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/50 border border-white/5"
+                          >
+                            <span className="text-[10px] font-black text-white uppercase italic tracking-tight">
+                              {cls.name}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[9px] font-bold text-primary/40 uppercase tracking-widest">
+                                Active
+                              </span>
+                              <div className="w-1 h-1 rounded-full bg-primary animate-pulse" />
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-center py-4 text-[9px] font-bold text-white/10 uppercase tracking-widest border border-dashed border-white/5 rounded-xl">
+                          No Active Missions detected
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute top-0 right-0 p-6 text-primary/[0.03] pointer-events-none">
+                    <Star className="w-16 h-16 fill-primary" />
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setSelectedTrainer(null)}
+                  className="w-full mt-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-[9px] font-black text-white uppercase tracking-[0.3em] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300 shadow-inner"
+                >
+                  Close Personnel Diagnostic
+                </button>
+              </div>
+
+              {/* Advanced Scanline/CRT Effect */}
+              <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-30 opacity-30" />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
