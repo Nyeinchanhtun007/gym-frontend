@@ -19,7 +19,7 @@ export default function Memberships() {
   const queryClient = useQueryClient();
   const [isYearly, setIsYearly] = useState(false);
 
-  const { data: userData } = useQuery({
+  const { data: userData, isLoading: userLoading } = useQuery({
     queryKey: ["user-details", user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -30,6 +30,7 @@ export default function Memberships() {
       return res.json();
     },
     enabled: !!user,
+    retry: 1,
   });
 
   const { data: plans, isLoading: plansLoading } = useQuery({
@@ -45,17 +46,9 @@ export default function Memberships() {
     (m: any) => m.status === "ACTIVE" || m.status === "PENDING_DOWNGRADE",
   );
 
-  if (user && !userData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <Loader2 className="w-12 h-12 text-primary animate-spin" />
-      </div>
-    );
-  }
-
   const membershipMutation = useMutation({
     mutationFn: async (planName: string) => {
-      if (!user) throw new Error("Please log in to acquire a tier");
+      if (!user) throw new Error("Please log in to subscribe to a tier");
 
       const startDate = new Date();
       const endDate = new Date();
@@ -95,13 +88,13 @@ export default function Memberships() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || "Failed to acquire membership");
+        throw new Error(data.message || "Failed to subscribe membership");
       }
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-details", user?.id] });
-      alert("Tier acquired! Your evolution begins now.");
+      alert("Tier subscribed! Your evolution begins now.");
       navigate("/dashboard");
     },
     onError: (error: any) => {
@@ -116,6 +109,19 @@ export default function Memberships() {
     }
     membershipMutation.mutate(planName);
   };
+
+  if (userLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 animate-pulse">
+            Syncing Protocol
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container px-6 py-10 mx-auto pb-10">
@@ -141,42 +147,42 @@ export default function Memberships() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mt-12 p-8 glass-card border-primary/30 max-w-2xl mx-auto relative overflow-hidden group"
+            className="mt-8 p-6 glass-card border-primary/30 max-w-xl mx-auto relative overflow-hidden group rounded-3xl"
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <ShieldCheck className="w-24 h-24 text-primary" />
+              <ShieldCheck className="w-16 h-16 text-primary" />
             </div>
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
               <div className="text-left">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2 block">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary mb-1 block">
                   Active Protocol
                 </span>
-                <h3 className="text-2xl font-black uppercase tracking-tight mb-1">
+                <h3 className="text-xl font-black uppercase tracking-tight">
                   {activeMembership.planTier} Tier
                 </h3>
-                <p className="text-xs text-muted-foreground font-medium">
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest opacity-60">
                   {activeMembership.billingCycle} Cycle • Expires{" "}
                   {new Date(activeMembership.endDate).toLocaleDateString()}
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-center px-6">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">
-                    Daily Limit
+              <div className="flex gap-3">
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5 text-center min-w-[100px]">
+                  <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 mb-0.5 block">
+                    Daily
                   </span>
-                  <span className="text-xl font-black text-white">
-                    {activeMembership.dailyClassLimit} Classes
+                  <span className="text-base font-black text-white">
+                    {activeMembership.dailyClassLimit} Slots
                   </span>
                 </div>
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-center px-6">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">
-                    Monthly Limit
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5 text-center min-w-[100px]">
+                  <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 mb-0.5 block">
+                    Monthly
                   </span>
-                  <span className="text-xl font-black text-white">
+                  <span className="text-base font-black text-white">
                     {activeMembership.monthlyClassLimit > 1000
                       ? "∞"
                       : activeMembership.monthlyClassLimit}{" "}
-                    Sessions
+                    Total
                   </span>
                 </div>
               </div>
@@ -218,12 +224,12 @@ export default function Memberships() {
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {plansLoading
           ? [1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-96 bg-white/5 rounded-3xl animate-pulse"
+                className="h-80 bg-white/5 rounded-3xl animate-pulse"
               />
             ))
           : plans &&
@@ -236,26 +242,26 @@ export default function Memberships() {
               return (
                 <motion.div
                   key={plan.name}
-                  initial={{ opacity: 0, y: 40 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.6 }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
                   className="flex"
                 >
                   <Card
                     className={`flex-1 flex flex-col relative overflow-hidden h-full border-none transition-all duration-500 ${
                       isStandard
-                        ? "bg-primary text-black scale-105 z-10 shadow-[0_0_80px_rgba(255,10,10,0.15)] rounded-[2.5rem]"
-                        : "bg-[#0a0a0a] text-white rounded-[2rem] border border-white/5 opacity-80 hover:opacity-100"
+                        ? "bg-primary text-black scale-[1.02] z-10 shadow-[0_0_50px_rgba(255,10,10,0.1)] rounded-[2rem]"
+                        : "bg-zinc-950/40 backdrop-blur-xl text-white rounded-[1.5rem] border border-white/5 hover:border-white/10"
                     }`}
                   >
-                    <CardHeader className="text-center pt-12 pb-6">
-                      <CardTitle className="text-xl font-black mb-4 tracking-tighter uppercase italic">
+                    <CardHeader className="text-center pt-8 pb-4">
+                      <CardTitle className="text-lg font-black mb-2 tracking-tighter uppercase italic">
                         {plan.name} Tier
                       </CardTitle>
                       <div className="flex items-baseline justify-center gap-1">
                         <span
-                          className={`text-5xl font-black tracking-tighter ${isStandard ? "text-black" : "text-white"}`}
+                          className={`text-4xl font-black tracking-tighter ${isStandard ? "text-black" : "text-white"}`}
                         >
                           $
                           {isYearly
@@ -263,31 +269,31 @@ export default function Memberships() {
                             : finalMonthlyPrice}
                         </span>
                         <span
-                          className={`text-[10px] font-black uppercase tracking-widest ${isStandard ? "text-black/60" : "text-white/40"}`}
+                          className={`text-[9px] font-black uppercase tracking-widest ${isStandard ? "text-black/60" : "text-white/40"}`}
                         >
                           /{isYearly ? "year" : "month"}
                         </span>
                       </div>
                     </CardHeader>
 
-                    <CardContent className="flex-1 px-8 pb-10">
-                      <ul className="space-y-5">
-                        <li className="flex flex-col items-center text-center gap-2">
-                          <div className="flex items-center gap-3">
+                    <CardContent className="flex-1 px-6 pb-8">
+                      <ul className="space-y-3">
+                        <li className="flex flex-col items-center text-center">
+                          <div className="flex items-center gap-2">
                             <div
-                              className={`w-1.5 h-1.5 rounded-full ${isStandard ? "bg-black" : "bg-primary"}`}
+                              className={`w-1 h-1 rounded-full ${isStandard ? "bg-black" : "bg-primary"}`}
                             />
-                            <span className="text-[10px] font-black uppercase tracking-widest italic">
+                            <span className="text-[9px] font-black uppercase tracking-widest italic opacity-80">
                               {plan.dailyClassLimit} Class Per Day
                             </span>
                           </div>
                         </li>
-                        <li className="flex flex-col items-center text-center gap-2">
-                          <div className="flex items-center gap-3">
+                        <li className="flex flex-col items-center text-center">
+                          <div className="flex items-center gap-2">
                             <div
-                              className={`w-1.5 h-1.5 rounded-full ${isStandard ? "bg-black" : "bg-primary"}`}
+                              className={`w-1 h-1 rounded-full ${isStandard ? "bg-black" : "bg-primary"}`}
                             />
-                            <span className="text-[10px] font-black uppercase tracking-widest italic">
+                            <span className="text-[9px] font-black uppercase tracking-widest italic opacity-80">
                               {plan.monthlyClassLimit > 900
                                 ? "Unlimited Classes"
                                 : `${plan.monthlyClassLimit} Classes Per Month`}
@@ -299,11 +305,11 @@ export default function Memberships() {
                             key={feature}
                             className="flex flex-col items-center text-center"
                           >
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
                               <div
-                                className={`w-1.5 h-1.5 rounded-full ${isStandard ? "bg-black" : "bg-primary"}`}
+                                className={`w-1 h-1 rounded-full ${isStandard ? "bg-black" : "bg-primary"}`}
                               />
-                              <span className="text-[10px] font-black uppercase tracking-widest italic">
+                              <span className="text-[9px] font-black uppercase tracking-widest italic opacity-80">
                                 {feature}
                               </span>
                             </div>
@@ -312,25 +318,25 @@ export default function Memberships() {
                       </ul>
                     </CardContent>
 
-                    <CardFooter className="pb-10 px-8">
+                    <CardFooter className="pb-8 px-6">
                       <Button
                         onClick={() => handleAcquireTier(plan.name)}
                         disabled={
                           membershipMutation.isPending ||
                           activeMembership?.planTier === plan.name
                         }
-                        className={`w-full h-14 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all ${
+                        className={`w-full h-12 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
                           isStandard
-                            ? "bg-black text-white hover:bg-black/90"
-                            : "bg-primary text-black hover:bg-primary/90"
+                            ? "bg-black text-white hover:bg-black/90 shadow-xl"
+                            : "bg-primary text-black hover:bg-primary/90 shadow-lg"
                         }`}
                       >
                         {membershipMutation.isPending ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <Loader2 className="w-4 h-4 animate-spin" />
                         ) : activeMembership?.planTier === plan.name ? (
-                          "Active Protocol"
+                          "Protocol Active"
                         ) : (
-                          "Acquire Protocol"
+                          "Subscribe Now"
                         )}
                       </Button>
                     </CardFooter>

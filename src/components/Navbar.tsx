@@ -125,15 +125,17 @@ export default function Navbar() {
                 <div className="flex items-center gap-4">
                   <Link
                     to="/dashboard"
-                    className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-white/5 px-3 py-1.5 rounded-xl border border-white/5"
+                    className="flex items-center gap-3 hover:opacity-80 transition-opacity bg-white/5 px-4 py-2 rounded-xl border border-white/5 active:scale-95 duration-300"
                   >
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                       <UserIcon className="w-4 h-4 text-primary" />
                     </div>
-                    <span className="text-[11px] font-bold text-white uppercase tracking-widest">
+                    <span className="text-[11px] font-black text-white uppercase tracking-widest hidden sm:block">
                       {displayUser.name.split(" ")[0]}
                     </span>
-                    <ChevronDown className="w-3 h-3 text-white/30" />
+                    <div className="w-5 h-5 rounded-md bg-white/5 border border-white/10 flex items-center justify-center">
+                      <ChevronDown className="w-3 h-3 text-white/40 group-hover:text-primary transition-colors" />
+                    </div>
                   </Link>
                   <button
                     onClick={handleLogout}

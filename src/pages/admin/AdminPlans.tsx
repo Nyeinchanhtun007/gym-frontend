@@ -209,7 +209,7 @@ export default function AdminPlans() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative max-w-xl w-full bg-zinc-950 border border-white/10 rounded-[2rem] p-5 shadow-2xl overflow-y-auto"
+              className="relative max-w-xl w-full bg-zinc-950 border border-white/10 rounded-[2rem] p-5 shadow-2xl overflow-y-auto scrollbar-hide"
               style={{ maxHeight: "90vh" }}
             >
               <div className="flex justify-between items-center mb-4 relative z-10">
@@ -469,9 +469,9 @@ export default function AdminPlans() {
               key={plan.id}
               className="bg-zinc-900/50 border border-white/5 p-8 rounded-[2.5rem] relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 p-8 transform group-hover:scale-110 group-hover:text-primary transition-all text-white/10">
+              {/* <div className="absolute top-0 right-0 p-8 transform group-hover:scale-110 group-hover:text-primary transition-all text-white/10">
                 <CreditCard className="w-12 h-12" />
-              </div>
+              </div> */}
 
               <div className="mb-8">
                 <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase mb-2 group-hover:text-primary transition-colors">

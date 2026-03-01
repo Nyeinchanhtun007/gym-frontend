@@ -265,7 +265,7 @@ export default function Login() {
                     to="/register"
                     className="text-primary hover:text-white font-black transition-all ml-1 underline underline-offset-4 decoration-2"
                   >
-                    JOIN THE ALLIANCE
+                    Go to Register
                   </Link>
                 </p>
               </div>

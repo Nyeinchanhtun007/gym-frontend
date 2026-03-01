@@ -2,7 +2,18 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronLeft } from "lucide-react";
+import {
+  Menu,
+  X,
+  ChevronLeft,
+  LayoutDashboard,
+  Users,
+  Dumbbell,
+  Calendar,
+  ClipboardList,
+  CreditCard,
+  Layers,
+} from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -28,13 +39,13 @@ export default function AdminLayout({
   }, []);
 
   const menuItems = [
-    { label: "DASHBOARD", path: "/admin" },
-    { label: "USERS", path: "/admin/users" },
-    { label: "TRAINERS", path: "/admin/trainers" },
-    { label: "CLASSES", path: "/admin/classes" },
-    { label: "BOOKINGS", path: "/admin/bookings" },
-    { label: "MEMBERSHIPS", path: "/admin/memberships" },
-    { label: "PLANS", path: "/admin/plans" },
+    { label: "DASHBOARD", path: "/admin", icon: LayoutDashboard },
+    { label: "USERS", path: "/admin/users", icon: Users },
+    { label: "TRAINERS", path: "/admin/trainers", icon: Dumbbell },
+    { label: "CLASSES", path: "/admin/classes", icon: Calendar },
+    { label: "BOOKINGS", path: "/admin/bookings", icon: ClipboardList },
+    { label: "MEMBERSHIPS", path: "/admin/memberships", icon: CreditCard },
+    { label: "PLANS", path: "/admin/plans", icon: Layers },
   ];
 
   return (
@@ -85,7 +96,7 @@ export default function AdminLayout({
         </div>
       </div>
 
-      <div className="flex pt-12">
+      <div className="flex pt-16">
         {/* Backdrop for Mobile */}
         <AnimatePresence>
           {isOpen && isMobile && (
@@ -103,15 +114,15 @@ export default function AdminLayout({
         <motion.div
           initial={isMobile ? { x: -260 } : { width: 240 }}
           animate={
-            isMobile
-              ? { x: isOpen ? 0 : -260 }
-              : { width: isOpen ? 240 : 0, opacity: isOpen ? 1 : 0 }
+            isMobile ? { x: isOpen ? 0 : -260 } : { width: isOpen ? 240 : 80 }
           }
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          transition={{ type: "spring", damping: 30, stiffness: 250 }}
           className="fixed top-16 bottom-0 left-0 bg-zinc-950 border-r border-white/5 z-[900] overflow-hidden"
         >
-          <div className="w-[240px] h-full flex flex-col p-6">
-            <nav className="flex flex-col gap-1.5">
+          <div
+            className={`${isOpen ? "w-[240px]" : "w-[80px]"} h-full flex flex-col p-4 transition-all duration-300`}
+          >
+            <nav className="flex flex-col gap-2">
               {menuItems.map((item) => (
                 <button
                   key={item.path}
@@ -120,15 +131,34 @@ export default function AdminLayout({
                     if (isMobile) setIsOpen(false);
                   }}
                   className={`
-                    text-left px-5 py-3.5 rounded-xl text-[10px] font-black tracking-[0.1em] transition-all
+                    flex items-center rounded-xl text-[10px] font-black tracking-[0.1em] transition-all group relative
+                    ${isOpen ? "px-5 py-3.5 gap-3" : "p-3.5 justify-center"}
                     ${
                       pathname === item.path
                         ? "bg-primary text-black italic shadow-[0_4px_15px_rgba(255,62,62,0.3)]"
-                        : "text-white/40 hover:text-white hover:bg-white/5"
+                        : "text-white/60 hover:text-white hover:bg-white/5"
                     }
                   `}
                 >
-                  {item.label}
+                  <item.icon
+                    className={`w-5 h-5 shrink-0 ${pathname === item.path ? "text-black" : "text-primary/60 group-hover:text-primary transition-colors"}`}
+                  />
+
+                  {isOpen && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="whitespace-nowrap"
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+
+                  {!isOpen && (
+                    <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900 border border-white/10 text-white text-[9px] font-black rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[1000] tracking-widest uppercase italic">
+                      {item.label}
+                    </div>
+                  )}
                 </button>
               ))}
             </nav>
@@ -136,10 +166,12 @@ export default function AdminLayout({
             <div className="mt-auto pt-6 border-t border-white/5">
               <Link
                 to="/"
-                className="flex items-center gap-2 group text-[9px] font-bold text-white/20 hover:text-primary transition-colors tracking-widest uppercase"
+                className={`flex items-center group text-[9px] font-bold text-white/40 hover:text-primary transition-colors tracking-widest uppercase ${isOpen ? "gap-2" : "justify-center"}`}
               >
-                <ChevronLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-                Return to Site
+                <ChevronLeft
+                  className={`w-4 h-4 group-hover:-translate-x-1 transition-transform ${isOpen ? "" : "rotate-180"}`}
+                />
+                {isOpen && <span>Return to Site</span>}
               </Link>
             </div>
           </div>
@@ -148,10 +180,10 @@ export default function AdminLayout({
         {/* Content Area - Offset for Fixed elements */}
         <motion.div
           animate={{
-            marginLeft: isMobile ? 0 : isOpen ? 240 : 0,
-            padding: isMobile ? "20px" : "32px",
+            marginLeft: isMobile ? 0 : isOpen ? 240 : 80,
+            padding: isMobile ? "12px" : "16px",
           }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          transition={{ type: "spring", damping: 30, stiffness: 250 }}
           className="flex-1 min-h-[calc(100vh-64px)] overflow-x-hidden"
         >
           <div className="max-w-7xl mx-auto h-full">{children}</div>

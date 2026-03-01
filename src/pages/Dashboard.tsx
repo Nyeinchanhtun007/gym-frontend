@@ -36,7 +36,7 @@ export default function Dashboard() {
     enabled: !!user?.email && !!token,
   });
 
-  const { data: userData } = useQuery({
+  const { data: userData, isLoading: userLoading } = useQuery({
     queryKey: ["user-details-dashboard", user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -56,23 +56,23 @@ export default function Dashboard() {
   const bookings = bookingsData?.items || [];
 
   return (
-    <div className="container px-6 py-24 mx-auto pb-40">
+    <div className="container px-6 py-20 mx-auto pb-40">
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="mb-16 border-l-4 border-primary pl-8 py-2"
+        className="mb-10 border-l-4 border-primary pl-6 py-1"
       >
-        <h1 className="text-6xl font-black mb-4 tracking-tighter uppercase leading-none">
+        <h1 className="text-4xl font-black mb-2 tracking-tighter uppercase leading-none">
           OPERATIVE <br />
           <span className="text-neon">{user?.name}</span>
         </h1>
-        <p className="text-muted-foreground text-xl max-w-xl">
-          Mission Status: Active. Your biometrics indicate optimal performance
-          today.
+        <p className="text-muted-foreground text-sm max-w-xl opacity-80">
+          Mission Status: <span className="text-primary font-bold">Active</span>
+          . Optimal biometrics detected.
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           {
             title: "Evolution Tier",
@@ -115,18 +115,20 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
           >
-            <Card className="glass shadow-none border-white/5 h-full">
-              <CardHeader className="flex flex-row items-center justify-between pb-4">
-                <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">
+            <Card className="glass shadow-none border-white/5 h-full rounded-2xl">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-5 pt-5">
+                <CardTitle className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">
                   {stat.title}
                 </CardTitle>
-                <div className={`p-2 rounded-xl ${stat.bg}`}>
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <div className={`p-1.5 rounded-lg ${stat.bg}`}>
+                  <stat.icon className={`h-3 w-3 ${stat.color}`} />
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-black mb-1">{stat.value}</div>
-                <p className="text-xs text-muted-foreground font-bold tracking-tight">
+              <CardContent className="px-5 pb-5">
+                <div className="text-2xl font-black mb-0.5 tracking-tighter">
+                  {stat.value}
+                </div>
+                <p className="text-[9px] text-muted-foreground font-bold tracking-widest uppercase opacity-60">
                   {stat.sub}
                 </p>
               </CardContent>
@@ -161,7 +163,7 @@ export default function Dashboard() {
                 bookings.map((booking: any, i: number) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between p-6 rounded-[2rem] glass-card border-white/2 hover:border-primary/30 group cursor-pointer"
+                    className="flex items-center justify-between p-4 rounded-2xl glass-card border-white/2 hover:border-primary/30 group cursor-pointer"
                   >
                     <div className="flex items-center gap-6">
                       <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-primary/20 transition-colors">
@@ -207,38 +209,38 @@ export default function Dashboard() {
         <div className="space-y-8">
           <Card className="glass border-white/5 overflow-hidden relative">
             <div className="absolute inset-0 bg-primary/10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
-            <CardHeader className="relative z-10">
-              <CardTitle className="text-xl font-black uppercase">
+            <CardHeader className="relative z-10 py-5 px-6 pb-2">
+              <CardTitle className="text-sm font-black uppercase tracking-widest text-white/50">
                 Rapid Protocols
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 relative z-10">
-              <button className="p-6 rounded-3xl glass-card flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-black">
-                    <Calendar className="w-5 h-5" />
+            <CardContent className="grid grid-cols-1 gap-3 relative z-10 px-6 pb-6 pt-2">
+              <button className="p-4 rounded-2xl glass-card flex items-center justify-between group border-white/5 bg-white/[0.02]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-black">
+                    <Calendar className="w-4 h-4" />
                   </div>
-                  <span className="font-black uppercase tracking-widest text-xs">
+                  <span className="font-black uppercase tracking-widest text-[10px]">
                     New Session
                   </span>
                 </div>
-                <ArrowUpRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
-              <button className="p-6 rounded-3xl glass-card flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                    <User className="w-5 h-5" />
+              <button className="p-4 rounded-2xl glass-card flex items-center justify-between group border-white/5 bg-white/[0.02]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                    <User className="w-4 h-4" />
                   </div>
-                  <span className="font-black uppercase tracking-widest text-xs">
+                  <span className="font-black uppercase tracking-widest text-[10px]">
                     Cipher Profile
                   </span>
                 </div>
-                <ArrowUpRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-primary to-primary/60 border-none text-black p-8 rounded-[3rem] shadow-2xl shadow-primary/20">
+          <Card className="bg-gradient-to-br from-primary to-primary/60 border-none text-black p-6 rounded-[2.5rem] shadow-2xl shadow-primary/20">
             <div className="flex flex-col h-full justify-between gap-12">
               <div>
                 <CardTitle className="text-3xl font-black leading-tight uppercase tracking-tighter mb-4">

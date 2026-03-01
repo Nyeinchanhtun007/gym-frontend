@@ -18,7 +18,7 @@ import {
   Skull,
   Camera,
   Link as LinkIcon,
-  ChevronDown,
+  ChevronsUpDown,
   Check,
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -180,9 +180,11 @@ export default function AdminUsers() {
                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   <span className="truncate">{roleFilter || "ALL ROLES"}</span>
                 </div>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-500 ${isRoleOpen ? "rotate-180 text-primary" : "text-white/20"}`}
-                />
+                <div className="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/40 transition-all duration-300">
+                  <ChevronsUpDown
+                    className={`w-3 h-3 transition-all duration-500 ${isRoleOpen ? "text-primary scale-110" : "text-white/30"}`}
+                  />
+                </div>
               </button>
 
               <AnimatePresence>
@@ -236,9 +238,11 @@ export default function AdminUsers() {
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                   <span className="truncate">{planFilter || "ALL PLANS"}</span>
                 </div>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-500 ${isPlanOpen ? "rotate-180 text-blue-500" : "text-white/20"}`}
-                />
+                <div className="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:border-blue-500/40 transition-all duration-300">
+                  <ChevronsUpDown
+                    className={`w-3 h-3 transition-all duration-500 ${isPlanOpen ? "text-blue-500 scale-110" : "text-white/30"}`}
+                  />
+                </div>
               </button>
 
               <AnimatePresence>

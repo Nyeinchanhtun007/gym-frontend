@@ -182,7 +182,7 @@ export default function Register() {
                 {isLoading ? "Broadcasting..." : "Create Account"}
               </Button>
 
-              <div className="pt-3">
+              <div className="pt-1">
                 <div className="relative flex justify-center text-[8px] mb-3">
                   <span className="bg-[#050505] px-3 font-black uppercase tracking-[0.3em] text-zinc-600 italic">
                     Quick Access
@@ -234,14 +234,14 @@ export default function Register() {
                 </div>
               </div>
 
-              <div className="text-center pt-5 border-t border-white/5">
+              <div className="text-center pt-3 border-t border-white/5">
                 <p className="text-[9px] text-zinc-600 font-medium">
                   ALREADY AN ATHLETE?{" "}
                   <Link
                     to="/login"
                     className="text-primary hover:text-white font-black transition-all ml-1 underline underline-offset-4 decoration-2"
                   >
-                    RETURN TO BASE
+                    RETURN TO LOGIN
                   </Link>
                 </p>
               </div>

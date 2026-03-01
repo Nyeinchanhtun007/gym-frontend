@@ -683,12 +683,12 @@ export default function Home() {
                 return (
                   <div
                     key={plan.id}
-                    className={`p-12 text-center transition-all border w-full md:w-[calc(33.33%-1.5rem)] max-w-sm flex flex-col ${isFeatured ? "bg-primary border-primary scale-105 z-10 shadow-2xl" : "bg-zinc-900 border-white/10"}`}
+                    className={`p-8 text-center transition-all border w-full md:w-[calc(33.33%-1.5rem)] max-w-sm flex flex-col ${isFeatured ? "bg-primary border-primary scale-[1.02] z-10 shadow-2xl" : "bg-zinc-900 border-white/10"}`}
                   >
-                    <h3 className="text-xl font-black uppercase mb-4 tracking-tighter text-white">
+                    <h3 className="text-lg font-black uppercase mb-3 tracking-tighter text-white">
                       {plan.name} Tier
                     </h3>
-                    <div className="flex items-end justify-center gap-1 mb-2 h-10 overflow-hidden">
+                    <div className="flex items-end justify-center gap-1 mb-1 h-10 overflow-hidden">
                       <AnimatePresence mode="wait">
                         <motion.span
                           key={isYearly ? "yearly" : "monthly"}
@@ -696,7 +696,7 @@ export default function Home() {
                           animate={{ y: 0, opacity: 1 }}
                           exit={{ y: -20, opacity: 0 }}
                           transition={{ duration: 0.2 }}
-                          className={`text-4xl font-black ${isFeatured ? "text-black" : "text-white"}`}
+                          className={`text-3xl font-black ${isFeatured ? "text-black" : "text-white"}`}
                         >
                           $
                           {isYearly
@@ -705,24 +705,24 @@ export default function Home() {
                         </motion.span>
                       </AnimatePresence>
                       <span
-                        className={`text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1 ${isFeatured ? "text-black" : "text-white"}`}
+                        className={`text-[9px] font-bold opacity-60 uppercase tracking-widest mb-1 ${isFeatured ? "text-black" : "text-white"}`}
                       >
                         /{isYearly ? "Year" : "Month"}
                       </span>
                     </div>
-                    <div className="h-6 mb-4">
+                    <div className="h-4 mb-4">
                       {isYearly && plan.discount > 0 && (
                         <motion.p
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className={`text-[9px] font-black tracking-widest uppercase italic ${isFeatured ? "text-black/60" : "text-primary/60"}`}
+                          className={`text-[8px] font-black tracking-widest uppercase italic ${isFeatured ? "text-black/60" : "text-primary/60"}`}
                         >
                           {plan.discount}% Discount Applied
                         </motion.p>
                       )}
                     </div>
                     <div
-                      className={`space-y-4 mb-10 text-[10px] font-bold uppercase tracking-widest opacity-80 flex-1 ${isFeatured ? "text-black" : "text-white"}`}
+                      className={`space-y-3 mb-8 text-[9px] font-bold uppercase tracking-widest opacity-80 flex-1 ${isFeatured ? "text-black" : "text-white"}`}
                     >
                       <p className="flex items-center justify-center gap-2">
                         <span
@@ -752,13 +752,12 @@ export default function Home() {
                           </p>
                         ))}
                     </div>
-                    <Link to="/memberships" className="block mt-auto">
-                      <Button
-                        className={`${isFeatured ? "bg-black text-white hover:bg-black/90" : "bg-primary text-black hover:bg-primary/90"} w-full h-14 rounded-none font-black uppercase tracking-widest text-[10px]`}
-                      >
-                        Acquire Tier
-                      </Button>
-                    </Link>
+                    <Button
+                      asChild
+                      className={`${isFeatured ? "bg-black text-white hover:bg-black/90" : "bg-primary text-black hover:bg-primary/90"} w-full h-12 rounded-none font-black uppercase tracking-widest text-[9px] mt-auto`}
+                    >
+                      <Link to="/memberships">Subscribe Plan</Link>
+                    </Button>
                   </div>
                 );
               })}
@@ -1131,11 +1130,12 @@ export default function Home() {
                   </div>
 
                   <div className="flex gap-4 pt-4">
-                    <Link to="/classes" className="flex-1">
-                      <Button className="w-full h-14 bg-primary text-black font-black uppercase tracking-widest rounded-2xl hover:bg-primary/90">
-                        Acquire Slot
-                      </Button>
-                    </Link>
+                    <Button
+                      asChild
+                      className="w-full h-14 bg-primary text-black font-black uppercase tracking-widest rounded-2xl hover:bg-primary/90 flex-1"
+                    >
+                      <Link to="/classes">Book Slot</Link>
+                    </Button>
                     <Button
                       variant="outline"
                       onClick={() => setSelectedClass(null)}

@@ -9,6 +9,7 @@ import {
   Trash2,
   UserPlus,
   ShieldCheck,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -190,9 +191,9 @@ export default function AdminClasses() {
               key={item.id}
               className="bg-zinc-900/50 border border-white/5 p-8 rounded-[2.5rem] relative overflow-hidden group"
             >
-              <div className="absolute top-0 right-0 p-8 transform group-hover:scale-110 group-hover:text-primary transition-all text-white/10">
-                <Dumbbell className="w-12 h-12" />
-              </div>
+              {/* <div className="absolute top-0 right-0 p-8 transform group-hover:scale-110 group-hover:text-primary transition-all text-white/10">
+                <Dumbbell className="w-8 h-8" />
+              </div> */}
 
               <div className="mb-8">
                 <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase mb-2 group-hover:text-primary transition-colors">
@@ -367,28 +368,39 @@ export default function AdminClasses() {
                 setEditingClass(null);
                 setIsCreating(false);
               }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/90 backdrop-blur-xl"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 40 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative max-w-lg w-full bg-zinc-950 border border-white/10 rounded-[2rem] p-4.5 shadow-2xl overflow-y-auto max-h-[85vh] custom-scrollbar"
+              exit={{ opacity: 0, scale: 0.95, y: 40 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative max-w-xl w-full bg-zinc-950/80 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-8 shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden"
             >
-              <div className="absolute top-0 right-0 p-6 text-white/5 pointer-events-none">
-                <Dumbbell className="w-20 h-20" />
+              {/* Decorative Corner Brackets */}
+              <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-primary/20 rounded-tl-[3rem] pointer-events-none" />
+              <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-primary/20 rounded-br-[3rem] pointer-events-none" />
+
+              <div className="absolute top-0 right-0 p-10 text-primary opacity-[0.03] pointer-events-none">
+                <Dumbbell className="w-40 h-40 rotate-12" />
               </div>
 
-              <div className="flex justify-between items-center mb-5 relative z-10">
+              <div className="flex justify-between items-start mb-10 relative z-10">
                 <div>
-                  <h2 className="text-xl font-black text-white italic tracking-tighter uppercase leading-none mb-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic">
+                      SYSTEM PROTOCOL // ALPHA-7
+                    </span>
+                  </div>
+                  <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
                     {isCreating ? "Establish" : "Modify"}{" "}
-                    <span className="text-primary">Session</span>
+                    <span className="text-primary text-neon">Session</span>
                   </h2>
-                  <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.2em]">
+                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-2">
                     {isCreating
-                      ? "Initiating New Combat Protocol"
-                      : `Class ID: #${editingClass.id}`}
+                      ? "Initiating New Combat Deployment Protocol"
+                      : `Syncing Parameters for Class ID: #${editingClass.id}`}
                   </p>
                 </div>
                 <button
@@ -396,91 +408,114 @@ export default function AdminClasses() {
                     setEditingClass(null);
                     setIsCreating(false);
                   }}
-                  className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                  className="w-12 h-12 rounded-2xl bg-white/5 hover:bg-primary/20 border border-white/10 flex items-center justify-center transition-all group"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
                 </button>
               </div>
 
               <form
                 onSubmit={handleSubmit}
-                className="space-y-3.5 relative z-10"
+                className="space-y-6 relative z-10 max-h-[60vh] overflow-y-auto scrollbar-hide"
               >
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
-                    Class Name
+                <div className="space-y-2 group">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 group-focus-within:text-primary transition-colors">
+                    Deployment Designation
                   </Label>
                   <Input
+                    required
                     value={formData.name}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="bg-white/5 border-white/10 rounded-xl h-12 font-bold focus:border-primary transition-colors"
+                    className="bg-white/[0.03] border-white/10 rounded-2xl h-14 font-black italic tracking-tight text-lg text-white placeholder:text-white/10 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all"
+                    placeholder="e.g. ADVANCED CROSSFIT ALPHA"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
-                    Description
+                <div className="space-y-2 group">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 group-focus-within:text-primary transition-colors">
+                    Mission Intelligence Briefing
                   </Label>
                   <Textarea
+                    required
                     value={formData.description}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    className="bg-white/5 border-white/10 rounded-xl min-h-[100px] font-bold focus:border-primary transition-colors"
+                    className="bg-white/[0.03] border-white/10 rounded-2xl min-h-[120px] font-bold text-sm text-white/80 placeholder:text-white/10 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all p-5 leading-relaxed"
+                    placeholder="Describe the tactical objectives and training intensity..."
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
-                      Capacity
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2 group">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 group-focus-within:text-primary transition-colors">
+                      Operative Limit
                     </Label>
-                    <Input
-                      type="number"
-                      value={formData.capacity}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setFormData({ ...formData, capacity: e.target.value })
-                      }
-                      className="bg-white/5 border-white/10 rounded-xl h-12 font-bold focus:border-primary transition-colors"
-                    />
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        required
+                        value={formData.capacity}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setFormData({ ...formData, capacity: e.target.value })
+                        }
+                        className="bg-white/[0.03] border-white/10 rounded-2xl h-14 font-black italic text-lg focus:border-primary/50 transition-all pl-12"
+                      />
+                      <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-primary transition-colors" />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
-                      Tactical Instructor
+                  <div className="space-y-2 group">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 group-focus-within:text-primary transition-colors">
+                      Lead Instructor
                     </Label>
-                    <select
-                      value={formData.trainerId}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                        setFormData({ ...formData, trainerId: e.target.value })
-                      }
-                      className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-sm font-bold text-white focus:outline-none focus:border-primary transition-colors appearance-none"
-                    >
-                      {trainers?.items?.map((t: any) => (
-                        <option key={t.id} value={t.id} className="bg-zinc-900">
-                          {t.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        required
+                        value={formData.trainerId}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                          setFormData({
+                            ...formData,
+                            trainerId: e.target.value,
+                          })
+                        }
+                        className="w-full h-14 bg-white/[0.03] border border-white/10 rounded-2xl px-12 text-sm font-black text-white uppercase italic focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all appearance-none cursor-pointer"
+                      >
+                        {trainers?.items?.map((t: any) => (
+                          <option
+                            key={t.id}
+                            value={t.id}
+                            className="bg-zinc-900 font-bold"
+                          >
+                            COMMANDER {t.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-primary transition-colors pointer-events-none" />
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
-                    Deployment Schedule
+                <div className="space-y-2 group">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 group-focus-within:text-primary transition-colors">
+                    Deployment Temporal Synchronization
                   </Label>
-                  <Input
-                    type="datetime-local"
-                    value={formData.schedule}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFormData({ ...formData, schedule: e.target.value })
-                    }
-                    className="bg-white/5 border-white/10 rounded-xl h-12 font-bold focus:border-primary transition-colors [color-scheme:dark]"
-                  />
+                  <div className="relative">
+                    <Input
+                      type="datetime-local"
+                      required
+                      value={formData.schedule}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFormData({ ...formData, schedule: e.target.value })
+                      }
+                      className="bg-white/[0.03] border-white/10 rounded-2xl h-14 font-black italic text-lg focus:border-primary/50 transition-all pl-12 [color-scheme:dark]"
+                    />
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-primary transition-colors" />
+                  </div>
                 </div>
 
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-10 sticky bottom-0 bg-transparent backdrop-blur-sm mt-4">
                   {!isCreating && (
                     <Button
                       type="button"
@@ -488,17 +523,17 @@ export default function AdminClasses() {
                       onClick={() => {
                         if (
                           confirm(
-                            "Are you sure you want to delete this class session?",
+                            "Are you sure you want to terminate this deployment protocol?",
                           )
                         ) {
                           deleteMutation.mutate(editingClass.id);
                           setEditingClass(null);
                         }
                       }}
-                      className="flex-1 h-14 rounded-2xl border-white/10 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 font-black uppercase tracking-widest text-xs"
+                      className="flex-1 h-16 rounded-[2rem] border-white/10 bg-white/5 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 font-black uppercase tracking-[0.2em] text-[10px] transition-all"
                     >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
+                      <Trash2 className="w-4 h-4 mr-3" />
+                      Terminate
                     </Button>
                   )}
                   <Button
@@ -506,15 +541,16 @@ export default function AdminClasses() {
                     disabled={
                       updateMutation.isPending || createMutation.isPending
                     }
-                    className="flex-[2] h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="flex-[2] h-16 rounded-[2rem] bg-primary text-black font-black uppercase tracking-[0.2em] text-[10px] hover:scale-[1.02] active:scale-[0.98] transition-all tactical-glow relative overflow-hidden group/submit"
                   >
+                    <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover/submit:translate-x-[100%] transition-transform duration-1000" />
                     {updateMutation.isPending || createMutation.isPending ? (
-                      <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <div className="w-6 h-6 border-3 border-black border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <>
-                        <Save className="w-4 h-4 mr-2" />
-                        {isCreating ? "Create" : "Update"}
-                      </>
+                      <div className="flex items-center justify-center">
+                        <Save className="w-4 h-4 mr-3" />
+                        {isCreating ? "Establish Protocol" : "Authorize Sync"}
+                      </div>
                     )}
                   </Button>
                 </div>
