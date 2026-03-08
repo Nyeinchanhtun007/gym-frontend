@@ -17,6 +17,7 @@ import AdminPlans from "./pages/admin/AdminPlans";
 import Layout from "./components/layout/Layout";
 import AdminLayout from "./components/layout/AdminLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import UserLayout from "./components/layout/UserLayout";
 
 function App() {
   return (
@@ -42,6 +43,17 @@ function App() {
           }
         />
 
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <UserLayout>
+                <Dashboard />
+              </UserLayout>
+            </ProtectedRoute>
+          }
+        />
+
         {/* Public & User Routes with Main Layout */}
         <Route
           path="*"
@@ -55,14 +67,6 @@ function App() {
                 <Route path="/classes" element={<Classes />} />
                 <Route path="/trainers" element={<Trainers />} />
                 <Route path="/memberships" element={<Memberships />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
               </Routes>
             </Layout>
           }

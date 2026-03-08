@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { motion } from "framer-motion";
-import { ChevronLeft, Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User } from "lucide-react";
+import AuthVisualSide from "@/components/auth/AuthVisualSide";
+import AuthInput from "@/components/auth/AuthInput";
+import AuthSocialLogins from "@/components/auth/AuthSocialLogins";
+import AuthFormWrapper from "@/components/auth/AuthFormWrapper";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -32,8 +33,6 @@ export default function Register() {
         throw new Error(data.message || "Registration failed");
       }
 
-      // Remove automatic login
-      // setAuth(data.user, data.access_token || data.token);
       navigate("/login", {
         state: {
           message:
@@ -49,206 +48,73 @@ export default function Register() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-black font-sans">
-      {/* Left Side: Visual Storytelling */}
-      <div className="hidden lg:flex relative flex-col justify-center p-12 lg:p-20 overflow-hidden border-r border-white/5">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
-          <img
-            src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1975&auto=format&fit=crop"
-            alt="Gym Sanctuary"
-            className="w-full h-full object-cover grayscale brightness-50"
-          />
-        </div>
+      <AuthVisualSide
+        image="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1975&auto=format&fit=crop"
+        tag="New Intake Active"
+        title="LIMITS"
+        highlight="DON'T"
+        subtitle="EXIST"
+        description="Create your profile and start your peak performance journey. Access elite coaching, custom plans, and a community of titans."
+      />
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-20 space-y-6"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">
-              New Intake Active
-            </span>
+      <AuthFormWrapper
+        title="Join the"
+        highlight="Movement"
+        subtitle="Create credentials to initiate evolution."
+        error={error}
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-3.5">
+            <AuthInput
+              label="Full Name"
+              icon={User}
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+
+            <AuthInput
+              label="Email address"
+              icon={Mail}
+              type="email"
+              placeholder="name@fitness.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <AuthInput
+              label="Password"
+              icon={Lock}
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
-          <div className="space-y-2">
-            <h2 className="text-5xl font-black text-white italic tracking-tighter leading-[0.95]">
-              LIMITS
-              <br />
-              <span className="text-primary">DON'T</span>
-              <br />
-              EXIST
-            </h2>
-          </div>
-
-          <p className="max-w-xs text-zinc-400 text-xs font-medium leading-relaxed">
-            Create your profile and start your peak performance journey. Access
-            elite coaching, custom plans, and a community of titans.
-          </p>
-        </motion.div>
-      </div>
-
-      {/* Right Side: Optimized Form */}
-      <div className="flex flex-col items-center justify-center p-8 bg-[#050505]">
-        <div className="w-full max-w-[310px]">
-          <Link
-            to="/"
-            className="group inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-white transition-colors mb-6"
+          <Button
+            className="w-full h-11 bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-[0.15em] text-[10px] rounded-full transition-all shadow-lg active:scale-[0.98]"
+            type="submit"
+            disabled={isLoading}
           >
-            <ChevronLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-            Back to Home
-          </Link>
+            {isLoading ? "Broadcasting..." : "Create Account"}
+          </Button>
 
-          <motion.div
-            initial={{ opacity: 0, x: 15 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-7"
-          >
-            <div className="space-y-1">
-              <h1 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">
-                Join the <span className="text-primary">Movement</span>
-              </h1>
-              <p className="text-zinc-500 text-[10px] font-medium italic">
-                Create credentials to initiate evolution.
-              </p>
-            </div>
+          <AuthSocialLogins />
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="p-2.5 text-[9px] font-bold bg-red-500/10 border-l-2 border-red-500 text-red-500 uppercase tracking-widest text-center">
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-3.5">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between px-1">
-                    <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                      Full Name
-                    </Label>
-                    <User className="w-2.5 h-2.5 text-zinc-800" />
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="John Doe"
-                    required
-                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-primary focus:border-primary transition-all placeholder:text-zinc-700 text-xs font-medium"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between px-1">
-                    <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                      Email address
-                    </Label>
-                    <Mail className="w-2.5 h-2.5 text-zinc-800" />
-                  </div>
-                  <Input
-                    type="email"
-                    placeholder="name@fitness.com"
-                    required
-                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-primary focus:border-primary transition-all placeholder:text-zinc-700 text-xs font-medium"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between px-1">
-                    <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                      Password
-                    </Label>
-                    <Lock className="w-2.5 h-2.5 text-zinc-800" />
-                  </div>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    required
-                    className="h-11 bg-zinc-900/50 border-white/5 text-white rounded-full px-5 focus:ring-primary focus:border-primary transition-all placeholder:text-zinc-700 text-xs font-medium"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <Button
-                className="w-full h-11 bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-[0.15em] text-[10px] rounded-full transition-all shadow-lg active:scale-[0.98]"
-                type="submit"
-                disabled={isLoading}
+          <div className="text-center pt-3 border-t border-white/5">
+            <p className="text-[9px] text-zinc-600 font-medium tracking-wider">
+              ALREADY AN ATHLETE?{" "}
+              <Link
+                to="/login"
+                className="text-primary hover:text-white font-black transition-all ml-1 underline underline-offset-4 decoration-2"
               >
-                {isLoading ? "Broadcasting..." : "Create Account"}
-              </Button>
-
-              <div className="pt-1">
-                <div className="relative flex justify-center text-[8px] mb-3">
-                  <span className="bg-[#050505] px-3 font-black uppercase tracking-[0.3em] text-zinc-600 italic">
-                    Quick Access
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      (window.location.href =
-                        "http://localhost:3000/auth/google")
-                    }
-                    className="flex items-center justify-center gap-2 h-9 rounded-full bg-zinc-900/50 border border-white/5 hover:border-primary/30 transition-all group"
-                  >
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
-                      <path
-                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                        fill="#4285F4"
-                      />
-                      <path
-                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                        fill="#34A853"
-                      />
-                    </svg>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-white transition-colors">
-                      Google
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      (window.location.href =
-                        "http://localhost:3000/auth/facebook")
-                    }
-                    className="flex items-center justify-center gap-2 h-9 rounded-full bg-zinc-900/50 border border-white/5 hover:border-primary/30 transition-all group"
-                  >
-                    <svg
-                      className="w-3.5 h-3.5 text-[#1877F2]"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-                    </svg>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-white transition-colors">
-                      Facebook
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="text-center pt-3 border-t border-white/5">
-                <p className="text-[9px] text-zinc-600 font-medium">
-                  ALREADY AN ATHLETE?{" "}
-                  <Link
-                    to="/login"
-                    className="text-primary hover:text-white font-black transition-all ml-1 underline underline-offset-4 decoration-2"
-                  >
-                    RETURN TO LOGIN
-                  </Link>
-                </p>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      </div>
+                RETURN TO LOGIN
+              </Link>
+            </p>
+          </div>
+        </form>
+      </AuthFormWrapper>
     </div>
   );
 }

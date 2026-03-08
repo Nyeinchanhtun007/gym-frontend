@@ -17,7 +17,12 @@ export default function OAuthCallback() {
       try {
         const user = JSON.parse(decodeURIComponent(userStr));
         setAuth(user, token);
-        navigate("/dashboard");
+
+        if (user.role === "ADMIN") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       } catch (error) {
         console.error("Failed to parse user data", error);
         navigate("/login?error=OAuth failed");
