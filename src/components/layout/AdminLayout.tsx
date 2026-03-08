@@ -13,6 +13,8 @@ import {
   ClipboardList,
   CreditCard,
   Layers,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -26,6 +28,13 @@ export default function AdminLayout({
   const logout = useAuthStore((state: any) => state.logout);
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [theme, setTheme] = useState(
+    localStorage.getItem("admin-theme") || "dark",
+  );
+
+  useEffect(() => {
+    localStorage.setItem("admin-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -50,37 +59,66 @@ export default function AdminLayout({
 
   return (
     <div
+      className={`transition-colors duration-500 min-h-screen bg-background text-foreground ${theme === "light" ? "light" : "dark"}`}
       style={{
         minHeight: "100vh",
-        backgroundColor: "#000",
-        color: "#fff",
+        backgroundColor: "var(--background)",
+        color: "var(--foreground)",
       }}
     >
       {/* Top Banner - Fixed */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-zinc-950/80 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-6 md:px-10 z-[1000]">
+      <div className="fixed top-0 left-0 right-0 h-16 bg-card/80 backdrop-blur-md border-b border-border flex justify-between items-center px-6 md:px-10 z-[1000]">
         <div className="flex items-center gap-6">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/5 text-white/40 hover:text-white transition-all hover:bg-white/10"
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-foreground/5 border border-border text-foreground/40 hover:text-primary transition-all hover:bg-foreground/10"
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
           <Link
             to="/"
-            className="text-xl md:text-2xl font-black tracking-tighter text-white flex items-center gap-1 hover:opacity-80 transition-opacity"
+            className="text-xl md:text-2xl font-black tracking-tighter text-foreground flex items-center gap-1 hover:opacity-80 transition-opacity"
           >
             YGN<span className="text-primary italic">GYM</span>{" "}
-            <span className="hidden md:inline text-white/40 ml-1">ADMIN</span>
+            <span className="hidden md:inline text-foreground/40 ml-1">
+              ADMIN
+            </span>
           </Link>
         </div>
 
         <div className="flex items-center gap-4 md:gap-6">
+          {/* Theme Toggle */}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-all duration-500 hover:scale-110 active:scale-95 ${
+              theme === "dark"
+                ? "bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                : "bg-blue-500/10 border-blue-500/20 text-blue-500 hover:bg-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+            }`}
+            title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={theme}
+                initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
+                transition={{ duration: 0.3 }}
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </button>
           <div className="text-right hidden sm:block">
-            <div className="text-[9px] font-bold text-white/30 tracking-[0.2em] uppercase">
+            <div className="text-[9px] font-bold text-foreground/30 tracking-[0.2em] uppercase">
               USER IDENTIFIED
             </div>
-            <div className="text-[12px] font-bold text-white uppercase italic">
+            <div className="text-[12px] font-bold text-foreground uppercase italic">
               {user?.name}
             </div>
           </div>
@@ -89,7 +127,7 @@ export default function AdminLayout({
               logout();
               navigate("/login");
             }}
-            className="h-10 px-6 bg-white/5 text-primary border border-primary/20 rounded-xl text-[10px] font-black tracking-widest hover:bg-primary hover:text-black transition-all"
+            className="h-10 px-6 bg-foreground/5 text-primary border border-primary/20 rounded-xl text-[10px] font-black tracking-widest hover:bg-primary hover:text-primary-foreground transition-all"
           >
             LOGOUT
           </button>
@@ -105,7 +143,7 @@ export default function AdminLayout({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[800]"
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[800]"
             />
           )}
         </AnimatePresence>
@@ -117,7 +155,8 @@ export default function AdminLayout({
             isMobile ? { x: isOpen ? 0 : -260 } : { width: isOpen ? 240 : 80 }
           }
           transition={{ type: "spring", damping: 30, stiffness: 250 }}
-          className="fixed top-16 bottom-0 left-0 bg-zinc-950 border-r border-white/5 z-[900] overflow-hidden"
+          className="fixed top-16 bottom-0 left-0 border-r border-border z-[900] overflow-hidden transition-colors duration-500 shadow-sm"
+          style={{ backgroundColor: "var(--sidebar)" }}
         >
           <div
             className={`${isOpen ? "w-[240px]" : "w-[80px]"} h-full flex flex-col p-4 transition-all duration-300`}
@@ -135,13 +174,13 @@ export default function AdminLayout({
                     ${isOpen ? "px-5 py-3.5 gap-3" : "p-3.5 justify-center"}
                     ${
                       pathname === item.path
-                        ? "bg-primary text-black italic shadow-[0_4px_15px_rgba(255,62,62,0.3)]"
-                        : "text-white/60 hover:text-white hover:bg-white/5"
+                        ? "bg-primary/10 border border-primary/30 text-primary italic shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+                        : "text-foreground/40 hover:text-primary hover:bg-foreground/5"
                     }
                   `}
                 >
                   <item.icon
-                    className={`w-5 h-5 shrink-0 ${pathname === item.path ? "text-black" : "text-primary/60 group-hover:text-primary transition-colors"}`}
+                    className={`w-5 h-5 shrink-0 transition-colors ${pathname === item.path ? "text-primary" : "text-foreground/30 group-hover:text-primary"}`}
                   />
 
                   {isOpen && (
@@ -155,7 +194,7 @@ export default function AdminLayout({
                   )}
 
                   {!isOpen && (
-                    <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900 border border-white/10 text-white text-[9px] font-black rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[1000] tracking-widest uppercase italic">
+                    <div className="absolute left-full ml-4 px-3 py-2 bg-card border border-border text-foreground text-[9px] font-black rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[1000] tracking-widest uppercase italic shadow-xl">
                       {item.label}
                     </div>
                   )}
@@ -163,10 +202,10 @@ export default function AdminLayout({
               ))}
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-white/5">
+            <div className="mt-auto pt-6 border-t border-border">
               <Link
                 to="/"
-                className={`flex items-center group text-[9px] font-bold text-white/40 hover:text-primary transition-colors tracking-widest uppercase ${isOpen ? "gap-2" : "justify-center"}`}
+                className={`flex items-center group text-[9px] font-black text-foreground/30 hover:text-primary transition-colors tracking-widest uppercase italic ${isOpen ? "gap-2" : "justify-center"}`}
               >
                 <ChevronLeft
                   className={`w-4 h-4 group-hover:-translate-x-1 transition-transform ${isOpen ? "" : "rotate-180"}`}

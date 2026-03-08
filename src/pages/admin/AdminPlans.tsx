@@ -1,15 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
-import {
-  CreditCard,
-  Edit3,
-  X,
-  Save,
-  Trash2,
-  Plus,
-  Percent,
-  Loader2,
-} from "lucide-react";
+import { Edit3, X, Save, Trash2, Plus, Percent, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -209,14 +200,14 @@ export default function AdminPlans() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative max-w-xl w-full bg-zinc-950 border border-white/10 rounded-[2rem] p-5 shadow-2xl overflow-y-auto scrollbar-hide"
+              className="relative max-w-xl w-full bg-card border border-border rounded-[2rem] p-5 shadow-2xl overflow-y-auto scrollbar-hide"
               style={{ maxHeight: "90vh" }}
             >
               <div className="flex justify-between items-center mb-4 relative z-10">
                 <div>
-                  <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">
+                  <h2 className="text-xl font-black text-foreground italic tracking-tighter uppercase">
                     {isCreating ? "Establish" : "Modify"}{" "}
-                    <span className="text-primary">Tier</span>
+                    <span className="text-primary text-neon">Tier</span>
                   </h2>
                 </div>
                 <button
@@ -224,7 +215,7 @@ export default function AdminPlans() {
                     setEditingPlan(null);
                     setIsCreating(false);
                   }}
-                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                  className="w-10 h-10 rounded-full bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors border border-border text-foreground"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -233,7 +224,7 @@ export default function AdminPlans() {
               <form onSubmit={handleSubmit} className="space-y-3 relative z-10">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
                       Tier Name
                     </Label>
                     <Input
@@ -241,7 +232,7 @@ export default function AdminPlans() {
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
                       }
-                      className="bg-white/5 border-white/10 rounded-xl h-9 font-bold focus:border-primary"
+                      className="bg-foreground/5 border-border rounded-xl h-9 font-bold focus:border-primary text-foreground font-outfit"
                     />
                   </div>
                   <div className="space-y-2 flex items-center pt-5 gap-4 px-4">
@@ -255,11 +246,11 @@ export default function AdminPlans() {
                           isPopular: e.target.checked,
                         })
                       }
-                      className="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary"
+                      className="w-5 h-5 rounded border-border bg-foreground/5 text-primary focus:ring-primary"
                     />
                     <Label
                       htmlFor="isPopular"
-                      className="text-[10px] font-black uppercase tracking-widest text-white/50 cursor-pointer"
+                      className="text-[10px] font-black uppercase tracking-widest text-foreground/50 cursor-pointer"
                     >
                       Popular Option
                     </Label>
@@ -267,7 +258,7 @@ export default function AdminPlans() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
                     Description
                   </Label>
                   <Textarea
@@ -275,13 +266,13 @@ export default function AdminPlans() {
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    className="bg-white/5 border-white/10 rounded-xl min-h-[52px] font-bold focus:border-primary"
+                    className="bg-foreground/5 border-border rounded-xl min-h-[52px] font-bold focus:border-primary text-foreground font-outfit"
                   />
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
                       Monthly Price ($)
                     </Label>
                     <Input
@@ -293,11 +284,11 @@ export default function AdminPlans() {
                           monthlyPrice: e.target.value,
                         })
                       }
-                      className="bg-white/5 border-white/10 rounded-xl h-9 font-bold focus:border-primary"
+                      className="bg-foreground/5 border-border rounded-xl h-9 font-bold focus:border-primary text-foreground font-outfit"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
                       Yearly Price ($)
                     </Label>
                     <Input
@@ -309,11 +300,11 @@ export default function AdminPlans() {
                           yearlyPrice: e.target.value,
                         })
                       }
-                      className="bg-white/5 border-white/10 rounded-xl h-9 font-bold focus:border-primary"
+                      className="bg-foreground/5 border-border rounded-xl h-9 font-bold focus:border-primary text-foreground font-outfit"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
                       Discount (%)
                     </Label>
                     <Input
@@ -322,14 +313,14 @@ export default function AdminPlans() {
                       onChange={(e) =>
                         setFormData({ ...formData, discount: e.target.value })
                       }
-                      className="bg-white/5 border-white/10 rounded-xl h-9 font-bold focus:border-primary text-green-500"
+                      className="bg-foreground/5 border-border rounded-xl h-9 font-bold focus:border-primary text-green-500 font-outfit"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
                       Daily Class Limit
                     </Label>
                     <Input
@@ -341,11 +332,11 @@ export default function AdminPlans() {
                           dailyClassLimit: e.target.value,
                         })
                       }
-                      className="bg-white/5 border-white/10 rounded-xl h-9 font-bold focus:border-primary"
+                      className="bg-foreground/5 border-border rounded-xl h-9 font-bold focus:border-primary text-foreground font-outfit"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
                       Monthly Class Limit
                     </Label>
                     <Input
@@ -357,13 +348,13 @@ export default function AdminPlans() {
                           monthlyClassLimit: e.target.value,
                         })
                       }
-                      className="bg-white/5 border-white/10 rounded-xl h-9 font-bold focus:border-primary"
+                      className="bg-foreground/5 border-border rounded-xl h-9 font-bold focus:border-primary text-foreground font-outfit"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
                     Tier Features (One per line)
                   </Label>
                   <Textarea
@@ -371,7 +362,7 @@ export default function AdminPlans() {
                     onChange={(e) =>
                       setFormData({ ...formData, features: e.target.value })
                     }
-                    className="bg-white/5 border-white/10 rounded-xl min-h-[64px] font-bold focus:border-primary text-sm"
+                    className="bg-foreground/5 border-border rounded-xl min-h-[64px] font-bold focus:border-primary text-foreground font-outfit"
                   />
                 </div>
 
@@ -399,7 +390,7 @@ export default function AdminPlans() {
                           deleteMutation.mutate(editingPlan.id);
                         }
                       }}
-                      className="flex-1 h-10 rounded-xl border-white/10 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 font-black uppercase tracking-widest text-xs"
+                      className="flex-1 h-10 rounded-xl border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 font-black uppercase tracking-widest text-[10px] text-foreground"
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       Delete
@@ -410,7 +401,7 @@ export default function AdminPlans() {
                     disabled={
                       createMutation.isPending || updateMutation.isPending
                     }
-                    className="flex-[2] h-10 rounded-xl bg-primary text-black font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all"
+                    className="flex-[2] h-10 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all"
                   >
                     {createMutation.isPending || updateMutation.isPending ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -430,17 +421,17 @@ export default function AdminPlans() {
 
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-black uppercase italic tracking-tighter mb-2">
-            Pricing <span className="text-primary">Architecture</span>
+          <h1 className="text-4xl font-black uppercase italic tracking-tighter mb-2 text-foreground">
+            Pricing <span className="text-primary text-neon">Architecture</span>
           </h1>
-          <p className="text-white/50 uppercase tracking-[0.2em] text-[10px] font-bold">
+          <p className="text-foreground/40 uppercase tracking-[0.2em] text-[10px] font-bold">
             Configure Membership Tiers & Tactical Discounts
           </p>
         </div>
 
         <button
           onClick={handleCreate}
-          className="h-12 px-8 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform flex items-center gap-2"
+          className="h-12 px-8 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Create New Tier
@@ -452,7 +443,7 @@ export default function AdminPlans() {
           [1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-64 bg-white/5 rounded-[2.5rem] animate-pulse"
+              className="h-64 bg-foreground/5 rounded-[2.5rem] animate-pulse"
             />
           ))
         ) : error ? (
@@ -460,53 +451,53 @@ export default function AdminPlans() {
             Operational Error: {(error as any).message}
           </div>
         ) : plans.length === 0 ? (
-          <div className="col-span-full py-20 text-center text-white/20 uppercase font-black text-xs tracking-widest">
+          <div className="col-span-full py-20 text-center text-foreground/20 uppercase font-black text-xs tracking-widest">
             No Tiers Configured
           </div>
         ) : (
           plans.map((plan: any) => (
             <div
               key={plan.id}
-              className="bg-zinc-900/50 border border-white/5 p-8 rounded-[2.5rem] relative overflow-hidden group"
+              className="bg-card/50 backdrop-blur-2xl border border-border p-8 rounded-[2.5rem] relative overflow-hidden group"
             >
               {/* <div className="absolute top-0 right-0 p-8 transform group-hover:scale-110 group-hover:text-primary transition-all text-white/10">
                 <CreditCard className="w-12 h-12" />
               </div> */}
 
               <div className="mb-8">
-                <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase mb-2 group-hover:text-primary transition-colors">
+                <h3 className="text-2xl font-black text-foreground italic tracking-tighter uppercase mb-2 group-hover:text-primary transition-colors">
                   {plan.name}
                 </h3>
-                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest line-clamp-2 leading-relaxed">
+                <p className="text-foreground/40 text-[10px] font-bold uppercase tracking-widest line-clamp-2 leading-relaxed">
                   {plan.description}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                  <span className="text-[8px] font-black uppercase tracking-tighter text-white/30 block mb-1">
+                <div className="bg-foreground/5 p-4 rounded-2xl border border-border">
+                  <span className="text-[8px] font-black uppercase tracking-tighter text-foreground/30 block mb-1">
                     Monthly
                   </span>
-                  <span className="text-sm font-black text-white">
+                  <span className="text-sm font-black text-foreground">
                     ${plan.monthlyPrice}
                   </span>
                 </div>
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 relative">
-                  <span className="text-[8px] font-black uppercase tracking-tighter text-white/30 block mb-1">
+                <div className="bg-foreground/5 p-4 rounded-2xl border border-border relative">
+                  <span className="text-[8px] font-black uppercase tracking-tighter text-foreground/30 block mb-1">
                     Discount
                   </span>
                   <span className="text-sm font-black text-green-500">
                     {plan.discount}%
                   </span>
                   {plan.discount > 0 && (
-                    <div className="absolute -top-2 -right-2 bg-green-500 text-black rounded-full p-1 shadow-lg">
+                    <div className="absolute -top-2 -right-2 bg-green-500 text-primary-foreground rounded-full p-1 shadow-lg border border-green-400/50">
                       <Percent className="w-2 h-2" />
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-6 border-t border-white/5">
+              <div className="flex items-center justify-between pt-6 border-t border-border">
                 <div className="flex items-center gap-3">
                   {plan.isPopular && (
                     <span className="px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-[8px] font-black uppercase tracking-widest">
@@ -516,7 +507,7 @@ export default function AdminPlans() {
                 </div>
                 <button
                   onClick={() => handleEdit(plan)}
-                  className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary hover:text-black transition-all"
+                  className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all border border-border"
                 >
                   <Edit3 className="w-5 h-5" />
                 </button>

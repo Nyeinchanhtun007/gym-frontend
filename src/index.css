@@ -36,6 +36,7 @@
   --radius: 1rem;
   /* Sophisticated Midnight Black */
   --background: #0a0a0a;
+  --sidebar: #111111;
   --foreground: oklch(0.95 0.01 250);
   
   --card: oklch(0.12 0.01 250);
@@ -44,8 +45,8 @@
   --popover: oklch(0.12 0.01 250);
   --popover-foreground: oklch(0.95 0.01 250);
   
-  /* Dark Red Mix - Premium & Strong */
-  --primary: oklch(0.48 0.22 25);
+  /* Sleek Cyber Blue - High Tech & Premium */
+  --primary: #3b82f6;
   --primary-foreground: oklch(0.98 0.01 250);
   
   --secondary: oklch(0.15 0.02 250);
@@ -60,9 +61,42 @@
   --destructive: oklch(0.55 0.18 25);
   --destructive-foreground: oklch(0.95 0.01 250);
   
-  --border: oklch(0.18 0.01 250 / 0.1);
-  --input: oklch(0.18 0.01 250 / 0.1);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
   --ring: oklch(0.48 0.22 25);
+}
+
+.light {
+  /* Softer Slate Executive Theme */
+  --background: #f1f5f9;
+  --sidebar: #e2e8f0;
+  --foreground: #0f172a;
+  
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  
+  /* Executive Blue - Professional & High-Contrast */
+  --primary: #2563eb; 
+  --primary-foreground: #ffffff;
+  
+  --secondary: #e2e8f0;
+  --secondary-foreground: #0f172a;
+  
+  --muted: #f8fafc;
+  --muted-foreground: #475569;
+  
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  
+  --border: #cbd5e1;
+  --input: #cbd5e1;
+  --ring: oklch(0.48 0.22 25 / 0.5);
 }
 
 @layer base {
@@ -127,19 +161,22 @@ select option {
 
 @layer utilities {
   .glass {
-    @apply bg-background/60 backdrop-blur-xl border border-white/10;
+    @apply bg-background/60 backdrop-blur-xl border border-border/50;
   }
   
   .glass-card {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 hover:border-primary/50 transition-all duration-500;
+    @apply bg-card/60 backdrop-blur-md border border-border/50 hover:border-primary/50 transition-all duration-500;
   }
 
   .text-gradient {
-    @apply bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-foreground via-foreground to-foreground/40 bg-clip-text text-transparent;
   }
 
   .text-neon {
-    @apply text-primary drop-shadow-[0_0_8px_oklch(0.48_0.22_25_/_0.5)];
+    @apply text-primary filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)];
+    .dark & {
+      @apply drop-shadow-[0_0_8px_oklch(0.48_0.22_25_/_0.5)];
+    }
   }
 
   .noise-bg {

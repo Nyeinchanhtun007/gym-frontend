@@ -84,19 +84,19 @@ export default function AdminDashboard() {
     <div className="space-y-4 relative">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 relative z-10">
         <div>
-          <h1 className="text-4xl font-black uppercase italic tracking-tighter mb-1 leading-none">
+          <h1 className="text-4xl font-black uppercase italic tracking-tighter mb-1 leading-none text-foreground">
             System <span className="text-primary text-neon">Command</span>
           </h1>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-[1.5px] bg-primary animate-pulse" />
-            <p className="text-white/40 uppercase tracking-[0.3em] text-[8px] font-black">
+            <p className="text-foreground/40 uppercase tracking-[0.3em] text-[8px] font-black">
               SECURE SECTOR ACCESS // LEVEL 4 CLEARANCE
             </p>
           </div>
         </div>
         <button
           onClick={handleRefresh}
-          className="h-12 px-8 bg-zinc-950 border border-white/10 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-xl hover:border-primary/50 transition-all flex items-center gap-3 group tactical-glow overflow-hidden"
+          className="h-12 px-8 bg-card border border-border text-foreground text-[9px] font-black uppercase tracking-[0.2em] rounded-xl hover:border-primary/50 transition-all flex items-center gap-3 group tactical-glow overflow-hidden"
         >
           <RefreshCw
             className={`w-3.5 h-3.5 text-primary ${isLoading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-700"}`}
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.05 }}
             whileHover={{ y: -4 }}
-            className="group relative bg-zinc-950/40 backdrop-blur-3xl border border-white/5 p-6 rounded-[2rem] overflow-hidden transition-all duration-500 hover:border-white/10 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)]"
+            className="group relative bg-card/40 backdrop-blur-3xl border border-border p-6 rounded-[2rem] overflow-hidden transition-all duration-500 hover:border-border/50 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
           >
             {/* Background Decorative Elements */}
             <div className="absolute inset-0 pointer-events-none">
@@ -167,19 +167,19 @@ export default function AdminDashboard() {
             {/* Top Row: Icon and Tag */}
             <div className="flex justify-between items-start mb-8 relative z-10">
               <div
-                className={`p-2.5 rounded-xl bg-white/5 border border-white/10 ${stat.color} transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}
+                className={`p-2.5 rounded-xl bg-foreground/5 border border-border ${stat.color} transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}
               >
                 <stat.icon className={`w-5 h-5 ${stat.glow}`} />
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="text-[7px] font-black text-white/20 tracking-[0.2em] font-mono">
+                <span className="text-[7px] font-black text-foreground/20 tracking-[0.2em] font-mono">
                   {stat.id}
                 </span>
-                <div className="flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-md border border-white/5">
+                <div className="flex items-center gap-1.5 bg-foreground/5 px-2 py-1 rounded-md border border-foreground/5">
                   <div
                     className={`w-1 h-1 rounded-full animate-pulse ${stat.color.replace("text-", "bg-")}`}
                   />
-                  <span className="text-[8px] font-black text-white/40 uppercase tracking-widest leading-none">
+                  <span className="text-[8px] font-black text-foreground/40 uppercase tracking-widest leading-none">
                     {stat.tag}
                   </span>
                 </div>
@@ -188,11 +188,11 @@ export default function AdminDashboard() {
 
             {/* Bottom Section: Label and Value */}
             <div className="relative z-10 space-y-1">
-              <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] group-hover:text-white/50 transition-colors">
+              <p className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.3em] group-hover:text-foreground/50 transition-colors">
                 {stat.label}
               </p>
               <div className="flex items-baseline justify-between">
-                <h3 className="text-4xl font-black text-white italic tracking-tighter tabular-nums leading-none">
+                <h3 className="text-4xl font-black text-foreground italic tracking-tighter tabular-nums leading-none">
                   {isLoading ? (
                     <span className="opacity-20 animate-pulse">---</span>
                   ) : (
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Bottom Progress/Scanline Bar */}
-            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/[0.02]">
+            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground/[0.02]">
               <motion.div
                 initial={{ left: "-100%" }}
                 animate={{ left: "100%" }}
@@ -225,25 +225,25 @@ export default function AdminDashboard() {
             </div>
 
             {/* Corner Decorative Ornaments */}
-            <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute top-2 left-2 w-1.5 h-1.5 border-t border-l border-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute top-2 right-2 w-1.5 h-1.5 border-t border-r border-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute bottom-2 left-2 w-1.5 h-1.5 border-b border-l border-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute bottom-2 right-2 w-1.5 h-1.5 border-b border-r border-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           </motion.div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 bg-zinc-950/50 backdrop-blur-2xl border border-white/10 p-5 rounded-[2rem] relative overflow-hidden scanline-panel group">
+        <div className="lg:col-span-2 bg-card/50 backdrop-blur-2xl border border-border p-5 rounded-[2rem] relative overflow-hidden scanline-panel group">
           <div className="noise-bg absolute inset-0 opacity-5 pointer-events-none" />
 
           <div className="flex justify-between items-start mb-4 relative z-10">
             <div>
-              <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-none mb-1.5">
+              <h2 className="text-2xl font-black text-foreground uppercase italic tracking-tighter leading-none mb-1.5">
                 Deployment{" "}
                 <span className="text-primary text-neon">Velocity</span>
               </h2>
-              <p className="text-[8px] font-black text-white/30 uppercase tracking-[0.4em]">
+              <p className="text-[8px] font-black text-foreground/30 uppercase tracking-[0.4em]">
                 Sustained Operative Deployment Pattern
               </p>
             </div>
@@ -259,7 +259,10 @@ export default function AdminDashboard() {
             {/* Grid Background */}
             <div className="absolute inset-0 grid grid-cols-8 grid-rows-4 pointer-events-none">
               {[...Array(32)].map((_, i) => (
-                <div key={i} className="border-[0.5px] border-white/[0.02]" />
+                <div
+                  key={i}
+                  className="border-[0.5px] border-foreground/[0.02]"
+                />
               ))}
             </div>
 
@@ -364,7 +367,7 @@ export default function AdminDashboard() {
               ].map((time) => (
                 <span
                   key={time}
-                  className="text-[10px] font-bold text-white uppercase tracking-[0.2em]"
+                  className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.2em]"
                 >
                   {time}
                 </span>
@@ -373,9 +376,9 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-zinc-950/50 backdrop-blur-2xl border border-white/10 p-5 rounded-[2rem] relative overflow-hidden">
+        <div className="bg-card/50 backdrop-blur-2xl border border-border p-5 rounded-[2rem] relative overflow-hidden">
           <div className="noise-bg absolute inset-0 opacity-5 pointer-events-none" />
-          <h2 className="text-xl font-black text-white uppercase italic tracking-tighter mb-6 text-center relative z-10">
+          <h2 className="text-xl font-black text-foreground uppercase italic tracking-tighter mb-6 text-center relative z-10">
             Sector <span className="text-primary text-neon">Density</span>
           </h2>
 
@@ -402,12 +405,12 @@ export default function AdminDashboard() {
             ].map((bar) => (
               <div key={bar.label}>
                 <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.1em] mb-2">
-                  <span className="text-white/30">{bar.label}</span>
-                  <span className="text-white font-mono">
+                  <span className="text-foreground/30">{bar.label}</span>
+                  <span className="text-foreground font-mono">
                     {bar.val} // {bar.max}
                   </span>
                 </div>
-                <div className="h-3 w-full bg-white/[0.03] rounded-sm border border-white/5 p-[2px] overflow-hidden">
+                <div className="h-3 w-full bg-foreground/[0.03] rounded-sm border border-border p-[2px] overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${(bar.val / bar.max) * 100}%` }}
