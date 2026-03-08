@@ -1,16 +1,6 @@
 export type TransactionType = 'INCOME' | 'EXPENSE';
 
-export type TransactionCategory =
-  | 'MEMBERSHIP_FEE'
-  | 'PERSONAL_TRAINING'
-  | 'CAFE_SALES'
-  | 'EQUIPMENT_PURCHASE'
-  | 'RENT'
-  | 'UTILITIES'
-  | 'SALARY'
-  | 'MAINTENANCE'
-  | 'MARKETING'
-  | 'OTHER';
+export type TransactionCategory = string;
 
 export interface Transaction {
   id: number;
