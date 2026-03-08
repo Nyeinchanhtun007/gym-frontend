@@ -9,7 +9,6 @@ import {
   Trash2,
   Calendar,
   BarChart3,
-  AlertTriangle,
 } from "lucide-react";
 import {
   XAxis,
@@ -48,7 +47,7 @@ export default function AdminAccounting() {
   const [formData, setFormData] = useState({
     amount: 0,
     type: "INCOME" as TransactionType,
-    category: "MEMBERSHIP_FEE" as TransactionCategory,
+    category: "" as TransactionCategory,
     description: "",
     date: new Date().toISOString().split("T")[0],
   });
@@ -77,6 +76,17 @@ export default function AdminAccounting() {
     },
   });
 
+  const { data: categoriesData } = useQuery<TransactionCategory[]>({
+    queryKey: ["accounting-categories"],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:3000/accounting/categories", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      return res.json();
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
       const res = await fetch("http://localhost:3000/accounting", {
@@ -95,6 +105,10 @@ export default function AdminAccounting() {
       queryClient.invalidateQueries({ queryKey: ["accounting-summary"] });
       setIsModalOpen(false);
       resetForm();
+    },
+    onError: (error: any) => {
+      console.error("CREATE MUTATION ERROR:", error);
+      alert("Failed to confirm protocol. Ensure valid inputs.");
     },
   });
 
@@ -162,7 +176,7 @@ export default function AdminAccounting() {
     setFormData({
       amount: 0,
       type: "INCOME",
-      category: "MEMBERSHIP_FEE",
+      category: categoriesData?.[0] || "",
       description: "",
       date: new Date().toISOString().split("T")[0],
     });
@@ -187,18 +201,7 @@ export default function AdminAccounting() {
       return matchesSearch && matchesType && matchesCategory;
     }) || [];
 
-  const categories: TransactionCategory[] = [
-    "MEMBERSHIP_FEE",
-    "PERSONAL_TRAINING",
-    "CAFE_SALES",
-    "EQUIPMENT_PURCHASE",
-    "RENT",
-    "UTILITIES",
-    "SALARY",
-    "MAINTENANCE",
-    "MARKETING",
-    "OTHER",
-  ];
+  const categories: TransactionCategory[] = categoriesData || [];
 
   return (
     <div className="space-y-8 pb-20">
@@ -226,7 +229,7 @@ export default function AdminAccounting() {
         {[
           {
             label: "Total Revenue",
-            value: `₮ ${summary?.totalIncome.toLocaleString() || "0"}`,
+            value: `$ ${summary?.totalIncome.toLocaleString() || "0"}`,
             icon: TrendingUp,
             color: "text-emerald-500",
             bg: "bg-emerald-500/5",
@@ -234,15 +237,15 @@ export default function AdminAccounting() {
           },
           {
             label: "Operational Costs",
-            value: `₮ ${summary?.totalExpenses.toLocaleString() || "0"}`,
+            value: `$ ${summary?.totalExpenses.toLocaleString() || "0"}`,
             icon: TrendingDown,
             color: "text-rose-500",
             bg: "bg-rose-500/5",
             border: "border-rose-500/20",
           },
           {
-            label: "Net Capital Balance",
-            value: `₮ ${summary?.balance.toLocaleString() || "0"}`,
+            label: "Net Balance",
+            value: `$ ${summary?.balance.toLocaleString() || "0"}`,
             icon: DollarSign,
             color: "text-primary",
             bg: "bg-primary/5",
@@ -279,7 +282,7 @@ export default function AdminAccounting() {
       </div>
 
       {/* Chart Section */}
-      <div className="bg-card/50 backdrop-blur-2xl border border-border p-8 rounded-[2rem]">
+      {/* <div className="bg-card/50 backdrop-blur-2xl border border-border p-8 rounded-[2rem]">
         <div className="flex justify-between items-center mb-10">
           <div>
             <h2 className="text-xl font-black uppercase italic tracking-tighter text-foreground flex items-center gap-3">
@@ -362,10 +365,10 @@ export default function AdminAccounting() {
             </ResponsiveContainer>
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* Transactions Container */}
-      <div className="bg-card/50 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+      <div className="bg-card/50 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] shadow-2xl relative z-10">
         {/* Unified Filter Header */}
         <div className="p-8 border-b border-white/5 bg-white/[0.01]">
           <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
@@ -387,7 +390,7 @@ export default function AdminAccounting() {
                   { label: "EXPENSE", value: "EXPENSE" },
                 ]}
                 placeholder="ALL TYPES"
-                className="w-full md:w-48 !rounded-full"
+                className="w-full bg-green-300 md:w-48 !rounded-full"
               />
               <TacticalSelect
                 value={categoryFilter}
@@ -400,7 +403,7 @@ export default function AdminAccounting() {
                   })),
                 ]}
                 placeholder="ALL CATEGORIES"
-                className="w-full md:w-56 !rounded-full"
+                className="w-full bg-blue-300 md:w-56 !rounded-full"
               />
             </div>
           </div>
@@ -460,12 +463,12 @@ export default function AdminAccounting() {
                     </td>
                     <td className="px-10 py-8">
                       <div className="flex flex-col">
-                        <div className="text-[13px] font-black uppercase tracking-tighter text-white">
+                        <div className="text-[13px] font-black uppercase tracking-tighter text-foreground/50">
                           {tx.category.replace("_", " ")}
                         </div>
-                        <div className="text-[10px] font-bold text-foreground/20">
+                        {/* <div className="text-[10px] font-bold text-foreground/20">
                           {tx.description || "no details"}
-                        </div>
+                        </div> */}
                       </div>
                     </td>
                     <td className="px-10 py-8 text-center">
@@ -567,7 +570,7 @@ export default function AdminAccounting() {
               <div className="relative z-10 space-y-6">
                 <div>
                   <h3 className="text-2xl font-black uppercase italic tracking-tighter text-foreground mb-1">
-                    {editingTransaction ? "Amend" : "Initialize"} Protocol
+                    {editingTransaction ? "Edit" : "Add"} Transaction
                   </h3>
                   <p className="text-[8px] font-black text-foreground/30 uppercase tracking-[0.4em]">
                     Log Financial Movement Data
@@ -644,7 +647,9 @@ export default function AdminAccounting() {
                     <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
                       Sector Category
                     </label>
-                    <select
+                    <input
+                      type="text"
+                      list="category-options"
                       value={formData.category}
                       onChange={(e) =>
                         setFormData({
@@ -652,14 +657,17 @@ export default function AdminAccounting() {
                           category: e.target.value as TransactionCategory,
                         })
                       }
-                      className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-foreground font-black uppercase italic text-xs outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer"
-                    >
+                      placeholder="ENTER OR SELECT CATEGORY"
+                      className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-foreground font-black uppercase italic text-xs outline-none focus:border-primary/50 transition-all"
+                      required
+                    />
+                    <datalist id="category-options">
                       {categories.map((c) => (
                         <option key={c} value={c}>
                           {c.replace("_", " ")}
                         </option>
                       ))}
-                    </select>
+                    </datalist>
                   </div>
 
                   <div className="space-y-1.5">
@@ -685,7 +693,7 @@ export default function AdminAccounting() {
                       onClick={() => setIsModalOpen(false)}
                       className="flex-1 h-11 rounded-xl border border-border text-foreground/50 font-black uppercase text-[9px] tracking-widest hover:bg-foreground/5 transition-all"
                     >
-                      ABORT
+                      Cancel
                     </button>
                     <button
                       type="submit"
@@ -696,7 +704,7 @@ export default function AdminAccounting() {
                     >
                       {createMutation.isPending || updateMutation.isPending
                         ? "PROCESSING..."
-                        : "CONFIRM UPLINK"}
+                        : "CONFIRM"}
                     </button>
                   </div>
                 </form>
