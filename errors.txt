@@ -1,0 +1,15 @@
+src/components/auth/AuthInput.tsx(3,10): error TS1484: 'LucideIcon' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/pages/admin/AdminAccounting.tsx(11,3): error TS6133: 'Filter' is declared but its value is never read.
+src/pages/admin/AdminAccounting.tsx(13,3): error TS6133: 'ArrowUpDown' is declared but its value is never read.
+src/pages/admin/AdminAccounting.tsx(14,3): error TS6133: 'Search' is declared but its value is never read.
+src/pages/admin/AdminAccounting.tsx(17,3): error TS6133: 'LineChart' is declared but its value is never read.
+src/pages/admin/AdminAccounting.tsx(18,3): error TS6133: 'Line' is declared but its value is never read.
+src/pages/admin/AdminAccounting.tsx(26,3): error TS6133: 'BarChart' is declared but its value is never read.
+src/pages/admin/AdminAccounting.tsx(27,3): error TS6133: 'Bar' is declared but its value is never read.
+src/pages/admin/AdminAccounting.tsx(34,3): error TS1484: 'AccountingSummary' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/pages/admin/AdminAccounting.tsx(35,3): error TS1484: 'Transaction' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/pages/admin/AdminAccounting.tsx(36,3): error TS1484: 'TransactionType' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/pages/admin/AdminAccounting.tsx(37,3): error TS1484: 'TransactionCategory' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/pages/admin/AdminAccounting.tsx(58,37): error TS6133: 'isSummaryLoading' is declared but its value is never read.
+src/pages/Dashboard.tsx(39,38): error TS6133: 'userLoading' is declared but its value is never read.
+src/pages/Home.tsx(677,37): error TS6133: 'i' is declared but its value is never read.

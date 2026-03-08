@@ -674,7 +674,7 @@ export default function Home() {
                   className="w-full md:w-[calc(33.33%-1.5rem)] h-96 bg-zinc-900 animate-pulse"
                 />
               ))
-            : plans.map((plan: any, i: number) => {
+            : plans.map((plan: any) => {
                 const finalMonthlyPrice = plan.monthlyPrice;
                 const finalYearlyPrice =
                   plan.yearlyPrice * (1 - (plan.discount || 0) / 100);

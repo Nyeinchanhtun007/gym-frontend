@@ -1,0 +1,710 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "@/store/authStore";
+import { useState } from "react";
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  Plus,
+  Trash2,
+  Calendar,
+  BarChart3,
+  AlertTriangle,
+} from "lucide-react";
+import {
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from "recharts";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import TacticalSelect from "@/components/ui/TacticalSelect";
+import TacticalSearch from "@/components/admin/TacticalSearch";
+import TacticalConfirmModal from "@/components/admin/TacticalConfirmModal";
+import { AnimatePresence, motion } from "framer-motion";
+import type {
+  AccountingSummary,
+  Transaction,
+  TransactionType,
+  TransactionCategory,
+} from "@/types/accounting";
+
+export default function AdminAccounting() {
+  const token = useAuthStore((state: any) => state.token);
+  const queryClient = useQueryClient();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
+  const [deletingTransactionId, setDeletingTransactionId] = useState<
+    number | null
+  >(null);
+
+  const [formData, setFormData] = useState({
+    amount: 0,
+    type: "INCOME" as TransactionType,
+    category: "MEMBERSHIP_FEE" as TransactionCategory,
+    description: "",
+    date: new Date().toISOString().split("T")[0],
+  });
+
+  const { data: summary } = useQuery<AccountingSummary>({
+    queryKey: ["accounting-summary"],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:3000/accounting/summary", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch summary");
+      return res.json();
+    },
+  });
+
+  const { data: transactions, isLoading: isTransactionsLoading } = useQuery<
+    Transaction[]
+  >({
+    queryKey: ["admin-transactions"],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:3000/accounting", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch transactions");
+      return res.json();
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await fetch("http://localhost:3000/accounting", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create transaction");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounting-summary"] });
+      setIsModalOpen(false);
+      resetForm();
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const res = await fetch(`http://localhost:3000/accounting/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to update transaction");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounting-summary"] });
+      setIsModalOpen(false);
+      setEditingTransaction(null);
+      resetForm();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      console.log("DELETING TRANSACTION ID:", id);
+      const res = await fetch(`http://localhost:3000/accounting/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        let errorMsg = "Failed to delete transaction";
+        try {
+          const errData = await res.text();
+          errorMsg = errData || errorMsg;
+        } catch (e) {}
+        console.error("DELETE ERROR:", errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        return res.json();
+      }
+      return { success: true };
+    },
+    onSuccess: () => {
+      console.log("DELETE SUCCESSFUL");
+      alert("PURGE SECURED: RECORD DELETED");
+      queryClient.invalidateQueries({ queryKey: ["admin-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounting-summary"] });
+    },
+    onError: (err: any) => {
+      console.error("MUTATION DATABASE ERROR:", err);
+      alert(
+        "PURGE FAILURE: PROTOCOL REJECTED\n" + (err.message || "Unknown error"),
+      );
+    },
+  });
+
+  const resetForm = () => {
+    setFormData({
+      amount: 0,
+      type: "INCOME",
+      category: "MEMBERSHIP_FEE",
+      description: "",
+      date: new Date().toISOString().split("T")[0],
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingTransaction) {
+      updateMutation.mutate({ id: editingTransaction.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  const filteredTransactions =
+    transactions?.filter((t) => {
+      const matchesSearch =
+        t.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.category.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = !typeFilter || t.type === typeFilter;
+      const matchesCategory = !categoryFilter || t.category === categoryFilter;
+      return matchesSearch && matchesType && matchesCategory;
+    }) || [];
+
+  const categories: TransactionCategory[] = [
+    "MEMBERSHIP_FEE",
+    "PERSONAL_TRAINING",
+    "CAFE_SALES",
+    "EQUIPMENT_PURCHASE",
+    "RENT",
+    "UTILITIES",
+    "SALARY",
+    "MAINTENANCE",
+    "MARKETING",
+    "OTHER",
+  ];
+
+  return (
+    <div className="space-y-8 pb-20">
+      <div className="flex justify-between items-center">
+        <AdminPageHeader
+          title="Financial"
+          highlight="Intel"
+          subtitle="Treasury & Command Expenditure Operations"
+        />
+        <button
+          onClick={() => {
+            setEditingTransaction(null);
+            resetForm();
+            setIsModalOpen(true);
+          }}
+          className="h-12 px-8 bg-primary text-black font-black uppercase italic tracking-widest text-[10px] rounded-xl hover:opacity-90 transition-all flex items-center gap-3 tactical-glow"
+        >
+          <Plus className="w-4 h-4" />
+          Create Transaction
+        </button>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          {
+            label: "Total Revenue",
+            value: `₮ ${summary?.totalIncome.toLocaleString() || "0"}`,
+            icon: TrendingUp,
+            color: "text-emerald-500",
+            bg: "bg-emerald-500/5",
+            border: "border-emerald-500/20",
+          },
+          {
+            label: "Operational Costs",
+            value: `₮ ${summary?.totalExpenses.toLocaleString() || "0"}`,
+            icon: TrendingDown,
+            color: "text-rose-500",
+            bg: "bg-rose-500/5",
+            border: "border-rose-500/20",
+          },
+          {
+            label: "Net Capital Balance",
+            value: `₮ ${summary?.balance.toLocaleString() || "0"}`,
+            icon: DollarSign,
+            color: "text-primary",
+            bg: "bg-primary/5",
+            border: "border-primary/20",
+          },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className={`p-6 rounded-[2rem] border bg-card/40 backdrop-blur-2xl ${stat.border} relative overflow-hidden group`}
+          >
+            <div className="flex justify-between items-start relative z-10">
+              <div
+                className={`p-3 rounded-2xl ${stat.bg} ${stat.color} border ${stat.border}`}
+              >
+                <stat.icon className="w-5 h-5" />
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-1">
+                  {stat.label}
+                </p>
+                <h3 className="text-3xl font-black italic tracking-tighter text-foreground">
+                  {stat.value}
+                </h3>
+              </div>
+            </div>
+            <div
+              className={`absolute bottom-0 left-0 right-0 h-1 ${stat.bg} opacity-20`}
+            />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Chart Section */}
+      <div className="bg-card/50 backdrop-blur-2xl border border-border p-8 rounded-[2rem]">
+        <div className="flex justify-between items-center mb-10">
+          <div>
+            <h2 className="text-xl font-black uppercase italic tracking-tighter text-foreground flex items-center gap-3">
+              <BarChart3 className="w-5 h-5 text-primary" />
+              Deployment Velocity
+            </h2>
+            <p className="text-[8px] font-black text-foreground/30 uppercase tracking-[0.4em]">
+              Monthly Income vs Expenditure Telemetry
+            </p>
+          </div>
+        </div>
+
+        <div className="h-80 w-full">
+          {summary?.monthly && (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={summary.monthly}>
+                <defs>
+                  <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient
+                    id="colorExpenses"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(255,255,255,0.05)"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="month"
+                  stroke="rgba(255,255,255,0.2)"
+                  fontSize={10}
+                  tickFormatter={(val) => {
+                    const [y, m] = val.split("-");
+                    return new Date(
+                      parseInt(y),
+                      parseInt(m) - 1,
+                    ).toLocaleDateString("default", { month: "short" });
+                  }}
+                />
+                <YAxis stroke="rgba(255,255,255,0.2)" fontSize={10} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#111",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "1rem",
+                  }}
+                  itemStyle={{
+                    fontSize: "10px",
+                    fontWeight: "bold",
+                    textTransform: "uppercase",
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="income"
+                  stroke="#10b981"
+                  fillOpacity={1}
+                  fill="url(#colorIncome)"
+                  name="REVENUE"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="expenses"
+                  stroke="#f43f5e"
+                  fillOpacity={1}
+                  fill="url(#colorExpenses)"
+                  name="EXPENDITURE"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </div>
+
+      {/* Transactions Container */}
+      <div className="bg-card/50 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+        {/* Unified Filter Header */}
+        <div className="p-8 border-b border-white/5 bg-white/[0.01]">
+          <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
+            <div className="relative w-full md:w-96 group">
+              <TacticalSearch
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="SEARCH TRANSACTIONS..."
+                className="w-full  !rounded-full"
+              />
+            </div>
+            <div className="flex gap-4 w-full md:w-auto">
+              <TacticalSelect
+                value={typeFilter}
+                onChange={setTypeFilter}
+                options={[
+                  { label: "ALL TYPES", value: "" },
+                  { label: "INCOME", value: "INCOME" },
+                  { label: "EXPENSE", value: "EXPENSE" },
+                ]}
+                placeholder="ALL TYPES"
+                className="w-full md:w-48 !rounded-full"
+              />
+              <TacticalSelect
+                value={categoryFilter}
+                onChange={setCategoryFilter}
+                options={[
+                  { label: "ALL CATEGORIES", value: "" },
+                  ...categories.map((c) => ({
+                    label: c.replace("_", " "),
+                    value: c,
+                  })),
+                ]}
+                placeholder="ALL CATEGORIES"
+                className="w-full md:w-56 !rounded-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Tactical Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-white/5 bg-white/[0.02]">
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
+                  Date
+                </th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
+                  Category
+                </th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-center">
+                  Type
+                </th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">
+                  Amount
+                </th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {isTransactionsLoading ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-10 py-24 text-center animate-pulse text-foreground/10 uppercase tracking-[0.5em] text-[10px] font-black"
+                  >
+                    Establishing Uplink...
+                  </td>
+                </tr>
+              ) : filteredTransactions.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-10 py-24 text-center text-foreground/10 uppercase tracking-[0.5em] text-[10px] font-black italic"
+                  >
+                    No Telemetry Detected
+                  </td>
+                </tr>
+              ) : (
+                filteredTransactions.map((tx) => (
+                  <tr
+                    key={tx.id}
+                    className="hover:bg-white/[0.01] transition-all duration-300"
+                  >
+                    <td className="px-10 py-8">
+                      <div className="text-[11px] font-bold text-foreground/40 uppercase tracking-widest tabular-nums font-mono">
+                        {new Date(tx.date).toLocaleDateString()}
+                      </div>
+                    </td>
+                    <td className="px-10 py-8">
+                      <div className="flex flex-col">
+                        <div className="text-[13px] font-black uppercase tracking-tighter text-white">
+                          {tx.category.replace("_", " ")}
+                        </div>
+                        <div className="text-[10px] font-bold text-foreground/20">
+                          {tx.description || "no details"}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-10 py-8 text-center">
+                      <span
+                        className={`inline-block px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border ${
+                          tx.type === "INCOME"
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]"
+                            : "bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.05)]"
+                        }`}
+                      >
+                        {tx.type}
+                      </span>
+                    </td>
+                    <td className="px-10 py-8 text-right">
+                      <div
+                        className={`text-xl font-black italic tabular-nums ${
+                          tx.type === "INCOME"
+                            ? "text-emerald-400"
+                            : "text-rose-400"
+                        }`}
+                      >
+                        {tx.type === "INCOME" ? "+$" : "-$"}
+                        {tx.amount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                        })}
+                      </div>
+                    </td>
+                    <td className="px-10 py-8 text-right">
+                      <div className="flex justify-end gap-3 transition-all duration-300">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingTransaction(tx);
+                            setFormData({
+                              amount: tx.amount,
+                              type: tx.type,
+                              category: tx.category,
+                              description: tx.description || "",
+                              date: tx.date.split("T")[0],
+                            });
+                            setIsModalOpen(true);
+                          }}
+                          className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-foreground/40 hover:text-primary hover:border-primary/50 transition-all shadow-xl"
+                        >
+                          <Calendar className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeletingTransactionId(tx.id)}
+                          className="w-10 h-10 rounded-full bg-rose-500/10 border border-rose-500/40 flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-xl"
+                          title="Purge Record"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <TacticalConfirmModal
+        isOpen={deletingTransactionId !== null}
+        onClose={() => setDeletingTransactionId(null)}
+        onConfirm={() => {
+          if (deletingTransactionId !== null) {
+            deleteMutation.mutate(deletingTransactionId);
+          }
+        }}
+        title="Delete Transaction"
+        message={`Confirm permanent removal of transaction record. This action cannot be reversed.`}
+        type="danger"
+        confirmText="Confirm"
+        cancelText="Cancel"
+      />
+
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative w-full max-w-lg bg-card border border-border rounded-3xl p-6 shadow-2xl overflow-hidden"
+            >
+              <div className="noise-bg absolute inset-0 opacity-10 pointer-events-none" />
+
+              <div className="relative z-10 space-y-6">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic tracking-tighter text-foreground mb-1">
+                    {editingTransaction ? "Amend" : "Initialize"} Protocol
+                  </h3>
+                  <p className="text-[8px] font-black text-foreground/30 uppercase tracking-[0.4em]">
+                    Log Financial Movement Data
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, type: "INCOME" })
+                      }
+                      className={`flex-1 py-3 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                        formData.type === "INCOME"
+                          ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                          : "bg-foreground/5 border-border text-foreground/30 hover:border-foreground/20"
+                      }`}
+                    >
+                      INCOME
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, type: "EXPENSE" })
+                      }
+                      className={`flex-1 py-3 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                        formData.type === "EXPENSE"
+                          ? "bg-rose-500/10 border-rose-500 text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.2)]"
+                          : "bg-foreground/5 border-border text-foreground/30 hover:border-foreground/20"
+                      }`}
+                    >
+                      EXPENSE
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
+                        Magnitude (₮)
+                      </label>
+                      <input
+                        type="number"
+                        value={formData.amount}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            amount: parseFloat(e.target.value),
+                          })
+                        }
+                        className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-foreground font-black italic text-base outline-none focus:border-primary/50 transition-all"
+                        placeholder="0.00"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
+                        Protocol Date
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) =>
+                          setFormData({ ...formData, date: e.target.value })
+                        }
+                        className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-foreground font-black uppercase text-[9px] outline-none focus:border-primary/50 transition-all"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
+                      Sector Category
+                    </label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          category: e.target.value as TransactionCategory,
+                        })
+                      }
+                      className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-foreground font-black uppercase italic text-xs outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer"
+                    >
+                      {categories.map((c) => (
+                        <option key={c} value={c}>
+                          {c.replace("_", " ")}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
+                      Mission Intel
+                    </label>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      className="w-full h-20 bg-foreground/5 border border-border rounded-xl p-4 text-foreground font-bold text-[11px] outline-none focus:border-primary/50 transition-all resize-none"
+                      placeholder="ENTER PROTOCOL DETAILS..."
+                    />
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="flex-1 h-11 rounded-xl border border-border text-foreground/50 font-black uppercase text-[9px] tracking-widest hover:bg-foreground/5 transition-all"
+                    >
+                      ABORT
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={
+                        createMutation.isPending || updateMutation.isPending
+                      }
+                      className="flex-[2] h-11 bg-primary text-black font-black uppercase italic tracking-widest text-[9px] rounded-xl hover:opacity-90 transition-all tactical-glow disabled:opacity-50"
+                    >
+                      {createMutation.isPending || updateMutation.isPending
+                        ? "PROCESSING..."
+                        : "CONFIRM UPLINK"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

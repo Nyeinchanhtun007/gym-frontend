@@ -14,6 +14,7 @@ import AdminClasses from "./pages/admin/AdminClasses";
 import AdminBookings from "./pages/admin/AdminBookings";
 import AdminMemberships from "./pages/admin/AdminMemberships";
 import AdminPlans from "./pages/admin/AdminPlans";
+import AdminAccounting from "./pages/admin/AdminAccounting";
 import Layout from "./components/layout/Layout";
 import AdminLayout from "./components/layout/AdminLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -37,6 +38,7 @@ function App() {
                   <Route path="bookings" element={<AdminBookings />} />
                   <Route path="memberships" element={<AdminMemberships />} />
                   <Route path="plans" element={<AdminPlans />} />
+                  <Route path="accounting" element={<AdminAccounting />} />
                 </Routes>
               </AdminLayout>
             </ProtectedRoute>

@@ -15,6 +15,7 @@ import {
   Layers,
   Sun,
   Moon,
+  Wallet,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -55,6 +56,7 @@ export default function AdminLayout({
     { label: "BOOKINGS", path: "/admin/bookings", icon: ClipboardList },
     { label: "MEMBERSHIPS", path: "/admin/memberships", icon: CreditCard },
     { label: "PLANS", path: "/admin/plans", icon: Layers },
+    { label: "ACCOUNTING", path: "/admin/accounting", icon: Wallet },
   ];
 
   return (

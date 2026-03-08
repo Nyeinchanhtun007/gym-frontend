@@ -1,0 +1,2 @@
+src/components/auth/AuthInput.tsx:import type { LucideIcon } from "lucide-react";
+src/components/auth/AuthInput.tsx:  icon: LucideIcon;

@@ -36,7 +36,7 @@ export default function Dashboard() {
     enabled: !!user?.email && !!token,
   });
 
-  const { data: userData, isLoading: userLoading } = useQuery({
+  const { data: userData } = useQuery({
     queryKey: ["user-details-dashboard", user?.id],
     queryFn: async () => {
       if (!user) return null;
