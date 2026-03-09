@@ -159,13 +159,10 @@ export default function AdminAccounting() {
       return { success: true };
     },
     onSuccess: () => {
-      console.log("DELETE SUCCESSFUL");
-      alert("PURGE SECURED: RECORD DELETED");
-      queryClient.invalidateQueries({ queryKey: ["admin-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-transactions"] })
       queryClient.invalidateQueries({ queryKey: ["accounting-summary"] });
     },
     onError: (err: any) => {
-      console.error("MUTATION DATABASE ERROR:", err);
       alert(
         "PURGE FAILURE: PROTOCOL REJECTED\n" + (err.message || "Unknown error"),
       );
