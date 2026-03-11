@@ -1,4 +1,3 @@
-import { AlertTriangle } from "lucide-react";
 import TacticalModal from "@/components/ui/TacticalModal";
 
 interface TacticalConfirmModalProps {
@@ -28,7 +27,6 @@ export default function TacticalConfirmModal({
       onClose={onClose}
       title={title}
       subtitle="Operational clearance Required"
-      icon={<AlertTriangle className="w-5 h-5 text-primary" />}
       maxWidth="max-w-sm"
     >
       <div className="relative z-20">

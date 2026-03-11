@@ -28,7 +28,7 @@ export default function AdminBookings() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-black uppercase italic tracking-tighter mb-2 text-foreground">
+        <h1 className="text-4xl font-black uppercase tracking-tighter mb-2 text-foreground">
           Mission <span className="text-primary text-neon">Logs</span>
         </h1>
         <p className="text-foreground/40 uppercase tracking-[0.2em] text-[10px] font-bold">

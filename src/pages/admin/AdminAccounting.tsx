@@ -201,7 +201,7 @@ export default function AdminAccounting() {
   const categories: TransactionCategory[] = categoriesData || [];
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-4 pb-0">
       <div className="flex justify-between items-center">
         <AdminPageHeader
           title="Financial"
@@ -254,11 +254,11 @@ export default function AdminAccounting() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className={`p-6 rounded-[2rem] border bg-card/40 backdrop-blur-2xl ${stat.border} relative overflow-hidden group`}
+            className={`p-3 rounded-[2rem] border bg-card/40 backdrop-blur-2xl ${stat.border} relative overflow-hidden group`}
           >
             <div className="flex justify-between items-start relative z-10">
               <div
-                className={`p-3 rounded-2xl ${stat.bg} ${stat.color} border ${stat.border}`}
+                className={`p-2 rounded-2xl ${stat.bg} ${stat.color} border ${stat.border}`}
               >
                 <stat.icon className="w-5 h-5" />
               </div>
@@ -266,7 +266,7 @@ export default function AdminAccounting() {
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-1">
                   {stat.label}
                 </p>
-                <h3 className="text-3xl font-black italic tracking-tighter text-foreground">
+                <h3 className="text-xl font-black tracking-tighter text-foreground">
                   {stat.value}
                 </h3>
               </div>
@@ -481,7 +481,7 @@ export default function AdminAccounting() {
                     </td>
                     <td className="px-10 py-8 text-right">
                       <div
-                        className={`text-xl font-black italic tabular-nums ${
+                        className={`text-xl font-black tabular-nums ${
                           tx.type === "INCOME"
                             ? "text-emerald-400"
                             : "text-rose-400"

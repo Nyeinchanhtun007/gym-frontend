@@ -143,7 +143,7 @@ export default function AdminUsers() {
       />
 
       <div className="bg-card/50 backdrop-blur-2xl border border-border p-6 rounded-[2rem] relative z-50">
-        <div className="flex flex-col md:flex-row gap-6 justify-between items-center mb-10 relative z-10">
+        <div className="flex flex-col md:flex-row gap-6 justify-between items-center relative z-10">
           <TacticalSearch
             value={searchTerm}
             onChange={setSearchTerm}
