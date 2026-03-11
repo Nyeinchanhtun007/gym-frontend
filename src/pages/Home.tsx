@@ -19,6 +19,8 @@ import {
   Users,
   ShieldCheck,
   X,
+  Ticket,
+  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -52,6 +54,15 @@ export default function Home() {
     queryFn: async () => {
       const res = await fetch("http://localhost:3000/membership-plans");
       if (!res.ok) throw new Error("Failed to fetch plans");
+      return res.json();
+    },
+  });
+  
+  const { data: activeDiscounts } = useQuery({
+    queryKey: ["active-discounts"],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:3000/discounts?activeOnly=true");
+      if (!res.ok) throw new Error("Failed to fetch discounts");
       return res.json();
     },
   });
@@ -523,6 +534,63 @@ export default function Home() {
           })}
         </div>
       </section>
+
+      {/* Discount Section */}
+      {activeDiscounts && activeDiscounts.length > 0 && (
+        <section className="py-12 bg-primary/5 border-y border-primary/10 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none">
+            <div className="grid grid-cols-12 h-full">
+              {[...Array(12)].map((_, i) => (
+                <div key={i} className="border-r border-primary" />
+              ))}
+            </div>
+          </div>
+          
+          <div className="container px-6 md:px-16 lg:px-32 mx-auto relative z-10">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(255,62,62,0.3)]">
+                  <Ticket className="w-8 h-8 text-black" />
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-white italic">
+                    Tactical <span className="text-primary">Discounts</span> Available
+                  </h2>
+                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mt-1">
+                    USE THESE CODES AT CHECKOUT TO REDUCE OPERATIONAL COSTS
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-4 justify-center">
+                {activeDiscounts.slice(0, 3).map((d: any) => (
+                  <motion.div
+                    key={d.id}
+                    whileHover={{ scale: 1.05 }}
+                    className="px-6 py-4 bg-black border border-primary/30 rounded-2xl flex items-center gap-4 group cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(d.code);
+                      alert(`Code ${d.code} copied to clipboard!`);
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-[8px] font-black text-primary uppercase tracking-widest">
+                        {d.type === "PERCENTAGE" ? `${d.value}% OFF` : `$${d.value} OFF`}
+                      </span>
+                      <span className="text-lg font-black text-white font-mono tracking-tighter group-hover:text-primary transition-colors">
+                        {d.code}
+                      </span>
+                    </div>
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+                      <Sparkles className="w-4 h-4 text-primary group-hover:text-black" />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Schedule Section */}
       <section id="workouts" className="py-16 bg-black">

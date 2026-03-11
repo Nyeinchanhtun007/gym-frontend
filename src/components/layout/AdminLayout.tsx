@@ -16,6 +16,7 @@ import {
   Sun,
   Moon,
   Wallet,
+  Tag,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -56,6 +57,7 @@ export default function AdminLayout({
     { label: "BOOKINGS", path: "/admin/bookings", icon: ClipboardList },
     { label: "MEMBERSHIPS", path: "/admin/memberships", icon: CreditCard },
     { label: "PLANS", path: "/admin/plans", icon: Layers },
+    { label: "DISCOUNTS", path: "/admin/discounts", icon: Tag },
     { label: "ACCOUNTING", path: "/admin/accounting", icon: Wallet },
   ];
 
@@ -157,11 +159,11 @@ export default function AdminLayout({
             isMobile ? { x: isOpen ? 0 : -260 } : { width: isOpen ? 240 : 80 }
           }
           transition={{ type: "spring", damping: 30, stiffness: 250 }}
-          className="fixed top-16 bottom-0 left-0 border-r border-border z-[900] overflow-hidden transition-colors duration-500 shadow-sm"
+          className={`fixed top-16 bottom-0 left-0 border-r border-border z-[900] transition-colors duration-500 shadow-sm scrollbar-hide ${isOpen ? "overflow-y-auto overflow-x-hidden" : "overflow-visible"}`}
           style={{ backgroundColor: "var(--sidebar)" }}
         >
           <div
-            className={`${isOpen ? "w-[240px]" : "w-[80px]"} h-full flex flex-col p-4 transition-all duration-300`}
+            className={`${isOpen ? "w-[240px]" : "w-[80px]"} min-h-full flex flex-col p-4 transition-all duration-300`}
           >
             <nav className="flex flex-col gap-2">
               {menuItems.map((item) => (
