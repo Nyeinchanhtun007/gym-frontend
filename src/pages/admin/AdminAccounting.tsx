@@ -8,22 +8,15 @@ import {
   Plus,
   Trash2,
   Calendar,
-  BarChart3,
 } from "lucide-react";
-import {
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-} from "recharts";
+// Chart imports removed
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import TacticalSelect from "@/components/ui/TacticalSelect";
 import TacticalSearch from "@/components/admin/TacticalSearch";
 import TacticalConfirmModal from "@/components/admin/TacticalConfirmModal";
-import { AnimatePresence, motion } from "framer-motion";
+import TacticalModal from "@/components/ui/TacticalModal";
+import TacticalCombobox from "@/components/ui/TacticalCombobox";
+import { motion } from "framer-motion";
 import type {
   AccountingSummary,
   Transaction,
@@ -545,171 +538,131 @@ export default function AdminAccounting() {
         cancelText="Cancel"
       />
 
-      {/* Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-card border border-border rounded-3xl p-6 shadow-2xl overflow-hidden"
+      <TacticalModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={editingTransaction ? "Edit" : "Add"}
+        highlight="Transaction"
+        subtitle="Log Financial Movement Data"
+        maxWidth="max-w-xl"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, type: "INCOME" })}
+              className={`flex-1 py-4 rounded-2xl border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                formData.type === "INCOME"
+                  ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.2)]"
+                  : "bg-white/[0.03] border-white/5 text-foreground/40 hover:border-white/20"
+              }`}
             >
-              <div className="noise-bg absolute inset-0 opacity-10 pointer-events-none" />
-
-              <div className="relative z-10 space-y-6">
-                <div>
-                  <h3 className="text-2xl font-black uppercase italic tracking-tighter text-foreground mb-1">
-                    {editingTransaction ? "Edit" : "Add"} Transaction
-                  </h3>
-                  <p className="text-[8px] font-black text-foreground/30 uppercase tracking-[0.4em]">
-                    Log Financial Movement Data
-                  </p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-3">
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData({ ...formData, type: "INCOME" })
-                      }
-                      className={`flex-1 py-3 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
-                        formData.type === "INCOME"
-                          ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-                          : "bg-foreground/5 border-border text-foreground/30 hover:border-foreground/20"
-                      }`}
-                    >
-                      INCOME
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData({ ...formData, type: "EXPENSE" })
-                      }
-                      className={`flex-1 py-3 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
-                        formData.type === "EXPENSE"
-                          ? "bg-rose-500/10 border-rose-500 text-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.2)]"
-                          : "bg-foreground/5 border-border text-foreground/30 hover:border-foreground/20"
-                      }`}
-                    >
-                      EXPENSE
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
-                        Magnitude (₮)
-                      </label>
-                      <input
-                        type="number"
-                        value={formData.amount}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            amount: parseFloat(e.target.value),
-                          })
-                        }
-                        className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-foreground font-black italic text-base outline-none focus:border-primary/50 transition-all"
-                        placeholder="0.00"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
-                        Protocol Date
-                      </label>
-                      <input
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) =>
-                          setFormData({ ...formData, date: e.target.value })
-                        }
-                        className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-foreground font-black uppercase text-[9px] outline-none focus:border-primary/50 transition-all"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
-                      Sector Category
-                    </label>
-                    <input
-                      type="text"
-                      list="category-options"
-                      value={formData.category}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          category: e.target.value as TransactionCategory,
-                        })
-                      }
-                      placeholder="ENTER OR SELECT CATEGORY"
-                      className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-foreground font-black uppercase italic text-xs outline-none focus:border-primary/50 transition-all"
-                      required
-                    />
-                    <datalist id="category-options">
-                      {categories.map((c) => (
-                        <option key={c} value={c}>
-                          {c.replace("_", " ")}
-                        </option>
-                      ))}
-                    </datalist>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-[7px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-2">
-                      Mission Intel
-                    </label>
-                    <textarea
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      className="w-full h-20 bg-foreground/5 border border-border rounded-xl p-4 text-foreground font-bold text-[11px] outline-none focus:border-primary/50 transition-all resize-none"
-                      placeholder="ENTER PROTOCOL DETAILS..."
-                    />
-                  </div>
-
-                  <div className="flex gap-4 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setIsModalOpen(false)}
-                      className="flex-1 h-11 rounded-xl border border-border text-foreground/50 font-black uppercase text-[9px] tracking-widest hover:bg-foreground/5 transition-all"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={
-                        createMutation.isPending || updateMutation.isPending
-                      }
-                      className="flex-[2] h-11 bg-primary text-black font-black uppercase italic tracking-widest text-[9px] rounded-xl hover:opacity-90 transition-all tactical-glow disabled:opacity-50"
-                    >
-                      {createMutation.isPending || updateMutation.isPending
-                        ? "PROCESSING..."
-                        : "CONFIRM"}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </motion.div>
+              INCOME
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, type: "EXPENSE" })}
+              className={`flex-1 py-4 rounded-2xl border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                formData.type === "EXPENSE"
+                  ? "bg-rose-500/10 border-rose-500 text-rose-400 shadow-[0_0_30px_rgba(244,63,94,0.2)]"
+                  : "bg-white/[0.03] border-white/5 text-foreground/40 hover:border-white/20"
+              }`}
+            >
+              EXPENSE
+            </button>
           </div>
-        )}
-      </AnimatePresence>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-foreground/60 uppercase tracking-[0.2em] ml-1">
+                Magnitude (₮)
+              </label>
+              <input
+                type="number"
+                value={formData.amount}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    amount: parseFloat(e.target.value),
+                  })
+                }
+                className="w-full h-12 bg-white/[0.03] border border-white/10 rounded-2xl px-5 text-foreground font-black italic text-base outline-none focus:border-primary/50 transition-all"
+                placeholder="0.00"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-foreground/60 uppercase tracking-[0.2em] ml-1">
+                Protocol Date
+              </label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) =>
+                  setFormData({ ...formData, date: e.target.value })
+                }
+                className="w-full h-12 bg-white/[0.03] border border-white/10 rounded-2xl px-5 text-foreground font-black uppercase text-[10px] outline-none focus:border-primary/50 transition-all"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[9px] font-black text-foreground/60 uppercase tracking-[0.2em] ml-1">
+              Sector Category
+            </label>
+            <TacticalCombobox
+              value={formData.category}
+              onChange={(val) =>
+                setFormData({
+                  ...formData,
+                  category: val as TransactionCategory,
+                })
+              }
+              suggestions={categories}
+              placeholder="TYPE OR SELECT CATEGORY"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[9px] font-black text-foreground/60 uppercase tracking-[0.2em] ml-1">
+              Mission Intel
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  description: e.target.value,
+                })
+              }
+              className="w-full h-24 bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-foreground font-bold text-xs outline-none focus:border-primary/50 transition-all resize-none"
+              placeholder="ENTER PROTOCOL DETAILS..."
+            />
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 h-12 rounded-2xl border border-white/10 text-foreground/50 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={createMutation.isPending || updateMutation.isPending}
+              className="flex-[2] h-12 bg-primary text-black font-black uppercase italic tracking-widest text-[10px] rounded-2xl hover:scale-[1.02] transition-all tactical-glow disabled:opacity-50 shadow-lg shadow-primary/20"
+            >
+              {createMutation.isPending || updateMutation.isPending
+                ? "PROCESSING..."
+                : "CONFIRM"}
+            </button>
+          </div>
+        </form>
+      </TacticalModal>
     </div>
   );
 }

@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
-import { User, Activity, Clock } from "lucide-react";
+import { User, Activity, Clock, Check, X } from "lucide-react";
 
 export default function AdminBookings() {
   const { token } = useAuthStore();
+
+  const queryClient = useQueryClient();
 
   const {
     data: bookings,
@@ -20,6 +22,24 @@ export default function AdminBookings() {
         throw new Error(errData.message || "Failed to fetch bookings");
       }
       return res.json();
+    },
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const res = await fetch(`http://localhost:3000/bookings/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error("Failed to update status");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-bookings"] });
     },
   });
 
@@ -126,9 +146,60 @@ export default function AdminBookings() {
                       </div>
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <span className="px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-[9px] font-black uppercase tracking-widest">
-                        Confirmed
-                      </span>
+                      <div className="flex justify-end items-center gap-2">
+                        {booking.status === "PENDING" ? (
+                          <>
+                            <button
+                              onClick={() =>
+                                updateStatusMutation.mutate({
+                                  id: booking.id,
+                                  status: "CONFIRMED",
+                                })
+                              }
+                              disabled={updateStatusMutation.isPending}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all disabled:opacity-50 tactical-glow"
+                            >
+                              <Check className="w-3 h-3" />
+                              Confirm
+                            </button>
+                            <button
+                              onClick={() =>
+                                updateStatusMutation.mutate({
+                                  id: booking.id,
+                                  status: "CANCELLED",
+                                })
+                              }
+                              disabled={updateStatusMutation.isPending}
+                              className="p-1 px-2.5 py-1.5 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[9px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
+                              title="Cancel Mission"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </>
+                        ) : booking.status === "CONFIRMED" ? (
+                          <div className="flex items-center gap-3">
+                            <span className="px-4 py-1.5 rounded-full bg-primary/20 text-primary border border-primary/30 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                              <Check className="w-3 h-3" />
+                              Confirmed
+                            </span>
+                            <button
+                               onClick={() =>
+                                updateStatusMutation.mutate({
+                                  id: booking.id,
+                                  status: "PENDING",
+                                })
+                              }
+                              className="text-[8px] font-black text-foreground/20 hover:text-rose-500 uppercase tracking-widest transition-all hover:translate-x-[-2px]"
+                            >
+                              Revoke
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="px-4 py-1.5 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[9px] font-black uppercase tracking-widest">
+                            {booking.status}
+                          </span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

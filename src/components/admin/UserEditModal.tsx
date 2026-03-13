@@ -84,11 +84,11 @@ export default function UserEditModal({
           </div>
 
           <div className="flex-1 space-y-1.5">
-            <label className="text-[9px] font-bold uppercase tracking-widest text-foreground/30">
+            <label className="text-[9px] font-bold uppercase tracking-widest text-foreground/60">
               Photo Identifier (Link)
             </label>
             <div className="relative">
-              <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-foreground/20" />
+              <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-foreground/40" />
               <input
                 type="text"
                 value={formData.photo || ""}
@@ -99,26 +99,26 @@ export default function UserEditModal({
                   })
                 }
                 placeholder="https://..."
-                className="w-full h-9 bg-foreground/5 border border-border rounded-xl pl-9 pr-4 text-[10px] font-medium text-foreground focus:outline-none focus:border-primary transition-colors"
+                className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl pl-10 pr-4 text-[11px] font-medium text-foreground focus:outline-none focus:border-primary/50 transition-colors"
               />
             </div>
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[9px] font-bold uppercase tracking-widest text-foreground/30">
+          <label className="text-[9px] font-bold uppercase tracking-widest text-foreground/60">
             Full Name
           </label>
           <input
             type="text"
             value={formData.name || ""}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-sm font-medium text-foreground focus:outline-none focus:border-primary transition-colors"
+            className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-sm font-medium text-foreground focus:outline-none focus:border-primary/50 transition-colors"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[9px] font-bold uppercase tracking-widest text-foreground/30">
+          <label className="text-[9px] font-bold uppercase tracking-widest text-foreground/60">
             Email Address
           </label>
           <input
@@ -130,18 +130,18 @@ export default function UserEditModal({
                 email: e.target.value,
               })
             }
-            className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-sm font-medium text-foreground focus:outline-none focus:border-primary transition-colors"
+            className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-sm font-medium text-foreground focus:outline-none focus:border-primary/50 transition-colors"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[9px] font-bold uppercase tracking-widest text-foreground/30">
+          <label className="text-[9px] font-bold uppercase tracking-widest text-foreground/60">
             Access Permission
           </label>
           <select
             value={formData.role || "USER"}
             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-            className="w-full h-11 bg-foreground/5 border border-border rounded-xl px-4 text-sm font-medium text-foreground focus:outline-none focus:border-primary transition-colors appearance-none"
+            className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-sm font-medium text-foreground focus:outline-none focus:border-primary/50 transition-colors appearance-none"
           >
             <option value="USER" className="bg-zinc-900">
               USER

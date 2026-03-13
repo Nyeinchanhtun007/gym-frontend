@@ -42,7 +42,7 @@ export default function MembershipEditModal({
       <form onSubmit={onSave} className="space-y-3 relative z-10">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
               Tier Assignment
             </Label>
             <select
@@ -50,7 +50,7 @@ export default function MembershipEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, planTier: e.target.value })
               }
-              className="w-full h-9 bg-foreground/5 border border-border rounded-xl px-3 text-xs font-bold text-foreground focus:outline-none focus:border-primary transition-all appearance-none"
+              className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-xs font-bold text-foreground focus:outline-none focus:border-primary/50 transition-all appearance-none"
             >
               <option value="Basic" className="bg-card">
                 Basic Tier
@@ -64,7 +64,7 @@ export default function MembershipEditModal({
             </select>
           </div>
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
               Status Protocol
             </Label>
             <select
@@ -72,7 +72,7 @@ export default function MembershipEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, status: e.target.value })
               }
-              className="w-full h-9 bg-foreground/5 border border-border rounded-xl px-3 text-xs font-bold text-foreground focus:outline-none focus:border-primary transition-all appearance-none"
+              className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-xs font-bold text-foreground focus:outline-none focus:border-primary/50 transition-all appearance-none"
             >
               <option
                 value="ACTIVE"
@@ -104,7 +104,7 @@ export default function MembershipEditModal({
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
               Protocol Pricing ($)
             </Label>
             <Input
@@ -113,11 +113,11 @@ export default function MembershipEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, price: e.target.value })
               }
-              className="bg-foreground/5 border-border rounded-xl h-9 text-xs font-black transition-all focus:border-primary text-foreground"
+              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
               Billing Cycle
             </Label>
             <select
@@ -128,7 +128,7 @@ export default function MembershipEditModal({
                   billingCycle: e.target.value,
                 })
               }
-              className="w-full h-9 bg-foreground/5 border border-border rounded-xl px-3 text-xs font-bold text-foreground focus:outline-none focus:border-primary transition-all appearance-none"
+              className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-xs font-bold text-foreground focus:outline-none focus:border-primary/50 transition-all appearance-none"
             >
               <option value="Monthly" className="bg-card">
                 Monthly Cycle
@@ -142,7 +142,7 @@ export default function MembershipEditModal({
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
               Daily Capacity Override
             </Label>
             <Input
@@ -154,11 +154,11 @@ export default function MembershipEditModal({
                   dailyClassLimit: e.target.value,
                 })
               }
-              className="bg-foreground/5 border-border rounded-xl h-9 text-xs font-black transition-all focus:border-primary text-foreground"
+              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
               Monthly Capacity Override
             </Label>
             <Input
@@ -170,14 +170,14 @@ export default function MembershipEditModal({
                   monthlyClassLimit: e.target.value,
                 })
               }
-              className="bg-foreground/5 border-border rounded-xl h-9 text-xs font-black transition-all focus:border-primary text-foreground"
+              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
               Activation Date
             </Label>
             <Input
@@ -186,11 +186,11 @@ export default function MembershipEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, startDate: e.target.value })
               }
-              className="bg-foreground/5 border-border rounded-xl h-9 text-xs font-black transition-all focus:border-primary text-foreground"
+              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
               Deactivation Date
             </Label>
             <Input
@@ -199,7 +199,7 @@ export default function MembershipEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, endDate: e.target.value })
               }
-              className="bg-foreground/5 border-border rounded-xl h-9 text-xs font-black transition-all focus:border-primary text-foreground"
+              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
             />
           </div>
         </div>

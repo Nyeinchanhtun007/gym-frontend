@@ -89,15 +89,6 @@ export default function UserViewModal({
             </span>
           </div>
         </div>
-
-        <div className="mt-4 p-3 border border-primary/20 rounded-xl bg-primary/5 font-outfit">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-[8px] font-bold text-primary uppercase tracking-widest">
-              System Uplink Stable - Verified Record
-            </span>
-          </div>
-        </div>
       </div>
     </TacticalModal>
   );
