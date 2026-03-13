@@ -10,6 +10,7 @@ import {
   UserPlus,
   ShieldCheck,
   Users,
+  Plus,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -163,8 +164,9 @@ export default function AdminClasses() {
 
         <button
           onClick={handleCreate}
-          className="h-12 px-8 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform"
+          className="h-12 px-8 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform flex items-center gap-2 shadow-lg shadow-primary/20"
         >
+          <Plus className="w-4 h-4" />
           Create New Class
         </button>
       </div>

@@ -729,8 +729,7 @@ export default function AdminPlans() {
               <div className="flex justify-between items-center mb-5">
                 <div>
                   <h2 className="text-xl font-black text-foreground italic tracking-tighter uppercase">
-                    Apply{" "}
-                    <span className="text-green-400">Discounts</span>
+                    Apply <span className="text-green-400">Discounts</span>
                   </h2>
                   <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mt-0.5">
                     Manage discounts for{" "}
@@ -799,7 +798,7 @@ export default function AdminPlans() {
                   allDiscounts.map((discount) => {
                     const isLinked = isDiscountLinkedToPlan(
                       discount,
-                      linkingPlan.name
+                      linkingPlan.name,
                     );
                     const isGlobal = isDiscountGlobal(discount);
                     const appliesToThisPlan = isLinked || isGlobal;
@@ -875,8 +874,7 @@ export default function AdminPlans() {
                                   </span>
                                 ) : discount.applicableTo.length > 0 ? (
                                   <span className="text-foreground/35">
-                                    Plans:{" "}
-                                    {discount.applicableTo.join(", ")}
+                                    Plans: {discount.applicableTo.join(", ")}
                                   </span>
                                 ) : null}
                               </div>
@@ -890,7 +888,7 @@ export default function AdminPlans() {
                               onClick={() =>
                                 toggleDiscountForPlan(
                                   discount,
-                                  linkingPlan.name
+                                  linkingPlan.name,
                                 )
                               }
                               disabled={linkDiscountMutation.isPending}
@@ -903,8 +901,8 @@ export default function AdminPlans() {
                                 isLinked
                                   ? "bg-green-500/20 border-green-500/30 text-green-400 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400"
                                   : isGlobal
-                                  ? "bg-blue-500/20 border-blue-500/30 text-blue-400 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400"
-                                  : "bg-foreground/5 border-border text-foreground/40 hover:bg-green-500/20 hover:border-green-500/30 hover:text-green-400"
+                                    ? "bg-blue-500/20 border-blue-500/30 text-blue-400 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400"
+                                    : "bg-foreground/5 border-border text-foreground/40 hover:bg-green-500/20 hover:border-green-500/30 hover:text-green-400"
                               }`}
                             >
                               {linkDiscountMutation.isPending ? (
@@ -957,7 +955,9 @@ export default function AdminPlans() {
 
         <TacticalConfirmModal
           isOpen={confirmConfig.isOpen}
-          onClose={() => setConfirmConfig((prev) => ({ ...prev, isOpen: false }))}
+          onClose={() =>
+            setConfirmConfig((prev) => ({ ...prev, isOpen: false }))
+          }
           onConfirm={confirmConfig.onConfirm}
           title={confirmConfig.title}
           message={confirmConfig.message}
