@@ -120,10 +120,10 @@ export default function TacticalSelect({
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            className="absolute top-full left-0 w-full mt-2 bg-zinc-950/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-1.5 shadow-[0_20px_60px_rgba(0,0,0,0.9)] z-[200] overflow-hidden"
+            className="absolute top-full left-0 w-full mt-2 bg-[#0c0c0e] backdrop-blur-3xl border border-white/10 rounded-2xl p-1.5 shadow-[0_25px_70px_rgba(0,0,0,0.9)] z-[500]"
           >
-            <div className="crt-overlay opacity-20" />
-            <div className="relative z-10 space-y-1 max-h-60 overflow-y-auto scrollbar-thin">
+            <div className="crt-overlay opacity-10 pointer-events-none" />
+            <div className="relative z-10 space-y-1 max-h-[300px] overflow-y-auto scrollbar-thin">
               {options.map((opt) => (
                 <button
                   key={opt.value}
@@ -134,14 +134,14 @@ export default function TacticalSelect({
                     onChange(opt.value);
                     setIsOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-200 ${
                     value === opt.value
                       ? `${getAccentClass("bg")} ${getAccentClass("text")} border ${getAccentClass("border")} shadow-lg`
-                      : "text-foreground/70 hover:bg-white/5 hover:text-white border border-transparent"
+                      : "text-white/60 hover:bg-white/5 hover:text-white border border-transparent"
                   }`}
                 >
-                  {opt.label}
-                  {value === opt.value && <Check className="w-3 h-3" />}
+                  <span className="truncate pr-4">{opt.label}</span>
+                  {value === opt.value && <Check className="w-3.5 h-3.5 shrink-0" />}
                 </button>
               ))}
             </div>

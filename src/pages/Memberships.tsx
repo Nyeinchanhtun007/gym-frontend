@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
@@ -16,7 +16,6 @@ import { ShieldCheck, Loader2 } from "lucide-react";
 export default function Memberships() {
   const { user, token } = useAuthStore();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [isYearly, setIsYearly] = useState(false);
 
   const { data: userData, isLoading: userLoading } = useQuery({
@@ -55,73 +54,53 @@ export default function Memberships() {
     (m: any) => m.status === "ACTIVE" || m.status === "PENDING_DOWNGRADE",
   );
 
-  const membershipMutation = useMutation({
-    mutationFn: async (planName: string) => {
-      if (!user) throw new Error("Please log in to subscribe to a tier");
-
-      const startDate = new Date();
-      const endDate = new Date();
-      if (isYearly) {
-        endDate.setFullYear(startDate.getFullYear() + 1);
-      } else {
-        endDate.setMonth(startDate.getMonth() + 1);
-      }
-
-      const res = await fetch("http://localhost:3000/memberships", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          planTier: planName,
-          billingCycle: isYearly ? "Yearly" : "Monthly",
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-          status: "ACTIVE",
-          price: (() => {
-            const planDiscounts = activeDiscounts?.filter(
-              (d: any) =>
-                d.applicableTo.length === 0 ||
-                d.applicableTo.includes(planName.toUpperCase())
-            ) || [];
-            const effectiveDiscount = planDiscounts.find((d: any) => d.type === "PERCENTAGE")?.value ?? 0;
-            const planData = plans.find((p: any) => p.name === planName);
-            const basePrice = isYearly ? planData?.yearlyPrice : planData?.monthlyPrice;
-            return basePrice * (1 - effectiveDiscount / 100);
-          })(),
-          dailyClassLimit: plans.find((p: any) => p.name === planName)
-            ?.dailyClassLimit,
-          monthlyClassLimit: isYearly
-            ? plans.find((p: any) => p.name === planName)?.monthlyClassLimit *
-              12
-            : plans.find((p: any) => p.name === planName)?.monthlyClassLimit,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to subscribe membership");
-      }
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-details", user?.id] });
-      alert("Tier subscribed! Your evolution begins now.");
-      navigate("/dashboard");
-    },
-    onError: (error: any) => {
-      alert(error.message);
-    },
-  });
 
   const handleAcquireTier = (planName: string) => {
     if (!user) {
       navigate("/login");
       return;
     }
-    membershipMutation.mutate(planName);
+
+    const startDate = new Date();
+    const endDate = new Date();
+    if (isYearly) {
+      endDate.setFullYear(startDate.getFullYear() + 1);
+    } else {
+      endDate.setMonth(startDate.getMonth() + 1);
+    }
+
+    const planData = plans.find((p: any) => p.name === planName);
+    const planDiscounts =
+      activeDiscounts?.filter(
+        (d: any) =>
+          d.applicableTo.length === 0 ||
+          d.applicableTo.includes(planName.toUpperCase())
+      ) || [];
+    
+    // Find the automatic discount (one without a code or marked as automatic)
+    const autoDiscount = planDiscounts.find((d: any) => d.isAutomatic || !d.code);
+    const effectiveDiscountValue = autoDiscount?.value ?? 0;
+    
+    const basePrice = isYearly ? planData?.yearlyPrice : planData?.monthlyPrice;
+    const autoDiscountAmount = Math.floor(basePrice * (effectiveDiscountValue / 100));
+    const priceAfterAuto = basePrice - autoDiscountAmount;
+
+    navigate("/payment", {
+      state: {
+        planName,
+        originalPrice: basePrice,
+        autoDiscountAmount,
+        autoDiscountCode: autoDiscount?.name || "Member Early Access",
+        price: priceAfterAuto, // This will be the base for promo code calculations
+        billingCycle: isYearly ? "Yearly" : "Monthly",
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        dailyLimit: planData?.dailyClassLimit,
+        monthlyLimit: isYearly
+          ? planData?.monthlyClassLimit * 12
+          : planData?.monthlyClassLimit,
+      },
+    });
   };
 
   if (userLoading) {
@@ -353,19 +332,14 @@ export default function Memberships() {
                     <CardFooter className="pb-8 px-6">
                       <Button
                         onClick={() => handleAcquireTier(plan.name)}
-                        disabled={
-                          membershipMutation.isPending ||
-                          activeMembership?.planTier === plan.name
-                        }
+                        disabled={activeMembership?.planTier === plan.name}
                         className={`w-full h-12 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${
                           isStandard
                             ? "bg-black text-white hover:bg-black/90 shadow-xl"
                             : "bg-primary text-black hover:bg-primary/90 shadow-lg"
                         }`}
                       >
-                        {membershipMutation.isPending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : activeMembership?.planTier === plan.name ? (
+                        {activeMembership?.planTier === plan.name ? (
                           "Protocol Active"
                         ) : (
                           "Subscribe Now"

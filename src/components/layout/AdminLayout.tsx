@@ -1,6 +1,7 @@
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
@@ -58,8 +59,23 @@ export default function AdminLayout({
     { label: "MEMBERSHIPS", path: "/admin/memberships", icon: CreditCard },
     { label: "PLANS", path: "/admin/plans", icon: Layers },
     { label: "DISCOUNTS", path: "/admin/discounts", icon: Tag },
+    { label: "PAYMENTS", path: "/admin/payments", icon: ClipboardList, badge: true },
     { label: "ACCOUNTING", path: "/admin/accounting", icon: Wallet },
   ];
+
+  const { data: pendingData } = useQuery({
+    queryKey: ["pending-payments-count"],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:3000/payment-requests/pending-count", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return { count: 0 };
+      return res.json();
+    },
+    refetchInterval: 30000, // Check every 30 seconds
+  });
+  
+  const { token } = useAuthStore();
 
   return (
     <div
@@ -191,15 +207,24 @@ export default function AdminLayout({
                     <motion.span
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="whitespace-nowrap"
+                      className="whitespace-nowrap flex items-center justify-between w-full"
                     >
                       {item.label}
+                      {item.badge && pendingData?.count > 0 && (
+                        <span className="bg-primary text-black text-[9px] font-black w-5 h-5 rounded-lg flex items-center justify-center tactical-glow">
+                          {pendingData.count}
+                        </span>
+                      )}
                     </motion.span>
+                  )}
+
+                  {!isOpen && item.badge && pendingData?.count > 0 && (
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-primary rounded-full border-2 border-sidebar animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
                   )}
 
                   {!isOpen && (
                     <div className="absolute left-full ml-4 px-3 py-2 bg-card border border-border text-foreground text-[9px] font-black rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[1000] tracking-widest uppercase italic shadow-xl">
-                      {item.label}
+                      {item.label} {item.badge && pendingData?.count > 0 && `(${pendingData.count})`}
                     </div>
                   )}
                 </button>

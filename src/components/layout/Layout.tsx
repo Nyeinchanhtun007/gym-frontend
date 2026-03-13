@@ -26,7 +26,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {!isAuthPage && <ScrollToTop />}
 
-      {!isAuthPage && pathname !== "/classes" && (
+      {!isAuthPage && pathname !== "/classes" && pathname !== "/payment" && (
         <footer className="bg-zinc-900 pt-24 pb-12 border-t border-white/5">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20 text-center md:text-left">

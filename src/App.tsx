@@ -6,6 +6,7 @@ import OAuthCallback from "./pages/auth/OAuthCallback";
 import Classes from "./pages/Classes";
 import Trainers from "./pages/Trainers";
 import Memberships from "./pages/Memberships";
+import Payment from "./pages/Payment";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -16,6 +17,7 @@ import AdminMemberships from "./pages/admin/AdminMemberships";
 import AdminPlans from "./pages/admin/AdminPlans";
 import AdminAccounting from "./pages/admin/AdminAccounting";
 import AdminDiscounts from "./pages/admin/AdminDiscounts";
+import AdminPayments from "./pages/admin/AdminPayments";
 import Layout from "./components/layout/Layout";
 import AdminLayout from "./components/layout/AdminLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -41,6 +43,7 @@ function App() {
                   <Route path="plans" element={<AdminPlans />} />
                   <Route path="discounts" element={<AdminDiscounts />} />
                   <Route path="accounting" element={<AdminAccounting />} />
+                  <Route path="payments" element={<AdminPayments />} />
                 </Routes>
               </AdminLayout>
             </ProtectedRoute>
@@ -71,6 +74,14 @@ function App() {
                 <Route path="/classes" element={<Classes />} />
                 <Route path="/trainers" element={<Trainers />} />
                 <Route path="/memberships" element={<Memberships />} />
+                <Route
+                  path="/payment"
+                  element={
+                    <ProtectedRoute>
+                      <Payment />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </Layout>
           }

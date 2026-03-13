@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/store/authStore";
 import type { GymClass, User } from "@/types";
 import {
   CheckCircle2,
@@ -26,8 +27,51 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [selectedClass, setSelectedClass] = useState<GymClass | null>(null);
   const [isYearly, setIsYearly] = useState(false);
+
+  const handleAcquireTier = (planName: string) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    const startDate = new Date();
+    const endDate = new Date();
+    if (isYearly) {
+      endDate.setFullYear(startDate.getFullYear() + 1);
+    } else {
+      endDate.setMonth(startDate.getMonth() + 1);
+    }
+
+    const planData = plans?.find((p: any) => p.name === planName);
+    const planDiscounts =
+      activeDiscounts?.filter(
+        (d: any) =>
+          d.applicableTo.length === 0 ||
+          d.applicableTo.includes(planName.toUpperCase())
+      ) || [];
+    const effectiveDiscount =
+      planDiscounts.find((d: any) => d.type === "PERCENTAGE")?.value ?? 0;
+    const basePrice = isYearly ? planData?.yearlyPrice : planData?.monthlyPrice;
+    const finalPrice = basePrice * (1 - effectiveDiscount / 100);
+
+    navigate("/payment", {
+      state: {
+        planName,
+        price: Math.floor(finalPrice),
+        billingCycle: isYearly ? "Yearly" : "Monthly",
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        dailyLimit: planData?.dailyClassLimit,
+        monthlyLimit: isYearly
+          ? planData?.monthlyClassLimit * 12
+          : planData?.monthlyClassLimit,
+      },
+    });
+  };
   const { data: classesData } = useQuery({
     queryKey: ["classes"],
     queryFn: async () => {
@@ -837,10 +881,10 @@ export default function Home() {
                         ))}
                     </div>
                     <Button
-                      asChild
+                      onClick={() => handleAcquireTier(plan.name)}
                       className={`${isFeatured ? "bg-black text-white hover:bg-black/90" : "bg-primary text-black hover:bg-primary/90"} w-full h-12 rounded-none font-black uppercase tracking-widest text-[9px] mt-auto`}
                     >
-                      <Link to="/memberships">Subscribe Plan</Link>
+                      Subscribe Plan
                     </Button>
                   </div>
                 );

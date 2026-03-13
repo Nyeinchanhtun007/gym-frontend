@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CalendarCheck,
+  Tag,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -304,6 +305,14 @@ export default function AdminMemberships() {
                         <div className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
                           ${m.price} / {m.billingCycle}
                         </div>
+                        {m.discountAmount > 0 && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <Tag className="w-2.5 h-2.5 text-emerald-500" />
+                            <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter">
+                              SVD ${m.discountAmount} ({m.promoCode})
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td className="px-8 py-6">

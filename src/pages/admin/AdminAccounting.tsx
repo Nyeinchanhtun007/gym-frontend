@@ -8,6 +8,7 @@ import {
   Plus,
   Trash2,
   Calendar,
+  Tag,
 } from "lucide-react";
 // Chart imports removed
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -456,9 +457,17 @@ export default function AdminAccounting() {
                         <div className="text-[13px] font-black uppercase tracking-tighter text-foreground/50">
                           {tx.category.replace("_", " ")}
                         </div>
-                        {/* <div className="text-[10px] font-bold text-foreground/20">
+                        <div className="text-[9px] font-bold text-foreground/20 uppercase tracking-widest mt-1">
                           {tx.description || "no details"}
-                        </div> */}
+                        </div>
+                        {tx.description?.includes("Promo:") && (
+                          <div className="flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-md bg-primary/5 border border-primary/10 w-fit">
+                            <Tag className="w-2 h-2 text-primary" />
+                            <span className="text-[8px] font-black text-primary uppercase tracking-tighter">
+                               {tx.description.split("Promo:")[1].trim()}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td className="px-10 py-8 text-center">
