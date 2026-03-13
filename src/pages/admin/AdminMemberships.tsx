@@ -183,7 +183,7 @@ export default function AdminMemberships() {
         subtitle="Monitor and Override Active Tier Assignments"
       />
 
-      <div className="bg-card/50 backdrop-blur-2xl border border-border p-6 rounded-[2rem] relative">
+      <div className="bg-card/50 backdrop-blur-2xl border border-border p-6 rounded-[2rem] relative z-[50]">
         <div className="flex flex-col md:flex-row gap-6 justify-between items-center relative z-10">
           <TacticalSearch
             value={searchTerm}

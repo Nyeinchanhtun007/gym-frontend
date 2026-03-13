@@ -137,16 +137,22 @@
 
 /* Premium Tactical Select Styling */
 .tactical-select {
-  @apply bg-zinc-950/40 backdrop-blur-xl border border-white/10 rounded-2xl px-5 py-2.5 text-[10px] font-black text-white uppercase tracking-[0.2em] cursor-pointer transition-all duration-500 shadow-2xl flex items-center gap-3;
+  @apply bg-card/40 backdrop-blur-xl border border-border rounded-2xl px-5 py-2.5 text-[10px] font-black text-foreground uppercase tracking-[0.2em] cursor-pointer transition-all duration-500 shadow-2xl flex items-center gap-3;
   appearance: none;
 }
 
 .tactical-select:hover {
-  @apply border-primary/40 bg-white/[0.05] scale-[1.03] shadow-[0_0_25px_rgba(255,62,62,0.15)];
+  @apply border-primary/40 bg-foreground/5 scale-[1.03] shadow-[0_10px_30px_rgba(0,0,0,0.1)];
+  .dark & {
+    @apply bg-white/[0.05] shadow-[0_0_25px_rgba(255,62,62,0.15)];
+  }
 }
 
 .tactical-select:focus {
-  @apply border-primary ring-4 ring-primary/10 outline-none shadow-[0_0_30px_rgba(255,62,62,0.15)];
+  @apply border-primary ring-4 ring-primary/10 outline-none;
+  .dark & {
+    @apply shadow-[0_0_30px_rgba(255,62,62,0.15)];
+  }
 }
 
 /* Fix standard HTML select options in dark mode */

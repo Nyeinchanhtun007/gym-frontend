@@ -122,8 +122,8 @@ export default function AdminPayments() {
               { label: "ALL REQUESTS", value: "" },
             ]}
             placeholder="FILTER BY STATUS"
-            className="w-full md:w-56 !rounded-xl"
-            accentColor="primary"
+            className="w-full md:w-56"
+            accentColor="blue"
           />
         </div>
       </div>

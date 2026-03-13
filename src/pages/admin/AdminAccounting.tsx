@@ -359,7 +359,7 @@ export default function AdminAccounting() {
       </div> */}
 
       {/* Transactions Container */}
-      <div className="bg-card/50 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] shadow-2xl relative z-10">
+      <div className="bg-card/50 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] shadow-2xl relative z-[50]">
         {/* Unified Filter Header */}
         <div className="p-8 border-b border-white/5 bg-white/[0.01]">
           <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
