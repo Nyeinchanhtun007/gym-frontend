@@ -1,0 +1,5 @@
+
+> frontend@0.0.0 build
+> tsc -b && vite build
+
+src/pages/admin/AdminPlans.tsx(809,34): error TS2304: Cannot find name 'Percent'.

@@ -42,6 +42,15 @@ export default function Memberships() {
     },
   });
 
+  const { data: activeDiscounts } = useQuery({
+    queryKey: ["active-discounts"],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:3000/discounts?activeOnly=true");
+      if (!res.ok) throw new Error("Failed to fetch discounts");
+      return res.json();
+    },
+  });
+
   const activeMembership = userData?.memberships?.find(
     (m: any) => m.status === "ACTIVE" || m.status === "PENDING_DOWNGRADE",
   );
@@ -71,12 +80,17 @@ export default function Memberships() {
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
           status: "ACTIVE",
-          price: isYearly
-            ? plans.find((p: any) => p.name === planName)?.yearlyPrice *
-              (1 -
-                (plans.find((p: any) => p.name === planName)?.discount || 0) /
-                  100)
-            : plans.find((p: any) => p.name === planName)?.monthlyPrice,
+          price: (() => {
+            const planDiscounts = activeDiscounts?.filter(
+              (d: any) =>
+                d.applicableTo.length === 0 ||
+                d.applicableTo.includes(planName.toUpperCase())
+            ) || [];
+            const effectiveDiscount = planDiscounts.find((d: any) => d.type === "PERCENTAGE")?.value ?? 0;
+            const planData = plans.find((p: any) => p.name === planName);
+            const basePrice = isYearly ? planData?.yearlyPrice : planData?.monthlyPrice;
+            return basePrice * (1 - effectiveDiscount / 100);
+          })(),
           dailyClassLimit: plans.find((p: any) => p.name === planName)
             ?.dailyClassLimit,
           monthlyClassLimit: isYearly
@@ -234,9 +248,18 @@ export default function Memberships() {
             ))
           : plans &&
             plans.map((plan: any, i: number) => {
-              const finalMonthlyPrice = plan.monthlyPrice;
+              const planDiscounts = activeDiscounts?.filter(
+                (d: any) =>
+                  d.applicableTo.length === 0 ||
+                  d.applicableTo.includes(plan.name.toUpperCase())
+              ) || [];
+              const effectiveDiscount =
+                planDiscounts.find((d: any) => d.type === "PERCENTAGE")?.value ?? 0;
+
+              const finalMonthlyPrice =
+                plan.monthlyPrice * (1 - effectiveDiscount / 100);
               const finalYearlyPrice =
-                plan.yearlyPrice * (1 - (plan.discount || 0) / 100);
+                plan.yearlyPrice * (1 - effectiveDiscount / 100);
               const isStandard = plan.name.toLowerCase() === "standard";
 
               return (
@@ -259,20 +282,29 @@ export default function Memberships() {
                       <CardTitle className="text-lg font-black mb-2 tracking-tighter uppercase italic">
                         {plan.name} Tier
                       </CardTitle>
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span
-                          className={`text-4xl font-black tracking-tighter ${isStandard ? "text-black" : "text-white"}`}
-                        >
-                          $
-                          {isYearly
-                            ? Math.floor(finalYearlyPrice)
-                            : finalMonthlyPrice}
-                        </span>
-                        <span
-                          className={`text-[9px] font-black uppercase tracking-widest ${isStandard ? "text-black/60" : "text-white/40"}`}
-                        >
-                          /{isYearly ? "year" : "month"}
-                        </span>
+                      <div className="flex flex-col items-center justify-center gap-1 relative h-16">
+                        {effectiveDiscount > 0 && (
+                          <span
+                            className={`text-sm line-through opacity-50 font-normal absolute top-0 ${isStandard ? "text-black" : "text-white"}`}
+                          >
+                            ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
+                          </span>
+                        )}
+                        <div className="flex items-baseline justify-center gap-1 mt-4">
+                          <span
+                            className={`text-4xl font-black tracking-tighter ${isStandard ? "text-black" : "text-white"}`}
+                          >
+                            $
+                            {isYearly
+                              ? Math.floor(finalYearlyPrice)
+                              : Math.floor(finalMonthlyPrice)}
+                          </span>
+                          <span
+                            className={`text-[9px] font-black uppercase tracking-widest ${isStandard ? "text-black/60" : "text-white/40"}`}
+                          >
+                            /{isYearly ? "year" : "month"}
+                          </span>
+                        </div>
                       </div>
                     </CardHeader>
 

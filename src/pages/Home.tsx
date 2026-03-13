@@ -743,9 +743,18 @@ export default function Home() {
                 />
               ))
             : plans.map((plan: any) => {
-                const finalMonthlyPrice = plan.monthlyPrice;
+                const planDiscounts = activeDiscounts?.filter(
+                  (d: any) =>
+                    d.applicableTo.length === 0 ||
+                    d.applicableTo.includes(plan.name.toUpperCase())
+                ) || [];
+                const effectiveDiscount =
+                  planDiscounts.find((d: any) => d.type === "PERCENTAGE")?.value ?? 0;
+
+                const finalMonthlyPrice =
+                  plan.monthlyPrice * (1 - effectiveDiscount / 100);
                 const finalYearlyPrice =
-                  plan.yearlyPrice * (1 - (plan.discount || 0) / 100);
+                  plan.yearlyPrice * (1 - effectiveDiscount / 100);
                 const isFeatured = plan.name.toLowerCase() === "standard";
 
                 return (
@@ -756,20 +765,27 @@ export default function Home() {
                     <h3 className="text-lg font-black uppercase mb-3 tracking-tighter text-white">
                       {plan.name} Tier
                     </h3>
-                    <div className="flex items-end justify-center gap-1 mb-1 h-10 overflow-hidden">
+                    <div className="flex items-end justify-center gap-1 mb-1 h-14 overflow-hidden relative">
                       <AnimatePresence mode="wait">
+                        {effectiveDiscount > 0 && (
+                          <span
+                            className={`text-sm line-through opacity-50 absolute top-0 -translate-y-1 font-normal ${isFeatured ? "text-black" : "text-white"}`}
+                          >
+                            ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
+                          </span>
+                        )}
                         <motion.span
                           key={isYearly ? "yearly" : "monthly"}
                           initial={{ y: 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           exit={{ y: -20, opacity: 0 }}
                           transition={{ duration: 0.2 }}
-                          className={`text-3xl font-black ${isFeatured ? "text-black" : "text-white"}`}
+                          className={`text-3xl font-black mt-4 ${isFeatured ? "text-black" : "text-white"}`}
                         >
                           $
                           {isYearly
                             ? Math.floor(finalYearlyPrice)
-                            : finalMonthlyPrice}
+                            : Math.floor(finalMonthlyPrice)}
                         </motion.span>
                       </AnimatePresence>
                       <span
@@ -779,13 +795,13 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="h-4 mb-4">
-                      {isYearly && plan.discount > 0 && (
+                      {effectiveDiscount > 0 && (
                         <motion.p
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           className={`text-[8px] font-black tracking-widest uppercase italic ${isFeatured ? "text-black/60" : "text-primary/60"}`}
                         >
-                          {plan.discount}% Discount Applied
+                          {effectiveDiscount}% Discount Applied
                         </motion.p>
                       )}
                     </div>
