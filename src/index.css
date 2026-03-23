@@ -155,14 +155,13 @@
   }
 }
 
-/* Fix standard HTML select options in dark mode */
+/* Standard HTML select options styling that adapts to theme */
 select option {
-  background-color: #050505 !important;
-  color: #ffffff !important;
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: inherit;
-  padding: 1.25rem !important;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: normal;
+  text-transform: none;
 }
 
 @layer utilities {

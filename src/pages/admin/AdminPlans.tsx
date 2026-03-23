@@ -15,10 +15,7 @@ import {
   Sparkles,
   Tag,
   Star,
-  ChevronRight,
   Clock,
-  CheckCircle2,
-  BarChart3,
   Link2,
   Unlink2,
   Globe,
@@ -31,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import TacticalConfirmModal from "@/components/admin/TacticalConfirmModal";
+import ConfirmModal from "@/components/admin/ConfirmModal";
 
 interface MembershipPlan {
   id: number;
@@ -73,7 +70,6 @@ export default function AdminPlans() {
     type: "error" | "success";
     text: string;
   } | null>(null);
-  const [expandedPlan, setExpandedPlan] = useState<number | null>(null);
   // Link discount modal state
   const [linkingPlan, setLinkingPlan] = useState<MembershipPlan | null>(null);
   const [linkStatusMsg, setLinkStatusMsg] = useState<{
@@ -138,14 +134,14 @@ export default function AdminPlans() {
     return activeDiscounts.filter(
       (d) =>
         d.applicableTo.length === 0 ||
-        d.applicableTo.includes(planName.toUpperCase())
+        d.applicableTo.includes(planName.toUpperCase()),
     );
   };
 
   // Check if a discount is specifically linked to a plan (not via "all plans")
   const isDiscountLinkedToPlan = (
     discount: Discount,
-    planName: string
+    planName: string,
   ): boolean => {
     return discount.applicableTo.includes(planName.toUpperCase());
   };
@@ -164,17 +160,14 @@ export default function AdminPlans() {
       discountId: number;
       applicableTo: string[];
     }) => {
-      const res = await fetch(
-        `http://localhost:3000/discounts/${discountId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ applicableTo }),
-        }
-      );
+      const res = await fetch(`http://localhost:3000/discounts/${discountId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ applicableTo }),
+      });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: "Server error" }));
         throw new Error(err.message || "Failed to update discount");
@@ -235,7 +228,6 @@ export default function AdminPlans() {
       applicableTo: [],
     });
   };
-
 
   const createMutation = useMutation({
     mutationFn: async (newData: any) => {
@@ -332,7 +324,8 @@ export default function AdminPlans() {
   const handleDelete = (id: number) => {
     triggerConfirm({
       title: "Delete Plan",
-      message: "Are you sure you want to delete this membership plan? This action cannot be undone.",
+      message:
+        "Are you sure you want to delete this membership plan? This action cannot be undone.",
       type: "danger",
       onConfirm: () => deleteMutation.mutate(id),
     });
@@ -388,7 +381,6 @@ export default function AdminPlans() {
 
   // Compute plan stats
   const totalPlans = plans?.length ?? 0;
-  const popularPlans = plans?.filter((p) => p.isPopular).length ?? 0;
   const avgPrice = plans?.length
     ? (
         plans.reduce((acc, p) => acc + p.monthlyPrice, 0) / plans.length
@@ -398,76 +390,27 @@ export default function AdminPlans() {
 
   const statsCards = [
     {
-      label: "Total Plans",
+      label: "Active Plans",
       value: totalPlans,
-      icon: BarChart3,
-      color: "text-primary",
-      bg: "bg-primary/10 border-primary/20",
-    },
-    {
-      label: "Popular Plans",
-      value: popularPlans,
       icon: Crown,
-      color: "text-amber-400",
-      bg: "bg-amber-500/10 border-amber-500/20",
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
     {
-      label: "Avg. Price",
+      label: "Avg. Monthly",
       value: `$${avgPrice}`,
       icon: DollarSign,
-      color: "text-green-400",
-      bg: "bg-green-500/10 border-green-500/20",
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10",
     },
     {
-      label: "Active Discounts",
+      label: "Active Offers",
       value: activeDiscountsCount,
       icon: Tag,
-      color: "text-blue-400",
-      bg: "bg-blue-500/10 border-blue-500/20",
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
     },
   ];
-
-  const getPlanGradient = (index: number) => {
-    const gradients = [
-      "from-blue-500/10 via-transparent to-cyan-500/5",
-      "from-purple-500/10 via-transparent to-pink-500/5",
-      "from-emerald-500/10 via-transparent to-teal-500/5",
-      "from-amber-500/10 via-transparent to-orange-500/5",
-      "from-rose-500/10 via-transparent to-red-500/5",
-    ];
-    return gradients[index % gradients.length];
-  };
-
-  const getPlanAccent = (index: number) => {
-    const accents = [
-      {
-        text: "text-blue-400",
-        border: "border-blue-500/30",
-        bg: "bg-blue-500/10",
-      },
-      {
-        text: "text-purple-400",
-        border: "border-purple-500/30",
-        bg: "bg-purple-500/10",
-      },
-      {
-        text: "text-emerald-400",
-        border: "border-emerald-500/30",
-        bg: "bg-emerald-500/10",
-      },
-      {
-        text: "text-amber-400",
-        border: "border-amber-500/30",
-        bg: "bg-amber-500/10",
-      },
-      {
-        text: "text-rose-400",
-        border: "border-rose-500/30",
-        bg: "bg-rose-500/10",
-      },
-    ];
-    return accents[index % accents.length];
-  };
 
   // Helper: is a discount expired?
   const isExpired = (d: Discount) =>
@@ -478,7 +421,7 @@ export default function AdminPlans() {
       {/* ─── Create / Edit Plan Modal ─── */}
       <AnimatePresence>
         {(editingPlan || isCreating) && (
-          <div className="fixed inset-0 flex items-center justify-center p-4 z-[9999]">
+          <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto p-4 md:py-20 scrollbar-hide">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -487,26 +430,24 @@ export default function AdminPlans() {
                 setEditingPlan(null);
                 setIsCreating(false);
               }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/50"
               style={{ cursor: "pointer" }}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative max-w-xl w-full bg-card border border-border rounded-[2rem] p-6 shadow-2xl overflow-y-auto scrollbar-hide"
-              style={{ maxHeight: "90vh" }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative max-w-xl w-full bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl z-10"
             >
-              <div className="flex justify-between items-center mb-5 relative z-10">
+              <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-xl font-black text-foreground italic tracking-tighter uppercase">
-                    {isCreating ? "Create" : "Edit"}{" "}
-                    <span className="text-primary text-neon">Tier</span>
+                  <h2 className="text-xl font-bold text-foreground">
+                    {isCreating ? "New Membership" : "Edit Plan"}
                   </h2>
-                  <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mt-0.5">
+                  <p className="text-sm text-muted-foreground mt-1 font-medium italic">
                     {isCreating
-                      ? "Configure a new membership tier"
-                      : "Modify existing tier settings"}
+                      ? "Create a new pricing tier for your members"
+                      : "Modify the details of this membership plan"}
                   </p>
                 </div>
                 <button
@@ -514,7 +455,7 @@ export default function AdminPlans() {
                     setEditingPlan(null);
                     setIsCreating(false);
                   }}
-                  className="w-10 h-10 rounded-full bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors border border-border text-foreground"
+                  className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-all"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -523,7 +464,7 @@ export default function AdminPlans() {
               <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                    <Label className="text-sm font-medium text-muted-foreground">
                       Tier Name
                     </Label>
                     <Input
@@ -532,7 +473,7 @@ export default function AdminPlans() {
                         setFormData({ ...formData, name: e.target.value })
                       }
                       placeholder="e.g. Premium"
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground font-outfit"
+                      className="rounded-lg h-10"
                     />
                   </div>
                   <div className="space-y-2 flex items-center pt-5 gap-4 px-4">
@@ -546,20 +487,20 @@ export default function AdminPlans() {
                           isPopular: e.target.checked,
                         })
                       }
-                      className="w-5 h-5 rounded border-border bg-foreground/5 text-primary focus:ring-primary accent-[hsl(var(--primary))]"
+                      className="w-5 h-5 rounded border-border bg-background text-primary focus:ring-primary accent-primary"
                     />
                     <Label
                       htmlFor="isPopular"
-                      className="text-[10px] font-black uppercase tracking-widest text-foreground/50 cursor-pointer flex items-center gap-1.5"
+                      className="text-sm font-medium text-foreground cursor-pointer flex items-center gap-1.5"
                     >
-                      <Crown className="w-3.5 h-3.5 text-amber-400" />
+                      <Crown className="w-4 h-4 text-amber-500" />
                       Popular
                     </Label>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                  <Label className="text-sm font-medium text-muted-foreground">
                     Description
                   </Label>
                   <Textarea
@@ -568,13 +509,13 @@ export default function AdminPlans() {
                       setFormData({ ...formData, description: e.target.value })
                     }
                     placeholder="Describe what this tier offers..."
-                    className="bg-foreground/5 border-border rounded-xl min-h-[52px] font-bold focus:border-primary text-foreground font-outfit"
+                    className="rounded-lg min-h-[52px]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                    <Label className="text-sm font-medium text-muted-foreground">
                       Monthly ($)
                     </Label>
                     <Input
@@ -586,11 +527,11 @@ export default function AdminPlans() {
                           monthlyPrice: e.target.value,
                         })
                       }
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground font-outfit"
+                      className="rounded-lg h-10"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                    <Label className="text-sm font-medium text-muted-foreground">
                       Yearly ($)
                     </Label>
                     <Input
@@ -602,14 +543,14 @@ export default function AdminPlans() {
                           yearlyPrice: e.target.value,
                         })
                       }
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground font-outfit"
+                      className="rounded-lg h-10"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                    <Label className="text-sm font-medium text-muted-foreground">
                       Daily Class Limit
                     </Label>
                     <Input
@@ -621,11 +562,11 @@ export default function AdminPlans() {
                           dailyClassLimit: e.target.value,
                         })
                       }
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground font-outfit"
+                      className="rounded-lg h-10"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                    <Label className="text-sm font-medium text-muted-foreground">
                       Monthly Class Limit
                     </Label>
                     <Input
@@ -637,13 +578,13 @@ export default function AdminPlans() {
                           monthlyClassLimit: e.target.value,
                         })
                       }
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground font-outfit"
+                      className="rounded-lg h-10"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                  <Label className="text-sm font-medium text-muted-foreground">
                     Tier Features (One per line)
                   </Label>
                   <Textarea
@@ -652,23 +593,23 @@ export default function AdminPlans() {
                       setFormData({ ...formData, features: e.target.value })
                     }
                     placeholder="Unlimited gym access&#10;Personal trainer session&#10;Nutrition plan"
-                    className="bg-foreground/5 border-border rounded-xl min-h-[80px] font-bold focus:border-primary text-foreground font-outfit"
+                    className="rounded-lg min-h-[80px]"
                   />
                 </div>
 
                 {statusMessage && (
                   <div
-                    className={`text-xs font-bold rounded-xl px-4 py-3 ${
+                    className={`text-sm rounded-lg px-4 py-3 ${
                       statusMessage.type === "error"
-                        ? "bg-red-500/10 border border-red-500/20 text-red-400"
-                        : "bg-green-500/10 border border-green-500/20 text-green-400"
+                        ? "bg-red-50 text-red-600 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20"
+                        : "bg-green-50 text-green-600 border border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20"
                     }`}
                   >
                     {statusMessage.text}
                   </div>
                 )}
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex justify-end gap-3 pt-6 border-t border-border mt-6">
                   <Button
                     type="button"
                     variant="outline"
@@ -676,7 +617,7 @@ export default function AdminPlans() {
                       setEditingPlan(null);
                       setIsCreating(false);
                     }}
-                    className="flex-1 h-10 rounded-xl border-border hover:bg-foreground/10 hover:border-border transition-all font-black uppercase tracking-widest text-[10px] text-foreground"
+                    className="px-6 h-10 rounded-lg border border-border text-foreground hover:bg-muted font-bold text-xs transition-all"
                   >
                     Cancel
                   </Button>
@@ -685,14 +626,14 @@ export default function AdminPlans() {
                     disabled={
                       createMutation.isPending || updateMutation.isPending
                     }
-                    className="flex-[2] h-10 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all"
+                    className="px-6 h-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-bold text-xs shadow-sm disabled:opacity-50 flex items-center gap-2"
                   >
                     {createMutation.isPending || updateMutation.isPending ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <>
-                        <Save className="w-4 h-4 mr-2" />
-                        {isCreating ? "Create Tier" : "Update Tier"}
+                        <Save className="w-4 h-4 font-bold" />
+                        {isCreating ? "Create Tier" : "Save Changes"}
                       </>
                     )}
                   </Button>
@@ -719,21 +660,24 @@ export default function AdminPlans() {
               style={{ cursor: "pointer" }}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative max-w-lg w-full bg-card border border-border rounded-[2rem] p-6 shadow-2xl overflow-y-auto scrollbar-hide"
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative max-w-lg w-full bg-card border border-border rounded-xl p-6 shadow-lg overflow-y-auto scrollbar-hide"
               style={{ maxHeight: "85vh" }}
             >
               {/* Header */}
-              <div className="flex justify-between items-center mb-5">
+              <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-xl font-black text-foreground italic tracking-tighter uppercase">
-                    Apply <span className="text-green-400">Discounts</span>
+                  <h2 className="text-xl font-bold text-foreground">
+                    Apply{" "}
+                    <span className="text-green-600 dark:text-green-500">
+                      Discounts
+                    </span>
                   </h2>
-                  <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mt-0.5">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Manage discounts for{" "}
-                    <span className="text-primary font-black">
+                    <span className="text-primary font-medium">
                       {linkingPlan.name}
                     </span>{" "}
                     plan
@@ -769,33 +713,50 @@ export default function AdminPlans() {
               </AnimatePresence>
 
               {/* Legend */}
-              <div className="flex flex-wrap gap-3 mb-4 px-1">
+              <div className="flex flex-wrap gap-4 mb-4">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40 flex items-center justify-center">
-                    <Check className="w-2 h-2 text-green-400" />
+                  <div className="w-4 h-4 rounded bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-green-600 dark:text-green-500" />
                   </div>
-                  <span className="text-[9px] font-bold text-foreground/40 uppercase">
+                  <span className="text-xs font-medium text-muted-foreground">
                     Linked to this plan
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-sm bg-blue-500/20 border border-blue-500/40 flex items-center justify-center">
-                    <Globe className="w-2 h-2 text-blue-400" />
+                  <div className="w-4 h-4 rounded bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center">
+                    <Globe className="w-3 h-3 text-blue-600 dark:text-blue-500" />
                   </div>
-                  <span className="text-[9px] font-bold text-foreground/40 uppercase">
+                  <span className="text-xs font-medium text-muted-foreground">
                     Applies to all plans
                   </span>
                 </div>
               </div>
 
               {/* Discount List */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {!allDiscounts || allDiscounts.length === 0 ? (
-                  <div className="text-center py-10 text-foreground/20 uppercase font-black text-xs tracking-widest">
+                  <div className="text-center py-10 text-muted-foreground text-sm font-medium">
                     No Discounts Found — Create One First
                   </div>
                 ) : (
-                  allDiscounts.map((discount) => {
+                  [...(allDiscounts ?? [])]
+                    .sort((a, b) => {
+                      const aApplies =
+                        isDiscountLinkedToPlan(a, linkingPlan.name) ||
+                        isDiscountGlobal(a);
+                      const bApplies =
+                        isDiscountLinkedToPlan(b, linkingPlan.name) ||
+                        isDiscountGlobal(b);
+                      if (aApplies && !bApplies) return -1;
+                      if (!aApplies && bApplies) return 1;
+
+                      // Secondary sort: active status
+                      if (a.isActive && !b.isActive) return -1;
+                      if (!a.isActive && b.isActive) return 1;
+
+                      return 0;
+                    })
+                    .map((discount) => {
                     const isLinked = isDiscountLinkedToPlan(
                       discount,
                       linkingPlan.name,
@@ -808,72 +769,72 @@ export default function AdminPlans() {
                       <motion.div
                         key={discount.id}
                         layout
-                        className={`relative p-4 rounded-xl border transition-all duration-300 ${
+                        className={`relative p-4 rounded-lg border transition-all duration-200 ${
                           appliesToThisPlan
                             ? isGlobal
-                              ? "bg-blue-500/5 border-blue-500/20"
-                              : "bg-green-500/5 border-green-500/20"
-                            : "bg-foreground/[0.02] border-border/50 hover:border-border"
+                              ? "bg-blue-50/50 dark:bg-blue-500/5 border-blue-200 dark:border-blue-500/20"
+                              : "bg-green-50/50 dark:bg-green-500/5 border-green-200 dark:border-green-500/20"
+                            : "bg-card border-border hover:border-foreground/20"
                         } ${expired ? "opacity-50" : ""} ${
-                          !discount.isActive ? "opacity-40" : ""
+                          !discount.isActive ? "opacity-60" : ""
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center justify-between gap-4">
                           {/* Discount Info */}
                           <div className="flex items-center gap-3 flex-1 min-w-0">
                             <div
-                              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
+                              className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${
                                 discount.type === "PERCENTAGE"
-                                  ? "bg-green-500/10 border-green-500/20"
-                                  : "bg-blue-500/10 border-blue-500/20"
+                                  ? "bg-green-100 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-600 dark:text-green-500"
+                                  : "bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-500"
                               }`}
                             >
                               {discount.type === "PERCENTAGE" ? (
-                                <Percent className="w-4 h-4 text-green-400" />
+                                <Percent className="w-5 h-5" />
                               ) : (
-                                <DollarSign className="w-4 h-4 text-blue-400" />
+                                <DollarSign className="w-5 h-5" />
                               )}
                             </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-sm font-black text-foreground uppercase tracking-tight font-mono">
+                                <span className="text-sm font-bold text-foreground font-mono">
                                   {discount.code}
                                 </span>
-                                <span className="text-xs font-black text-green-400">
+                                <span className="text-sm font-semibold text-green-600 dark:text-green-500">
                                   {discount.type === "PERCENTAGE"
                                     ? `${discount.value}% OFF`
                                     : `$${discount.value} OFF`}
                                 </span>
                                 {discount.isAutomatic && (
-                                  <span className="text-[7px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded leading-none">
+                                  <span className="text-[10px] font-semibold text-amber-600 bg-amber-100 dark:bg-amber-900/40 px-1.5 py-0.5 rounded leading-none">
                                     AUTO
                                   </span>
                                 )}
                                 {!discount.isActive && (
-                                  <span className="text-[7px] font-black text-zinc-400 bg-zinc-500/10 border border-zinc-500/20 px-1.5 py-0.5 rounded leading-none">
+                                  <span className="text-[10px] font-semibold text-zinc-600 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded leading-none">
                                     INACTIVE
                                   </span>
                                 )}
                                 {expired && (
-                                  <span className="text-[7px] font-black text-red-400 bg-red-500/10 border border-red-500/20 px-1.5 py-0.5 rounded leading-none">
+                                  <span className="text-[10px] font-semibold text-red-600 bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded leading-none">
                                     EXPIRED
                                   </span>
                                 )}
                               </div>
                               {discount.description && (
-                                <div className="text-[10px] font-bold text-foreground/30 truncate max-w-[200px]">
+                                <div className="text-xs text-muted-foreground truncate max-w-[250px] mt-0.5">
                                   {discount.description}
                                 </div>
                               )}
                               {/* Scope Info */}
-                              <div className="text-[9px] font-bold text-foreground/25 mt-0.5 uppercase">
+                              <div className="text-[11px] font-medium text-muted-foreground mt-1">
                                 {isGlobal ? (
-                                  <span className="flex items-center gap-1 text-blue-400/70">
-                                    <Globe className="w-2.5 h-2.5" />
+                                  <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                                    <Globe className="w-3 h-3" />
                                     All Plans
                                   </span>
                                 ) : discount.applicableTo.length > 0 ? (
-                                  <span className="text-foreground/35">
+                                  <span>
                                     Plans: {discount.applicableTo.join(", ")}
                                   </span>
                                 ) : null}
@@ -884,7 +845,9 @@ export default function AdminPlans() {
                           {/* Action Buttons */}
                           <div className="flex items-center gap-2 shrink-0">
                             {/* Toggle link to this specific plan */}
-                            <button
+                            <Button
+                              variant="outline"
+                              size="icon"
                               onClick={() =>
                                 toggleDiscountForPlan(
                                   discount,
@@ -897,12 +860,12 @@ export default function AdminPlans() {
                                   ? `Unlink from ${linkingPlan.name}`
                                   : `Link to ${linkingPlan.name}`
                               }
-                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all border ${
+                              className={`h-9 w-9 ${
                                 isLinked
-                                  ? "bg-green-500/20 border-green-500/30 text-green-400 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400"
+                                  ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-600 dark:text-green-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                                   : isGlobal
-                                    ? "bg-blue-500/20 border-blue-500/30 text-blue-400 hover:bg-red-500/20 hover:border-red-500/30 hover:text-red-400"
-                                    : "bg-foreground/5 border-border text-foreground/40 hover:bg-green-500/20 hover:border-green-500/30 hover:text-green-400"
+                                    ? "bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                                    : "text-muted-foreground hover:text-green-600 hover:bg-green-50 hover:border-green-200"
                               }`}
                             >
                               {linkDiscountMutation.isPending ? (
@@ -912,23 +875,25 @@ export default function AdminPlans() {
                               ) : (
                                 <Unlink2 className="w-4 h-4" />
                               )}
-                            </button>
+                            </Button>
 
                             {/* Apply to All Plans button */}
-                            <button
+                            <Button
+                              variant="outline"
+                              size="icon"
                               onClick={() => setDiscountGlobal(discount)}
                               disabled={
                                 linkDiscountMutation.isPending || isGlobal
                               }
                               title="Apply to all plans"
-                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all border ${
+                              className={`h-9 w-9 ${
                                 isGlobal
-                                  ? "bg-blue-500/20 border-blue-500/30 text-blue-400 cursor-default"
-                                  : "bg-foreground/5 border-border text-foreground/40 hover:bg-blue-500/20 hover:border-blue-500/30 hover:text-blue-400"
+                                  ? "bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-500 cursor-default"
+                                  : "text-muted-foreground hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
                               }`}
                             >
                               <Globe className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       </motion.div>
@@ -938,13 +903,14 @@ export default function AdminPlans() {
               </div>
 
               {/* Close Button */}
-              <div className="pt-4 mt-4 border-t border-border/50">
+              <div className="pt-4 mt-6 border-t border-border">
                 <Button
+                  variant="outline"
                   onClick={() => {
                     setLinkingPlan(null);
                     setLinkStatusMsg(null);
                   }}
-                  className="w-full h-10 rounded-xl bg-foreground/5 text-foreground border border-border font-black uppercase tracking-widest text-[10px] hover:bg-foreground/10"
+                  className="w-full h-10 rounded-lg font-semibold"
                 >
                   Done
                 </Button>
@@ -953,16 +919,14 @@ export default function AdminPlans() {
           </div>
         )}
 
-        <TacticalConfirmModal
-          isOpen={confirmConfig.isOpen}
-          onClose={() =>
-            setConfirmConfig((prev) => ({ ...prev, isOpen: false }))
-          }
-          onConfirm={confirmConfig.onConfirm}
-          title={confirmConfig.title}
-          message={confirmConfig.message}
-          type={confirmConfig.type}
-        />
+        <ConfirmModal
+        isOpen={confirmConfig.isOpen}
+        onClose={() => setConfirmConfig((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        type={confirmConfig.type}
+      />
       </AnimatePresence>
 
       {/* ─── Header ─── */}
@@ -972,13 +936,13 @@ export default function AdminPlans() {
           highlight="Tiers"
           subtitle="Manage Membership Plans & Connected Discounts"
         />
-        <button
+        <Button
           onClick={handleCreate}
-          className="h-12 px-8 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform flex items-center gap-2 shadow-lg shadow-primary/20"
+          className="h-10 px-4 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Create New Tier
-        </button>
+        </Button>
       </div>
 
       {/* ─── Stats Row ─── */}
@@ -989,18 +953,18 @@ export default function AdminPlans() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className={`bg-card/50 backdrop-blur-2xl border rounded-[1.5rem] p-4 flex items-center gap-4 ${s.bg}`}
+            className={`bg-card border border-border rounded-xl p-6 flex items-center gap-4`}
           >
             <div
-              className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-foreground/5 border border-border`}
+              className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${s.bg}`}
             >
-              <s.icon className={`w-5 h-5 ${s.color}`} />
+              <s.icon className={`w-6 h-6 ${s.color}`} />
             </div>
             <div>
-              <div className="text-[9px] font-black uppercase tracking-widest text-foreground/40">
+              <div className="text-sm font-medium text-muted-foreground">
                 {s.label}
               </div>
-              <div className="text-2xl font-black text-foreground italic tracking-tighter">
+              <div className="text-2xl font-bold text-foreground mt-0.5">
                 {s.value}
               </div>
             </div>
@@ -1027,10 +991,7 @@ export default function AdminPlans() {
           </div>
         ) : (
           plans.map((plan, index) => {
-            const accent = getPlanAccent(index);
-            const gradient = getPlanGradient(index);
             const planDiscounts = getDiscountsForPlan(plan.name);
-            const isExpanded = expandedPlan === plan.id;
             const effectiveDiscount =
               planDiscounts.find((d) => d.type === "PERCENTAGE")?.value ?? 0;
             const discountedPrice =
@@ -1044,280 +1005,160 @@ export default function AdminPlans() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.08 }}
-                className={`relative overflow-hidden group rounded-[2rem] border border-border bg-card/50 backdrop-blur-2xl hover:border-border/80 transition-all duration-500 ${
-                  plan.isPopular ? "ring-1 ring-primary/30" : ""
+                className={`flex flex-col overflow-hidden rounded-xl border bg-card hover:shadow-md transition-all duration-200 ${
+                  plan.isPopular
+                    ? "border-primary ring-1 ring-primary"
+                    : "border-border"
                 }`}
               >
-                {/* Gradient Overlay */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`}
-                />
-
                 {/* Popular Badge */}
                 {plan.isPopular && (
-                  <div className="absolute top-0 left-0 right-0">
-                    <div className="bg-gradient-to-r from-primary via-primary to-primary/80 text-primary-foreground px-4 py-1.5 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <Crown className="w-3 h-3" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em]">
-                          Most Popular
-                        </span>
-                        <Crown className="w-3 h-3" />
-                      </div>
-                    </div>
+                  <div className="bg-[#2563EB] text-white py-2 px-4 text-center text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    Recommended
                   </div>
                 )}
 
                 <div
-                  className={`relative p-7 ${plan.isPopular ? "pt-12" : ""}`}
+                  className={`p-6 flex-1 flex flex-col ${plan.isPopular ? "pt-5" : ""}`}
                 >
                   {/* Plan Header */}
-                  <div className="mb-5">
+                  <div className="mb-4">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="text-2xl font-black text-foreground italic tracking-tighter uppercase group-hover:text-primary transition-colors duration-300">
+                        <h3 className="text-xl font-bold text-foreground">
                           {plan.name}
                         </h3>
-                        <p className="text-foreground/40 text-[10px] font-bold uppercase tracking-widest line-clamp-2 leading-relaxed mt-1 max-w-[220px]">
+                        <p className="text-muted-foreground text-sm mt-1 line-clamp-2">
                           {plan.description || "No description"}
                         </p>
-                      </div>
-                      <div
-                        className={`w-10 h-10 rounded-xl ${accent.bg} border ${accent.border} flex items-center justify-center`}
-                      >
-                        <Star className={`w-5 h-5 ${accent.text}`} />
                       </div>
                     </div>
                   </div>
 
                   {/* Pricing Section */}
-                  <div className="mb-5">
-                    <div className="grid grid-cols-2 gap-3">
-                      {/* Monthly Price */}
-                      <div className="bg-foreground/[0.03] p-4 rounded-2xl border border-border/50 relative">
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-foreground/30 block mb-1.5">
-                          Monthly
+                  <div className="mb-6 bg-muted/30 -mx-6 p-6 border-y border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      {effectiveDiscount > 0 ? (
+                        <>
+                          <span className="text-3xl font-extrabold text-foreground">
+                            ${discountedPrice.toFixed(0)}
+                          </span>
+                          <span className="text-lg font-medium text-muted-foreground line-through opacity-50">
+                            ${plan.monthlyPrice}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-3xl font-extrabold text-foreground">
+                          ${plan.monthlyPrice}
                         </span>
-                        <div className="flex items-baseline gap-1">
-                          {effectiveDiscount > 0 ? (
-                            <>
-                              <span className="text-xl font-black text-foreground">
-                                ${discountedPrice.toFixed(0)}
-                              </span>
-                              <span className="text-xs font-bold text-foreground/30 line-through">
-                                ${plan.monthlyPrice}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="text-xl font-black text-foreground">
-                              ${plan.monthlyPrice}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-[8px] font-bold text-foreground/20 uppercase">
-                          /month
-                        </span>
-                      </div>
-
-                      {/* Yearly Price */}
-                      <div className="bg-foreground/[0.03] p-4 rounded-2xl border border-border/50 relative">
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-foreground/30 block mb-1.5">
-                          Yearly
-                        </span>
-                        <span className="text-xl font-black text-foreground block">
-                          ${plan.yearlyPrice}
-                        </span>
-                        <span className="text-[8px] font-bold text-foreground/20 uppercase">
-                          /year
-                        </span>
-                      </div>
+                      )}
+                      <span className="text-sm font-bold text-muted-foreground">/mo</span>
+                    </div>
+                    <div className="text-xs font-semibold text-muted-foreground/60">
+                       billed annually as ${plan.yearlyPrice}
                     </div>
                   </div>
 
-                  {/* Discount & Class Limits */}
-                  <div className="grid grid-cols-3 gap-2 mb-5">
-                    <div className="bg-foreground/[0.03] px-3 py-2.5 rounded-xl border border-border/50 text-center relative">
-                      <Tag className="w-3 h-3 text-green-400 mx-auto mb-1" />
-                      <span className="text-xs font-black text-green-400 block">
-                        {planDiscounts.length}
-                      </span>
-                      <span className="text-[7px] font-bold text-foreground/25 uppercase block">
-                        Discounts
-                      </span>
-                      {planDiscounts.length > 0 && (
-                        <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" />
-                      )}
+                  {/* Limits */}
+                  <div className="grid grid-cols-2 gap-3 mb-6">
+                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-muted/20 border border-border/40">
+                      <Zap className="w-4 h-4 text-amber-500" />
+                      <div>
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase leading-none mb-1">Daily Cap</div>
+                        <div className="text-sm font-bold">{plan.dailyClassLimit} Classes</div>
+                      </div>
                     </div>
-                    <div className="bg-foreground/[0.03] px-3 py-2.5 rounded-xl border border-border/50 text-center">
-                      <Zap className="w-3 h-3 text-amber-400 mx-auto mb-1" />
-                      <span className="text-xs font-black text-foreground block">
-                        {plan.dailyClassLimit}
-                      </span>
-                      <span className="text-[7px] font-bold text-foreground/25 uppercase block">
-                        Daily
-                      </span>
-                    </div>
-                    <div className="bg-foreground/[0.03] px-3 py-2.5 rounded-xl border border-border/50 text-center">
-                      <CalendarDays className="w-3 h-3 text-blue-400 mx-auto mb-1" />
-                      <span className="text-xs font-black text-foreground block">
-                        {plan.monthlyClassLimit}
-                      </span>
-                      <span className="text-[7px] font-bold text-foreground/25 uppercase block">
-                        Monthly
-                      </span>
+                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-muted/20 border border-border/40">
+                      <CalendarDays className="w-4 h-4 text-blue-500" />
+                      <div>
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase leading-none mb-1">Monthly</div>
+                        <div className="text-sm font-bold">{plan.monthlyClassLimit} Sessions</div>
+                      </div>
                     </div>
                   </div>
 
                   {/* Features */}
                   {plan.features && plan.features.length > 0 && (
-                    <div className="mb-5">
-                      <button
-                        onClick={() =>
-                          setExpandedPlan(isExpanded ? null : plan.id)
-                        }
-                        className="flex items-center gap-2 w-full text-left mb-2 group/feat"
-                      >
-                        <Sparkles className="w-3 h-3 text-foreground/30" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-foreground/30 group-hover/feat:text-foreground/50 transition-colors">
-                          Features ({plan.features.length})
-                        </span>
-                        <ChevronRight
-                          className={`w-3 h-3 text-foreground/30 transition-transform duration-200 ml-auto ${
-                            isExpanded ? "rotate-90" : ""
-                          }`}
-                        />
-                      </button>
-                      <AnimatePresence>
-                        {isExpanded && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="space-y-1.5 overflow-hidden"
-                          >
-                            {plan.features.map((f, fi) => (
-                              <div
-                                key={fi}
-                                className="flex items-center gap-2 pl-1"
-                              >
-                                <CheckCircle2 className="w-3 h-3 text-green-400 shrink-0" />
-                                <span className="text-[10px] font-bold text-foreground/50">
-                                  {f}
-                                </span>
-                              </div>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                    <div className="mb-8 space-y-3">
+                      {plan.features.slice(0, 4).map((f, fi) => (
+                        <div key={fi} className="flex items-start gap-3">
+                          <div className="mt-1 w-4 h-4 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                            <Check className="w-2.5 h-2.5 text-emerald-600" />
+                          </div>
+                          <span className="text-sm font-medium text-foreground/70">
+                            {f}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   )}
 
-                  {/* ─── Connected Discounts Section ─── */}
-                  <div className="mb-5">
-                    {planDiscounts.length > 0 ? (
-                      <div className="p-3 bg-gradient-to-r from-green-500/5 to-emerald-500/5 rounded-xl border border-green-500/10">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <Tag className="w-3 h-3 text-green-400" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-green-400">
-                              Active Discounts ({planDiscounts.length})
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => setLinkingPlan(plan)}
-                            className="text-[8px] font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
-                          >
-                            <Link2 className="w-3 h-3" />
-                            Manage
-                          </button>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {planDiscounts.map((d) => (
-                            <div
-                              key={d.id}
-                              className="flex items-center gap-1.5 bg-foreground/5 border border-border/50 rounded-lg px-2.5 py-1"
-                            >
-                              {d.isAutomatic ? (
-                                <Zap className="w-2.5 h-2.5 text-amber-400" />
-                              ) : (
-                                <Tag className="w-2.5 h-2.5 text-green-400" />
-                              )}
-                              <span className="text-[8px] font-black text-foreground/60 font-mono uppercase">
-                                {d.code}
-                              </span>
-                              <span className="text-[8px] font-black text-green-400">
-                                {d.type === "PERCENTAGE"
-                                  ? `${d.value}%`
-                                  : `$${d.value}`}
-                              </span>
-                              {d.applicableTo.length === 0 && (
-                                <span className="text-[7px] font-black text-blue-400 bg-blue-500/10 border border-blue-500/20 px-1 py-0.5 rounded leading-none">
-                                  ALL
-                                </span>
-                              )}
-                              {d.isAutomatic && (
-                                <span className="text-[7px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1 py-0.5 rounded leading-none">
-                                  AUTO
-                                </span>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
+                  {/* Discount Badge */}
+                  {planDiscounts.length > 0 && (
+                    <div className="mb-6 space-y-2">
                       <button
                         onClick={() => setLinkingPlan(plan)}
-                        className="w-full p-3 rounded-xl border border-dashed border-border/50 hover:border-primary/30 text-foreground/25 hover:text-primary/50 transition-all flex items-center justify-center gap-2 group/link"
+                        title="Click to view and manage all active offers"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/5 border border-emerald-500/10 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-500/10 transition-colors active:scale-95 group/offer"
                       >
-                        <Link2 className="w-3.5 h-3.5 group-hover/link:scale-110 transition-transform" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">
-                          Apply Discount
+                        <Tag className="w-3.5 h-3.5 group-hover/offer:scale-110 transition-transform" />
+                        <span className="text-xs font-bold uppercase tracking-wider">
+                          {planDiscounts.length} Active Offer(s)
                         </span>
                       </button>
-                    )}
-                  </div>
+                      
+                      {/* Quick view of codes */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {planDiscounts.slice(0, 3).map((d) => (
+                          <span 
+                            key={d.id} 
+                            className="px-2 py-0.5 rounded bg-foreground/5 border border-border/50 text-[10px] font-mono font-bold text-muted-foreground"
+                          >
+                            {d.code}
+                          </span>
+                        ))}
+                        {planDiscounts.length > 3 && (
+                          <span className="text-[10px] font-bold text-muted-foreground/40 self-center">
+                            +{planDiscounts.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Footer Actions */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                    <div className="flex items-center gap-2">
-                      {plan.isPopular && (
-                        <span className="px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
-                          <Crown className="w-2.5 h-2.5" />
-                          Popular
-                        </span>
-                      )}
-                      <span className="text-[8px] font-bold text-foreground/20 uppercase flex items-center gap-1">
-                        <Clock className="w-2.5 h-2.5" />
-                        {new Date(plan.updatedAt).toLocaleDateString()}
-                      </span>
+                  <div className="flex items-center justify-between pt-5 mt-auto border-t border-border/50">
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase opacity-40">
+                      <Clock className="w-3 h-3" />
+                      {new Date(plan.updatedAt).toLocaleDateString()}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => setLinkingPlan(plan)}
-                        title="Apply Discount"
-                        className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center hover:bg-green-500/20 hover:text-green-400 transition-all border border-border hover:border-green-500/30 hover:scale-110"
+                        className="h-9 w-9 rounded-lg hover:bg-primary/10 hover:text-primary transition-all"
                       >
                         <Tag className="w-4 h-4" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleEdit(plan)}
-                        title="Edit Plan"
-                        className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all border border-border hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/20"
+                        className="h-9 w-9 rounded-lg hover:bg-primary/10 hover:text-primary transition-all"
                       >
                         <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleDelete(plan.id)}
                         disabled={deleteMutation.isPending}
-                        title="Delete Plan"
-                        className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-all border border-border hover:border-destructive hover:scale-110 hover:shadow-lg hover:shadow-destructive/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="h-9 w-9 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-all"
                       >
-                        {deleteMutation.isPending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                      </button>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>

@@ -7,7 +7,7 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import TacticalSearch from "@/components/admin/TacticalSearch";
 import TrainerViewModal from "@/components/admin/TrainerViewModal";
 import TrainerDeployModal from "@/components/admin/TrainerDeployModal";
-import TacticalConfirmModal from "@/components/admin/TacticalConfirmModal";
+import ConfirmModal from "@/components/admin/ConfirmModal";
 
 export default function AdminTrainers() {
   const { token } = useAuthStore();
@@ -64,7 +64,7 @@ export default function AdminTrainers() {
       const res = await fetch("http://localhost:3000/classes?limit=100", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("Communications Link Failure");
+      if (!res.ok) throw new Error("Failed to fetch classes");
       return res.json();
     },
   });
@@ -87,7 +87,7 @@ export default function AdminTrainers() {
         },
         body: JSON.stringify({ trainerId }),
       });
-      if (!res.ok) throw new Error("Deployment Synchronization Failed");
+      if (!res.ok) throw new Error("Failed to assign trainer to class");
       return res.json();
     },
     onSuccess: () => {
@@ -108,7 +108,7 @@ export default function AdminTrainers() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok)
-        throw new Error("Personnel Retrieval Failed - Clearance Required");
+        throw new Error("Failed to delete trainer");
       return res.json();
     },
     onSuccess: () => {
@@ -124,7 +124,7 @@ export default function AdminTrainers() {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("Mission Termination Failed");
+      if (!res.ok) throw new Error("Failed to delete class");
       return res.json();
     },
     onSuccess: () => {
@@ -134,94 +134,110 @@ export default function AdminTrainers() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <AdminPageHeader
-        title="Tactical"
-        highlight="Instruction"
-        subtitle="Elite Personnel Management Sector"
+        title="Trainers"
+        highlight="Personnel"
+        subtitle="Manage gym instructors and their class assignments"
       />
 
-      <div className="bg-card/50 backdrop-blur-2xl border border-border p-6 rounded-[2rem] relative z-50">
-        <div className="flex flex-col md:flex-row gap-6 justify-between items-center mb-10 relative z-10">
+      <div className="bg-card border border-border p-5 rounded-xl shadow-sm">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
           <TacticalSearch
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="SEARCH INSTRUCTORS..."
+            placeholder="Search instructors by name or email..."
             className="w-full md:w-96"
           />
         </div>
+      </div>
 
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="px-8 py-6 text-[10px] font-black text-foreground/30 uppercase tracking-[0.3em]">
-                Instructor Profile
-              </th>
-              <th className="px-8 py-6 text-[10px] font-black text-foreground/30 uppercase tracking-[0.3em]">
-                Specialization
-              </th>
-              <th className="px-8 py-6 text-[10px] font-black text-foreground/30 uppercase tracking-[0.3em]">
-                Status
-              </th>
-              <th className="px-8 py-6 text-[10px] font-black text-foreground/30 uppercase tracking-[0.3em] text-right">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/50">
-            {isLoading
-              ? [...Array(3)].map((_, i) => (
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-muted/50">
+              <tr className="border-b border-border text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-6 py-4">Instructor Profile</th>
+                <th className="px-6 py-4">Specialization</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/50">
+              {isLoading ? (
+                [...Array(3)].map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-8 py-6" colSpan={4}>
-                      <div className="h-12 bg-foreground/5 rounded-xl w-full" />
+                    <td className="px-6 py-6" colSpan={4}>
+                      <div className="h-12 bg-muted rounded-lg w-full" />
                     </td>
                   </tr>
                 ))
-              : filteredTrainers.map((trainer: any) => (
+              ) : filteredTrainers.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="px-6 py-10 text-center text-muted-foreground italic"
+                  >
+                    No trainers found matching your search.
+                  </td>
+                </tr>
+              ) : (
+                filteredTrainers.map((trainer: any) => (
                   <tr
                     key={trainer.id}
-                    className="hover:bg-foreground/[0.01] transition-colors group"
+                    className="hover:bg-muted/30 transition-colors group"
                   >
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center border border-border">
-                          <User className="w-5 h-5 text-foreground/20 group-hover:text-primary transition-colors" />
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
+                          {trainer.photo ? (
+                            <img
+                              src={trainer.photo}
+                              alt={trainer.name}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            <User className="w-5 h-5 text-primary" />
+                          )}
                         </div>
                         <div>
-                          <div className="text-[12px] font-black text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">
+                          <div className="text-sm font-semibold text-foreground">
                             {trainer.name}
                           </div>
-                          <div className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest">
+                          <div className="text-xs text-muted-foreground font-medium">
                             {trainer.email}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-2 py-2 px-3 rounded-xl bg-white/[0.02] border border-white/5">
-                        <Award className="w-3 h-3 text-primary" />
-                        <span className="text-[8px] font-black text-white uppercase tracking-widest">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/5 border border-primary/10 w-fit">
+                        <Award className="w-3.5 h-3.5 text-primary" />
+                        <span className="text-[10px] font-bold text-primary uppercase">
                           Certified
                         </span>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <span className="text-[8px] font-bold text-green-500 uppercase tracking-widest">
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 uppercase">
                         Active
                       </span>
                     </td>
-                    <td className="px-8 py-6 text-right">
+                    <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => setViewingTrainer(trainer)}
-                        className="p-2.5 rounded-xl hover:bg-foreground/5 text-foreground/20 hover:text-primary border border-transparent hover:border-border transition-all"
+                        className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary border border-transparent hover:border-border transition-all"
+                        title="View Details"
                       >
                         <LayoutDashboard className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
-                ))}
-          </tbody>
-        </table>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -235,16 +251,16 @@ export default function AdminTrainers() {
           }}
           onPurge={(trainer) => {
             triggerConfirm({
-              title: "Personnel Purge",
-              message: `CRITICAL: You are about to retroactively purge ${trainer.name} from global records. This will decommission all active missions and scrub session data. Confirm Permanent Purge?`,
+              title: "Delete Trainer",
+              message: `Are you sure you want to delete ${trainer.name}? This will remove all their records and end active class assignments.`,
               type: "danger",
               onConfirm: () => deleteTrainerMutation.mutate(trainer.id),
             });
           }}
           onDecommissionMission={(cls) => {
             triggerConfirm({
-              title: "Mission Decommission",
-              message: `You are about to terminate mission: ${cls.name}. This action will scrub all deployment data from the sector. Confirm?`,
+              title: "End Assignment",
+              message: `Remove instructor from class: ${cls.name}?`,
               type: "warning",
               onConfirm: () => deleteClassMutation.mutate(cls.id),
             });
@@ -263,7 +279,7 @@ export default function AdminTrainers() {
           pendingClassId={assignMutation.variables?.classId}
         />
 
-        <TacticalConfirmModal
+        <ConfirmModal
           isOpen={confirmConfig.isOpen}
           onClose={() =>
             setConfirmConfig((prev) => ({ ...prev, isOpen: false }))

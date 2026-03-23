@@ -1,5 +1,5 @@
-import { Skull, AlertTriangle } from "lucide-react";
-import TacticalModal from "@/components/ui/TacticalModal";
+import { AlertTriangle, Trash2, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface UserDeleteModalProps {
   user: any;
@@ -21,69 +21,73 @@ export default function UserDeleteModal({
   if (!user) return null;
 
   return (
-    <TacticalModal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Purge"
-      highlight="Authorization"
-      subtitle="Critical Sector Action Required"
-      icon={<Skull className="w-24 h-24" />}
-      maxWidth="max-w-md"
-    >
-      <div className="flex flex-col items-center text-center">
-        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4 relative">
-          <AlertTriangle className="w-6 h-6 text-red-500" />
-          <div
-            className="absolute inset-0 rounded-full bg-red-500/20 animate-ping"
-            style={{ animationDuration: "3s" }}
-          />
-        </div>
-
-        {error && (
-          <div className="w-full mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
-            <p className="text-[9px] font-bold text-red-500 uppercase tracking-widest leading-relaxed">
-              Error: {error.message || "Protocol Denied"}
-            </p>
-          </div>
-        )}
-
-        <div className="w-full p-4 bg-white/5 rounded-xl border border-white/10 mb-6">
-          <p className="text-[10px] font-medium text-white/60 mb-1">
-            Permanently delete user record:
-          </p>
-          <p className="text-xs font-bold text-white uppercase tracking-tight">
-            {user.name}
-          </p>
-          <p className="text-[9px] font-medium text-white/20 mt-1 uppercase tracking-widest">
-            {user.email}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 w-full">
-          <button
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center p-4 z-[9999]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={onClose}
-            className="h-10 rounded-xl bg-white/5 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-colors"
+            className="absolute inset-0 bg-black/50"
+            style={{ cursor: "pointer" }}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="relative w-full max-w-md bg-card border border-border rounded-xl p-6 shadow-lg overflow-y-auto"
           >
-            Abort
-          </button>
-          <button
-            onClick={() => onConfirm(user.id)}
-            disabled={isLoading}
-            className="h-10 rounded-xl bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-red-600 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 shadow-[0_4px_20px_rgba(239,68,68,0.3)]"
-          >
-            {isLoading ? "Purging..." : "Confirm Purge"}
-          </button>
-        </div>
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 dark:bg-red-500/10 rounded-lg">
+                  <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-500" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground">
+                  Delete User
+                </h2>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-        <div className="mt-8 pt-6 border-t border-white/5 w-full">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-[8px] font-bold text-red-500/40 uppercase tracking-[0.2em]">
-              Warning: This action is irreversible
-            </span>
-          </div>
+            {error && (
+              <div className="p-3 bg-red-50 text-red-600 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20 rounded-lg mb-4 text-sm font-medium">
+                {error.message || "Failed to delete user"}
+              </div>
+            )}
+
+            <p className="text-muted-foreground text-sm mb-4">
+              Are you sure you want to delete <span className="font-semibold text-foreground">{user.name}</span>? This action cannot be undone and will permanently remove all associated data.
+            </p>
+
+            <div className="flex gap-3 justify-end mt-8">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 rounded-lg bg-card border border-border text-foreground hover:bg-muted transition-colors font-medium text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => onConfirm(user.id)}
+                disabled={isLoading}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors font-medium text-sm flex items-center gap-2"
+              >
+                {isLoading ? "Deleting..." : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Delete User
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </TacticalModal>
+      )}
+    </AnimatePresence>
   );
 }

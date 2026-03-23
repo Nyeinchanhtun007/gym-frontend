@@ -11,10 +11,10 @@ export default function AdminPageHeader({
 }: AdminPageHeaderProps) {
   return (
     <div className="mb-8">
-      <h1 className="text-4xl font-black uppercase tracking-tighter mb-2 text-foreground">
-        {title} <span className="text-primary text-neon">{highlight}</span>
+      <h1 className="text-2xl font-bold tracking-tight mb-1 text-foreground">
+        {title} <span className="text-primary">{highlight}</span>
       </h1>
-      <p className="text-foreground/40 uppercase tracking-[0.2em] text-[10px] font-bold">
+      <p className="text-muted-foreground text-sm font-medium">
         {subtitle}
       </p>
     </div>

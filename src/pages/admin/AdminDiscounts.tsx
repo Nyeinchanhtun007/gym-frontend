@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import TacticalSearch from "@/components/admin/TacticalSearch";
-import TacticalConfirmModal from "@/components/admin/TacticalConfirmModal";
+import ConfirmModal from "@/components/admin/ConfirmModal";
 
 type DiscountType = "PERCENTAGE" | "FIXED";
 
@@ -294,30 +294,30 @@ export default function AdminDiscounts() {
   const getStatusBadge = (d: Discount) => {
     if (!d.isActive)
       return (
-        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-zinc-500/10 text-zinc-400 border-zinc-500/20">
+        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 uppercase tracking-tight">
           INACTIVE
         </span>
       );
     if (isExpired(d))
       return (
-        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-red-500/10 text-red-400 border-red-500/20">
+        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 uppercase tracking-tight">
           EXPIRED
         </span>
       );
     if (isFuture(d))
       return (
-        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-blue-500/10 text-blue-400 border-blue-500/20">
+        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 uppercase tracking-tight">
           SCHEDULED
         </span>
       );
     if (d.maxUses !== null && d.usedCount >= (d.maxUses || 0))
       return (
-        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-amber-500/10 text-amber-400 border-amber-500/20">
+        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 uppercase tracking-tight">
           MAXED OUT
         </span>
       );
     return (
-      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-green-500/10 text-green-400 border-green-500/20">
+      <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 uppercase tracking-tight">
         ACTIVE
       </span>
     );
@@ -355,7 +355,7 @@ export default function AdminDiscounts() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <AdminPageHeader
@@ -367,51 +367,49 @@ export default function AdminDiscounts() {
           <TacticalSearch
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="SEARCH CODES..."
+            placeholder="Search codes..."
             className="w-full md:w-72"
           />
-          <button
+          <Button
             onClick={openCreate}
-            className="h-10 px-6 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform flex items-center gap-2 shrink-0"
+            className="rounded-lg h-10 px-6 font-semibold flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             New Code
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statsCards.map((s) => (
-          <motion.div
+          <div
             key={s.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`bg-card/50 backdrop-blur-2xl border rounded-[1.5rem] p-2 flex items-center gap-4 ${s.bg}`}
+            className={`bg-card border rounded-xl p-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow`}
           >
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-foreground/5 border border-border`}
+              className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${s.bg} border`}
             >
-              <s.icon className={`w-5 h-5 ${s.color}`} />
+              <s.icon className={`w-6 h-6 ${s.color}`} />
             </div>
             <div>
-              <div className="text-[9px] font-black uppercase tracking-widest text-foreground/40">
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 {s.label}
               </div>
-              <div className="text-2xl font-black text-foreground italic tracking-tighter">
+              <div className="text-2xl font-bold text-foreground">
                 {s.value}
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
-      {/* Table */}
-      <div className="bg-card/50 backdrop-blur-2xl border border-border rounded-[2rem]">
+      {/* Table Section */}
+      <div className="bg-card border rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-border">
+              <tr className="bg-muted/30 border-b border-border">
                 {[
                   "Code",
                   "Type & Value",
@@ -422,7 +420,7 @@ export default function AdminDiscounts() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className={`px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 ${h === "Actions" ? "text-right" : ""}`}
+                    className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground ${h === "Actions" ? "text-right" : ""}`}
                   >
                     {h}
                   </th>
@@ -434,16 +432,16 @@ export default function AdminDiscounts() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-8 py-20 text-center animate-pulse text-foreground/20 uppercase font-black text-xs tracking-widest"
+                    className="px-8 py-20 text-center animate-pulse text-muted-foreground font-medium text-sm"
                   >
-                    Loading Discount Codes...
+                    Loading discount codes...
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-8 py-20 text-center text-red-500 uppercase font-black text-xs tracking-widest"
+                    className="px-8 py-20 text-center text-destructive font-medium text-sm"
                   >
                     Error: {(error as any).message}
                   </td>
@@ -452,143 +450,152 @@ export default function AdminDiscounts() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-8 py-20 text-center text-foreground/20 uppercase font-black text-xs tracking-widest"
+                    className="px-8 py-20 text-center text-muted-foreground font-medium text-sm"
                   >
-                    No Discount Codes Found
+                    No discount codes found
                   </td>
                 </tr>
               ) : (
                 discounts.map((d) => (
-                  <motion.tr
+                  <tr
                     key={d.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="hover:bg-foreground/[0.01] transition-colors group"
+                    className="hover:bg-muted/20 transition-colors border-b border-border last:border-0"
                   >
                     {/* Code */}
-                    <td className="px-6 py-5">
+                    <td className="px-6 py-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <Tag className="w-4 h-4 text-primary" />
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Tag className="w-5 h-5 text-primary" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <div className="font-black text-foreground text-sm uppercase tracking-tight group-hover:text-primary transition-colors font-mono">
+                            <span className="font-bold text-foreground text-sm tracking-tight family-mono">
                               {d.code}
-                            </div>
+                            </span>
                             {d.isRecurring && (
-                              <span className="px-1.5 py-0.5 rounded-md text-[8px] font-black bg-blue-500/10 text-blue-400 border border-blue-500/20 leading-none">
-                                RC
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                                RECURRING
                               </span>
                             )}
                             {d.isAutomatic && (
-                              <span className="px-1.5 py-0.5 rounded-md text-[8px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 leading-none">
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                                 AUTO
                               </span>
                             )}
                           </div>
                           {d.description && (
-                            <div className="text-foreground/30 text-[10px] font-bold tracking-wide max-w-[160px] truncate">
+                            <p className="text-muted-foreground text-xs mt-1 max-w-[200px] truncate">
                               {d.description}
-                            </div>
+                            </p>
                           )}
                         </div>
                       </div>
                     </td>
 
                     {/* Type & Value */}
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-2">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
                         <div
-                          className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
                             d.type === "PERCENTAGE"
-                              ? "bg-green-500/10 border border-green-500/20"
-                              : "bg-blue-500/10 border border-blue-500/20"
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                              : "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                           }`}
                         >
                           {d.type === "PERCENTAGE" ? (
-                            <Percent className="w-3.5 h-3.5 text-green-400" />
+                            <Percent className="w-4 h-4" />
                           ) : (
-                            <DollarSign className="w-3.5 h-3.5 text-blue-400" />
+                            <DollarSign className="w-4 h-4" />
                           )}
                         </div>
                         <div>
-                          <div className="text-sm font-black text-foreground">
+                          <p className="text-sm font-bold text-foreground">
                             {d.type === "PERCENTAGE"
                               ? `${d.value}% OFF`
                               : `$${d.value} OFF`}
-                          </div>
+                          </p>
                           {d.minPurchase > 0 && (
-                            <div className="text-[9px] font-bold text-foreground/30 uppercase">
-                              Min ${d.minPurchase}
-                            </div>
+                            <p className="text-[10px] font-medium text-muted-foreground uppercase">
+                              Min: ${d.minPurchase}
+                            </p>
                           )}
                         </div>
                       </div>
                     </td>
 
                     {/* Usage */}
-                    <td className="px-6 py-5">
-                      <div className="text-xs font-black text-foreground">
-                        {d.usedCount}
-                        <span className="text-foreground/30 font-bold">
-                          {" "}
-                          /{" "}
-                          {d.maxUses !== null && d.maxUses !== undefined
-                            ? d.maxUses
-                            : "∞"}
-                        </span>
+                    <td className="px-6 py-4">
+                      <div className="space-y-1.5">
+                        <div className="text-sm font-semibold text-foreground">
+                          {d.usedCount}
+                          <span className="text-muted-foreground font-normal">
+                            {" "}
+                            /{" "}
+                            {d.maxUses !== null && d.maxUses !== undefined
+                              ? d.maxUses
+                              : "∞"}
+                          </span>
+                        </div>
+                        {d.perUserLimit && (
+                          <p className="text-[10px] font-medium text-muted-foreground uppercase">
+                            Limit: {d.perUserLimit}/User
+                          </p>
+                        )}
+                        {d.maxUses && (
+                          <div className="h-1.5 w-24 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-primary rounded-full transition-all duration-500"
+                              style={{
+                                width: `${Math.min((d.usedCount / d.maxUses) * 100, 100)}%`,
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
-                      {d.perUserLimit && (
-                        <div className="text-[9px] font-bold text-foreground/30 uppercase mt-0.5">
-                          Limit {d.perUserLimit}/User
-                        </div>
-                      )}
-                      {d.maxUses && (
-                        <div className="mt-1 h-1 w-20 bg-foreground/10 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary rounded-full transition-all"
-                            style={{
-                              width: `${Math.min((d.usedCount / d.maxUses) * 100, 100)}%`,
-                            }}
-                          />
-                        </div>
-                      )}
                     </td>
 
                     {/* Status */}
-                    <td className="px-6 py-5">{getStatusBadge(d)}</td>
+                    <td className="px-6 py-4">{getStatusBadge(d)}</td>
 
                     {/* Expiry */}
-                    <td className="px-6 py-5">
-                      <span className="text-xs font-bold text-foreground/50">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="w-3.5 h-3.5" />
                         {d.expiresAt
-                          ? new Date(d.expiresAt).toLocaleDateString()
+                          ? new Date(d.expiresAt).toLocaleDateString(undefined, {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
                           : "No Expiry"}
-                      </span>
+                      </div>
                     </td>
 
                     {/* Actions */}
-                    <td className="px-6 py-5 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => openEdit(d)}
-                          className="w-9 h-9 rounded-xl bg-foreground/5 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all border border-border"
+                          className="w-8 h-8 hover:bg-muted"
                         >
                           <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => {
                             setIdToDelete(d.id);
                             setIsConfirmOpen(true);
                           }}
-                          className="w-9 h-9 rounded-xl bg-foreground/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all border border-border"
+                          className="w-8 h-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
                     </td>
-                  </motion.tr>
+                  </tr>
                 ))
               )}
             </tbody>
@@ -608,23 +615,23 @@ export default function AdminDiscounts() {
                 setIsModalOpen(false);
                 setEditingDiscount(null);
               }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/50"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative max-w-lg w-full bg-card border border-border rounded-[2rem] p-6 shadow-2xl overflow-y-auto scrollbar-hide"
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative max-w-lg w-full bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl overflow-y-auto"
               style={{ maxHeight: "90vh" }}
             >
               {/* Modal Header */}
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-xl font-black text-foreground italic tracking-tighter uppercase">
+                  <h2 className="text-xl font-bold text-foreground">
                     {editingDiscount ? "Edit" : "Create"}{" "}
-                    <span className="text-primary">Discount Code</span>
+                    Discount Code
                   </h2>
-                  <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest mt-0.5">
+                  <p className="text-sm text-muted-foreground mt-1 font-medium italic">
                     {editingDiscount
                       ? "Modify existing promo code"
                       : "Configure a new promo code"}
@@ -635,21 +642,21 @@ export default function AdminDiscounts() {
                     setIsModalOpen(false);
                     setEditingDiscount(null);
                   }}
-                  className="w-10 h-10 rounded-full bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors border border-border"
+                  className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-all"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Automatic Toggle & Code */}
                 <div className="flex w-full gap-4">
-                  <div className="flex items-center w-[160px] justify-between p-3 bg-foreground/5 rounded-xl border border-border shrink-0">
+                  <div className="flex items-center w-[160px] justify-between p-3 bg-muted/30 rounded-lg border border-border shrink-0">
                     <div>
-                      <div className="text-[9px] font-black uppercase tracking-widest text-foreground/50">
+                      <div className="text-[10px] font-bold uppercase tracking-tight text-muted-foreground">
                         Automatic
                       </div>
-                      <div className="text-[8px] font-bold text-foreground/30 mt-0.5 uppercase">
+                      <div className="text-xs font-semibold text-foreground mt-0.5 uppercase">
                         {formData.isAutomatic ? "ON" : "OFF"}
                       </div>
                     </div>
@@ -661,19 +668,19 @@ export default function AdminDiscounts() {
                           isAutomatic: !formData.isAutomatic,
                         })
                       }
-                      className={`relative w-8 h-4 rounded-full transition-all duration-300 border ${
+                      className={`relative w-10 h-5 rounded-full transition-all duration-300 border ${
                         formData.isAutomatic
                           ? "bg-amber-500 border-amber-500"
-                          : "bg-foreground/10 border-border"
+                          : "bg-muted border-border"
                       }`}
                     >
                       <div
-                        className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white shadow transition-all duration-300 ${
-                          formData.isAutomatic ? "left-4.5" : "left-0.5"
+                        className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow-sm transition-all duration-300 ${
+                          formData.isAutomatic ? "left-5.5" : "left-0.5"
                         }`}
                         style={{
                           left: formData.isAutomatic
-                            ? "calc(100% - 0.85rem)"
+                            ? "calc(100% - 1.125rem)"
                             : "0.125rem",
                         }}
                       />
@@ -686,9 +693,9 @@ export default function AdminDiscounts() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
-                        className="space-y-2 flex-1"
+                        className="space-y-1.5 flex-1"
                       >
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                        <Label className="text-xs font-semibold text-foreground">
                           Promo Code
                         </Label>
                         <Input
@@ -700,7 +707,7 @@ export default function AdminDiscounts() {
                             })
                           }
                           placeholder="e.g. SUMMER20"
-                          className="bg-foreground/5 border-border rounded-xl h-10 font-black font-mono focus:border-primary text-foreground uppercase tracking-widest"
+                          className="bg-background border-border rounded-lg h-10 font-bold family-mono focus-visible:ring-primary text-foreground uppercase tracking-wider"
                           required
                         />
                       </motion.div>
@@ -709,8 +716,8 @@ export default function AdminDiscounts() {
                 </div>
 
                 {/* Description */}
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-foreground">
                     Description (optional)
                   </Label>
                   <Input
@@ -719,40 +726,40 @@ export default function AdminDiscounts() {
                       setFormData({ ...formData, description: e.target.value })
                     }
                     placeholder="e.g. Summer membership discount"
-                    className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground"
+                    className="bg-background border-border rounded-lg h-10 focus-visible:ring-primary text-foreground"
                   />
                 </div>
 
                 {/* Type + Value */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-foreground">
                       Discount Type
                     </Label>
-                    <div className="flex rounded-xl overflow-hidden border border-border">
+                    <div className="flex rounded-lg overflow-hidden border border-border h-10">
                       {(["PERCENTAGE", "FIXED"] as DiscountType[]).map((t) => (
                         <button
                           key={t}
                           type="button"
                           onClick={() => setFormData({ ...formData, type: t })}
-                          className={`flex-1 py-2 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all ${
+                          className={`flex-1 text-xs font-bold uppercase flex items-center justify-center gap-1.5 transition-all ${
                             formData.type === t
                               ? "bg-primary text-primary-foreground"
-                              : "bg-foreground/5 text-foreground/40 hover:text-foreground"
+                              : "bg-muted/50 text-muted-foreground hover:bg-muted"
                           }`}
                         >
                           {t === "PERCENTAGE" ? (
-                            <Percent className="w-3 h-3" />
+                            <Percent className="w-3.5 h-3.5" />
                           ) : (
-                            <DollarSign className="w-3 h-3" />
+                            <DollarSign className="w-3.5 h-3.5" />
                           )}
                           {t === "PERCENTAGE" ? "%" : "$"}
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-foreground">
                       Value {formData.type === "PERCENTAGE" ? "(%)" : "($)"}
                     </Label>
                     <Input
@@ -767,15 +774,15 @@ export default function AdminDiscounts() {
                           value: parseFloat(e.target.value),
                         })
                       }
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-black focus:border-primary text-green-400"
+                      className="bg-background border-border rounded-lg h-10 font-bold focus-visible:ring-primary text-foreground"
                       required
                     />
                   </div>
                 </div>
 
                 {/* Min Purchase */}
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-foreground">
                     Min Purchase ($)
                   </Label>
                   <Input
@@ -789,15 +796,15 @@ export default function AdminDiscounts() {
                         minPurchase: parseFloat(e.target.value),
                       })
                     }
-                    className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground"
+                    className="bg-background border-border rounded-lg h-10 font-bold focus-visible:ring-primary text-foreground"
                   />
                 </div>
 
                 {/* Limits: Max Uses + Per User Limit */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
-                      Total Max Uses (blank = ∞)
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-foreground">
+                      Total Max Uses
                     </Label>
                     <Input
                       type="number"
@@ -806,13 +813,13 @@ export default function AdminDiscounts() {
                       onChange={(e) =>
                         setFormData({ ...formData, maxUses: e.target.value })
                       }
-                      placeholder="Unlimited"
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground"
+                      placeholder="Unlimited (∞)"
+                      className="bg-background border-border rounded-lg h-10 font-bold focus-visible:ring-primary text-foreground"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
-                      Per User Limit (blank = ∞)
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-foreground">
+                      Per User Limit
                     </Label>
                     <Input
                       type="number"
@@ -824,16 +831,16 @@ export default function AdminDiscounts() {
                           perUserLimit: e.target.value,
                         })
                       }
-                      placeholder="Unlimited"
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground"
+                      placeholder="Unlimited (∞)"
+                      className="bg-background border-border rounded-lg h-10 font-bold focus-visible:ring-primary text-foreground"
                     />
                   </div>
                 </div>
 
                 {/* Dates: Start + Expiry */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-foreground">
                       Start Date
                     </Label>
                     <Input
@@ -842,12 +849,12 @@ export default function AdminDiscounts() {
                       onChange={(e) =>
                         setFormData({ ...formData, startDate: e.target.value })
                       }
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground"
+                      className="bg-background border-border rounded-lg h-10 font-bold focus-visible:ring-primary text-foreground"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
-                      Expiry Date (optional)
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-foreground">
+                      Expiry Date
                     </Label>
                     <Input
                       type="date"
@@ -855,17 +862,17 @@ export default function AdminDiscounts() {
                       onChange={(e) =>
                         setFormData({ ...formData, expiresAt: e.target.value })
                       }
-                      className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground"
+                      className="bg-background border-border rounded-lg h-10 font-bold focus-visible:ring-primary text-foreground"
                     />
                   </div>
                 </div>
 
                 {/* Applicable To (Checkboxes) */}
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
+                <div className="space-y-2.5">
+                  <Label className="text-xs font-semibold text-foreground">
                     Applicable Plans (Blank = All)
                   </Label>
-                  <div className="grid grid-cols-2 gap-2 p-4 bg-foreground/5 rounded-xl border border-border">
+                  <div className="grid grid-cols-2 gap-2 p-4 bg-muted/30 rounded-lg border border-border">
                     {plans?.map((plan) => (
                       <label
                         key={plan.id}
@@ -884,7 +891,7 @@ export default function AdminDiscounts() {
                             }
                             setFormData({ ...formData, applicableTo: current });
                           }}
-                          className={`w-5 h-5 rounded-md border transition-all flex items-center justify-center ${
+                          className={`w-5 h-5 rounded border transition-all flex items-center justify-center ${
                             formData.applicableTo.includes(
                               plan.name.toUpperCase(),
                             )
@@ -898,13 +905,13 @@ export default function AdminDiscounts() {
                             <CheckCircle className="w-3.5 h-3.5 text-primary-foreground" />
                           )}
                         </div>
-                        <span className="text-xs font-bold text-foreground/70 group-hover:text-foreground transition-colors uppercase tracking-tight">
+                        <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                           {plan.name}
                         </span>
                       </label>
                     ))}
                     {!plans?.length && (
-                      <div className="col-span-2 text-[10px] font-bold text-foreground/20 uppercase text-center py-2">
+                      <div className="col-span-2 text-xs text-muted-foreground text-center py-2 italic font-medium">
                         No plans found
                       </div>
                     )}
@@ -929,14 +936,14 @@ export default function AdminDiscounts() {
                   />
                 </div> */}
 
-                {/* Toggles: Active + Recurring + Automatic */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="flex items-center justify-between p-3 bg-foreground/5 rounded-xl border border-border">
+                {/* Toggles: Active + Recurring */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border">
                     <div>
-                      <div className="text-[9px] font-black uppercase tracking-widest text-foreground/50">
+                      <div className="text-[10px] font-bold uppercase tracking-tight text-muted-foreground">
                         Active
                       </div>
-                      <div className="text-[8px] font-bold text-foreground/30 mt-0.5 uppercase">
+                      <div className="text-xs font-semibold text-foreground mt-0.5 uppercase">
                         {formData.isActive ? "Yes" : "No"}
                       </div>
                     </div>
@@ -948,31 +955,31 @@ export default function AdminDiscounts() {
                           isActive: !formData.isActive,
                         })
                       }
-                      className={`relative w-8 h-4 rounded-full transition-all duration-300 border ${
+                      className={`relative w-10 h-5 rounded-full transition-all duration-300 border ${
                         formData.isActive
                           ? "bg-primary border-primary"
-                          : "bg-foreground/10 border-border"
+                          : "bg-muted border-border"
                       }`}
                     >
                       <div
-                        className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white shadow transition-all duration-300 ${
-                          formData.isActive ? "left-4.5" : "left-0.5"
+                        className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow-sm transition-all duration-300 ${
+                          formData.isActive ? "left-5.5" : "left-0.5"
                         }`}
                         style={{
                           left: formData.isActive
-                            ? "calc(100% - 0.85rem)"
+                            ? "calc(100% - 1.125rem)"
                             : "0.125rem",
                         }}
                       />
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-foreground/5 rounded-xl border border-border">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border">
                     <div>
-                      <div className="text-[9px] font-black uppercase tracking-widest text-foreground/50">
+                      <div className="text-[10px] font-bold uppercase tracking-tight text-muted-foreground">
                         Recurring
                       </div>
-                      <div className="text-[8px] font-bold text-foreground/30 mt-0.5 uppercase">
+                      <div className="text-xs font-semibold text-foreground mt-0.5 uppercase">
                         {formData.isRecurring ? "ON" : "OFF"}
                       </div>
                     </div>
@@ -984,19 +991,19 @@ export default function AdminDiscounts() {
                           isRecurring: !formData.isRecurring,
                         })
                       }
-                      className={`relative w-8 h-4 rounded-full transition-all duration-300 border ${
+                      className={`relative w-10 h-5 rounded-full transition-all duration-300 border ${
                         formData.isRecurring
                           ? "bg-blue-500 border-blue-500"
-                          : "bg-foreground/10 border-border"
+                          : "bg-muted border-border"
                       }`}
                     >
                       <div
-                        className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-white shadow transition-all duration-300 ${
-                          formData.isRecurring ? "left-4.5" : "left-0.5"
+                        className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white shadow-sm transition-all duration-300 ${
+                          formData.isRecurring ? "left-5.5" : "left-0.5"
                         }`}
                         style={{
                           left: formData.isRecurring
-                            ? "calc(100% - 0.85rem)"
+                            ? "calc(100% - 1.125rem)"
                             : "0.125rem",
                         }}
                       />
@@ -1011,10 +1018,10 @@ export default function AdminDiscounts() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="space-y-2 overflow-hidden"
+                      className="space-y-1.5 overflow-hidden"
                     >
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/50">
-                        Recurring Duration (Months, blank = forever)
+                      <Label className="text-xs font-semibold text-foreground">
+                        Recurring Duration (Months)
                       </Label>
                       <Input
                         type="number"
@@ -1026,8 +1033,8 @@ export default function AdminDiscounts() {
                             recurringDuration: e.target.value,
                           })
                         }
-                        placeholder="Forever"
-                        className="bg-foreground/5 border-border rounded-xl h-10 font-bold focus:border-primary text-foreground"
+                        placeholder="Forever (Leave blank)"
+                        className="bg-background border-border rounded-lg h-10 font-bold focus-visible:ring-primary text-foreground"
                       />
                     </motion.div>
                   )}
@@ -1036,10 +1043,10 @@ export default function AdminDiscounts() {
                 {/* Status Message */}
                 {statusMessage && (
                   <div
-                    className={`text-xs font-bold rounded-xl px-4 py-3 ${
+                    className={`text-sm font-medium rounded-lg px-4 py-3 ${
                       statusMessage.type === "error"
-                        ? "bg-red-500/10 border border-red-500/20 text-red-400"
-                        : "bg-green-500/10 border border-green-500/20 text-green-400"
+                        ? "bg-destructive/10 border border-destructive/20 text-destructive"
+                        : "bg-green-100 dark:bg-green-900/40 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400"
                     }`}
                   >
                     {statusMessage.text}
@@ -1047,7 +1054,7 @@ export default function AdminDiscounts() {
                 )}
 
                 {/* Submit */}
-                <div className="flex gap-3 pt-2">
+                <div className="flex justify-end gap-3 pt-6 border-t border-border mt-8">
                   <Button
                     type="button"
                     variant="outline"
@@ -1055,7 +1062,7 @@ export default function AdminDiscounts() {
                       setIsModalOpen(false);
                       setEditingDiscount(null);
                     }}
-                    className="flex-1 h-10 rounded-xl border-border hover:bg-foreground/5 font-black uppercase tracking-widest text-[10px] text-foreground"
+                    className="px-6 h-10 rounded-lg border border-border text-foreground hover:bg-muted font-bold text-xs transition-all"
                   >
                     Cancel
                   </Button>
@@ -1064,14 +1071,14 @@ export default function AdminDiscounts() {
                     disabled={
                       createMutation.isPending || updateMutation.isPending
                     }
-                    className="flex-[2] h-10 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all"
+                    className="px-6 h-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-bold text-xs shadow-sm disabled:opacity-50 flex items-center gap-2"
                   >
                     {createMutation.isPending || updateMutation.isPending ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <>
-                        <Save className="w-4 h-4 mr-2" />
-                        {editingDiscount ? "Update Code" : "Create Code"}
+                        <Save className="w-4 h-4 font-bold" />
+                        {editingDiscount ? "Save Changes" : "Create Code"}
                       </>
                     )}
                   </Button>
@@ -1083,12 +1090,12 @@ export default function AdminDiscounts() {
       </AnimatePresence>
 
       {/* Delete Confirm Modal */}
-      <TacticalConfirmModal
+      <ConfirmModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={() => idToDelete && deleteMutation.mutate(idToDelete)}
-        title="Delete Discount Code"
-        message="DANGER: You are about to permanently delete this discount code. All associated usage data will be lost. Continue?"
+        title="Delete Discount"
+        message="Are you sure you want to delete this discount code? This action cannot be undone."
         type="danger"
       />
     </div>

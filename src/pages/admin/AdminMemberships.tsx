@@ -14,7 +14,7 @@ import { AnimatePresence } from "framer-motion";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import TacticalSearch from "@/components/admin/TacticalSearch";
 import MembershipEditModal from "@/components/admin/MembershipEditModal";
-import TacticalConfirmModal from "@/components/admin/TacticalConfirmModal";
+import ConfirmModal from "@/components/admin/ConfirmModal";
 import TacticalSelect from "@/components/ui/TacticalSelect";
 
 export default function AdminMemberships() {
@@ -109,7 +109,7 @@ export default function AdminMemberships() {
       queryClient.invalidateQueries({ queryKey: ["admin-memberships"] });
       setStatusMessage({
         type: "success",
-        text: "Membership synchronized successfully!",
+        text: "Membership updated successfully!",
       });
       setTimeout(() => {
         setEditingMembership(null);
@@ -183,12 +183,12 @@ export default function AdminMemberships() {
         subtitle="Monitor and Override Active Tier Assignments"
       />
 
-      <div className="bg-card/50 backdrop-blur-2xl border border-border p-6 rounded-[2rem] relative z-[50]">
-        <div className="flex flex-col md:flex-row gap-6 justify-between items-center relative z-10">
+      <div className="bg-card border border-border p-6 rounded-2xl">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
           <TacticalSearch
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="SEARCH BY USER OR TIER..."
+            placeholder="Search by user or tier..."
             className="w-full md:w-96"
           />
 
@@ -196,167 +196,167 @@ export default function AdminMemberships() {
             value={statusFilter}
             onChange={setStatusFilter}
             options={[
-              { label: "ALL STATUS", value: "" },
-              { label: "ACTIVE", value: "ACTIVE" },
-              { label: "PENDING DOWNGRADE", value: "PENDING_DOWNGRADE" },
-              { label: "CANCELLED", value: "CANCELLED" },
-              { label: "EXPIRED", value: "EXPIRED" },
+              { label: "All Status", value: "" },
+              { label: "Active", value: "ACTIVE" },
+              { label: "Pending Downgrade", value: "PENDING_DOWNGRADE" },
+              { label: "Cancelled", value: "CANCELLED" },
+              { label: "Expired", value: "EXPIRED" },
             ]}
-            placeholder="FILTER BY STATUS"
-            className="w-full md:w-56 !rounded-xl"
+            placeholder="Filter by Status"
+            className="w-full md:w-56"
             accentColor="primary"
           />
         </div>
       </div>
 
-      <div className="bg-card/50 border border-border rounded-3xl overflow-hidden backdrop-blur-sm relative">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-border">
+              <tr className="border-b border-border bg-muted/30">
                 <th
-                  className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 cursor-pointer hover:text-foreground transition-colors"
+                  className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => handleSort("user")}
                 >
                   <div className="flex items-center gap-2">
                     User
                     <ArrowUpDown
-                      className={`w-3 h-3 ${sortBy === "user" ? "text-primary" : "text-foreground/10"}`}
+                      className={`w-3 h-3 ${sortBy === "user" ? "text-primary" : "text-muted-foreground/30"}`}
                     />
                   </div>
                 </th>
                 <th
-                  className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 cursor-pointer hover:text-foreground transition-colors"
+                  className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => handleSort("tier")}
                 >
                   <div className="flex items-center gap-2">
                     Tier & Cycle
                     <ArrowUpDown
-                      className={`w-3 h-3 ${sortBy === "tier" ? "text-primary" : "text-foreground/10"}`}
+                      className={`w-3 h-3 ${sortBy === "tier" ? "text-primary" : "text-muted-foreground/30"}`}
                     />
                   </div>
                 </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Limits
                 </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Start Date
                 </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/50">
+            <tbody className="divide-y divide-border">
               {isLoading ? (
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-8 py-20 text-center animate-pulse text-foreground/20 uppercase font-black text-xs tracking-widest"
+                    className="px-6 py-12 text-center text-muted-foreground/50 font-medium text-sm"
                   >
-                    Scanning Memberships...
+                    Loading memberships...
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-8 py-20 text-center text-red-500 uppercase font-black text-xs tracking-widest"
+                    className="px-6 py-12 text-center text-destructive font-medium text-sm"
                   >
-                    Uplink Error: {error.message}
+                    Error: {error.message}
                   </td>
                 </tr>
               ) : membershipData.length === 0 ? (
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-8 py-20 text-center text-foreground/20 uppercase font-black text-xs tracking-widest"
+                    className="px-6 py-12 text-center text-muted-foreground/50 font-medium text-sm"
                   >
-                    No Tier Assignments Found
+                    No memberships found
                   </td>
                 </tr>
               ) : (
                 membershipData.map((m: any) => (
                   <tr
                     key={m.id}
-                    className="hover:bg-foreground/[0.01] transition-colors group"
+                    className="hover:bg-muted/30 transition-colors"
                   >
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-border flex items-center justify-center font-black text-primary italic text-sm">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-sm">
                           {m.user?.name?.[0] || "U"}
                         </div>
                         <div>
-                          <div className="font-black text-foreground text-sm uppercase tracking-tight group-hover:text-primary transition-colors">
+                          <div className="font-semibold text-foreground text-sm">
                             {m.user?.name}
                           </div>
-                          <div className="text-foreground/30 text-[10px] font-bold uppercase tracking-widest">
+                          <div className="text-muted-foreground text-xs">
                             {m.user?.email}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
-                        <div className="text-xs font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                        <div className="text-sm font-medium text-foreground flex items-center gap-2">
                           <CreditCard className="w-3 h-3 text-primary" />
-                          {m.planTier}
+                          {m.planTier} Plan
                         </div>
-                        <div className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
+                        <div className="text-xs text-muted-foreground">
                           ${m.price} / {m.billingCycle}
                         </div>
                         {m.discountAmount > 0 && (
-                          <div className="flex items-center gap-1 mt-1">
-                            <Tag className="w-2.5 h-2.5 text-emerald-500" />
-                            <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter">
-                              SVD ${m.discountAmount} ({m.promoCode})
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <Tag className="w-3 h-3 text-emerald-500" />
+                            <span className="text-xs font-medium text-emerald-600">
+                              Saved ${m.discountAmount} ({m.promoCode})
                             </span>
                           </div>
                         )}
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="text-[10px] font-black text-foreground/50 uppercase space-y-1">
+                    <td className="px-6 py-4">
+                      <div className="text-xs text-muted-foreground space-y-0.5">
                         <div>
-                          DLY:{" "}
-                          <span className="text-foreground">
+                          Daily:{" "}
+                          <span className="text-foreground font-medium">
                             {m.dailyClassLimit}
                           </span>
                         </div>
                         <div>
-                          MTLY:{" "}
-                          <span className="text-foreground">
+                          Monthly:{" "}
+                          <span className="text-foreground font-medium">
                             {m.monthlyClassLimit > 999
-                              ? "∞"
+                              ? "Unlimited"
                               : m.monthlyClassLimit}
                           </span>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-2">
-                        <CalendarCheck className="w-3.5 h-3.5 text-primary/40" />
-                        <span className="text-xs font-bold text-foreground/60 tracking-tight">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CalendarCheck className="w-3.5 h-3.5 text-muted-foreground/60" />
+                        <span>
                           {new Date(m.startDate).toLocaleDateString()}
                         </span>
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-3">
                         <span
-                          className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                          className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
                             m.status === "ACTIVE"
-                              ? "bg-green-500/10 text-green-500 border-green-500/20"
+                              ? "bg-emerald-500/10 text-emerald-600"
                               : m.status === "PENDING_DOWNGRADE"
-                                ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                                : "bg-red-500/10 text-red-500 border-red-500/20"
+                                ? "bg-amber-500/10 text-amber-600"
+                                : "bg-destructive/10 text-destructive"
                           }`}
                         >
                           {m.status}
                         </span>
                         <button
                           onClick={() => handleEdit(m)}
-                          className="w-9 h-9 flex items-center justify-center rounded-xl bg-foreground/5 border border-border text-foreground/40 hover:text-primary hover:border-primary/20 transition-all font-outfit"
+                          className="p-2 rounded-lg bg-muted/50 border border-border text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
                           title="Edit Details"
                         >
                           <Edit3 className="w-4 h-4" />
@@ -371,15 +371,15 @@ export default function AdminMemberships() {
         </div>
 
         {/* Pagination */}
-        <div className="px-8 py-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-foreground/20 font-outfit">
-              Showing {membershipData.length} of {meta.total} Records
+        <div className="px-6 py-4 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 bg-muted/10">
+          <div className="flex items-center gap-4">
+            <div className="text-xs font-medium text-muted-foreground">
+              Showing {membershipData.length} of {meta.total} records
             </div>
 
-            <div className="flex items-center gap-2 ml-2">
-              <span className="text-[8px] font-black uppercase text-foreground/10 tracking-widest">
-                ROWS PER PAGE:
+            <div className="flex items-center gap-2 group">
+              <span className="text-xs text-muted-foreground">
+                Rows:
               </span>
               <select
                 value={limit}
@@ -387,7 +387,7 @@ export default function AdminMemberships() {
                   setLimit(Number(e.target.value));
                   setPage(1);
                 }}
-                className="tactical-select !py-1 !px-2 h-8 !bg-foreground/5 text-foreground border border-border"
+                className="bg-transparent text-xs font-semibold focus:outline-none"
               >
                 <option value="10">10</option>
                 <option value="25">25</option>
@@ -396,28 +396,27 @@ export default function AdminMemberships() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="group h-10 px-4 flex items-center gap-2 rounded-xl bg-foreground/5 border border-border disabled:opacity-20 hover:bg-foreground/10 hover:border-border transition-all font-bold text-[10px] uppercase tracking-widest text-foreground/60 hover:text-foreground"
+              className="h-9 px-3 flex items-center gap-1 rounded-lg border border-border bg-background disabled:opacity-50 text-xs font-medium hover:bg-muted transition-colors"
             >
-              <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+              <ChevronLeft className="w-3.5 h-3.5" />
               Previous
             </button>
 
-            <div className="px-4 py-2 bg-foreground/5 rounded-xl border border-border text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">
-              Page <span className="text-primary">{page}</span> OF{" "}
-              {meta.totalPages}
+            <div className="h-9 px-3 flex items-center justify-center rounded-lg bg-primary/5 border border-primary/10 text-xs font-bold text-primary min-w-[3rem]">
+              {page}
             </div>
 
             <button
               onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
               disabled={page === meta.totalPages}
-              className="group h-10 px-4 flex items-center gap-2 rounded-xl bg-foreground/5 border border-border disabled:opacity-20 hover:bg-foreground/10 hover:border-border transition-all font-bold text-[10px] uppercase tracking-widest text-foreground/60 hover:text-foreground"
+              className="h-9 px-3 flex items-center gap-1 rounded-lg border border-border bg-background disabled:opacity-50 text-xs font-medium hover:bg-muted transition-colors"
             >
               Next
-              <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -439,12 +438,12 @@ export default function AdminMemberships() {
           statusMessage={statusMessage}
         />
 
-        <TacticalConfirmModal
+        <ConfirmModal
           isOpen={isConfirmOpen}
           onClose={() => setIsConfirmOpen(false)}
           onConfirm={() => idToPurge && deleteMutation.mutate(idToPurge)}
-          title="Protocol Purge"
-          message="DANGER: You are about to permanently purge this membership protocol from global records. This action cannot be reversed. Continue?"
+          title="Delete Membership"
+          message="Are you sure you want to delete this membership? This action cannot be undone."
           type="danger"
         />
       </AnimatePresence>

@@ -7,16 +7,14 @@ import {
   Eye,
   User,
   Phone,
-  Clock,
   Tag,
+  Search,
 } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import TacticalSearch from "@/components/admin/TacticalSearch";
-import TacticalSelect from "@/components/ui/TacticalSelect";
-import TacticalModal from "@/components/ui/TacticalModal";
 import { Button } from "@/components/ui/button";
+import SimpleSelect from "@/components/ui/SimpleSelect";
 
 export default function AdminPayments() {
   const { token } = useAuthStore();
@@ -75,7 +73,6 @@ export default function AdminPayments() {
       queryClient.invalidateQueries({ queryKey: ["pending-payments-count"] });
       setSelectedRequest(null);
       setAdminNote("");
-      alert("Verification protocol complete.");
     },
     onError: (err: any) => {
       alert(`Operation Failed: ${err.message}`);
@@ -96,174 +93,137 @@ export default function AdminPayments() {
   ) || [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <AdminPageHeader
-        title="Payment"
+        title="Payments"
         highlight="Verification"
-        subtitle="Review and Approve Membership Tier Acquisitions"
+        subtitle="Review and verify membership payment submissions"
       />
 
-      <div className="bg-card/50 backdrop-blur-2xl border border-border p-6 rounded-[2rem] relative z-50">
-        <div className="flex flex-col md:flex-row gap-6 justify-between items-center relative z-10">
-          <TacticalSearch
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder="SEARCH BY PAYER OR USER..."
-            className="w-full md:w-96"
-          />
+      {/* Filters Bar */}
+      <div className="bg-card border border-border p-5 rounded-xl shadow-sm">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div className="relative w-full md:w-96 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by payer or plan..."
+              className="w-full bg-muted/30 border border-border rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all shadow-inner placeholder:text-muted-foreground/60"
+            />
+          </div>
 
-          <TacticalSelect
+          <SimpleSelect
             value={statusFilter}
             onChange={setStatusFilter}
             options={[
-              { label: "PENDING REVIEW", value: "PENDING" },
-              { label: "APPROVED", value: "APPROVED" },
-              { label: "REJECTED", value: "REJECTED" },
-              { label: "ALL REQUESTS", value: "" },
+              { label: "Pending Review", value: "PENDING" },
+              { label: "Approved", value: "APPROVED" },
+              { label: "Rejected", value: "REJECTED" },
+              { label: "All Requests", value: "" },
             ]}
-            placeholder="FILTER BY STATUS"
             className="w-full md:w-56"
-            accentColor="blue"
           />
         </div>
       </div>
 
-      <div className="bg-card/50 border border-border rounded-3xl overflow-hidden backdrop-blur-sm relative">
+      {/* Requests Table */}
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
-                  User & Payer
-                </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
-                  Plan & Amount
-                </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
-                  Method
-                </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
-                  Date
-                </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">
-                  Actions
-                </th>
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/50 border-b border-border">
+              <tr>
+                <th className="px-6 py-4 font-semibold text-muted-foreground">User & Payer</th>
+                <th className="px-6 py-4 font-semibold text-muted-foreground">Plan & Amount</th>
+                <th className="px-6 py-4 font-semibold text-muted-foreground">Method</th>
+                <th className="px-6 py-4 font-semibold text-muted-foreground">Date</th>
+                <th className="px-6 py-4 font-semibold text-muted-foreground text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
               {isLoading ? (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="px-8 py-20 text-center animate-pulse text-foreground/20 uppercase font-black text-xs tracking-widest"
-                  >
-                    Scanning Protocol Submissions...
+                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                      Loading payment requests...
+                    </div>
                   </td>
                 </tr>
               ) : filteredRequests.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="px-8 py-20 text-center text-foreground/20 uppercase font-black text-xs tracking-widest"
-                  >
-                    No Pending Verifications Found
+                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground italic font-medium">
+                    No payment requests found
                   </td>
                 </tr>
               ) : (
                 filteredRequests.map((r: any) => (
-                  <tr
-                    key={r.id}
-                    className="hover:bg-foreground/[0.01] transition-colors group"
-                  >
-                    <td className="px-8 py-6">
+                  <tr key={r.id} className="hover:bg-muted/30 transition-colors group">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-border flex items-center justify-center font-black text-primary italic text-sm">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-primary shrink-0">
                           {r.user?.name?.[0] || r.payerName?.[0]}
                         </div>
-                        <div>
-                          <div className="font-black text-foreground text-sm uppercase tracking-tight group-hover:text-primary transition-colors">
-                            {r.payerName}
+                        <div className="min-w-0">
+                          <div className="font-semibold text-foreground truncate">{r.payerName}</div>
+                          <div className="text-muted-foreground text-xs flex items-center gap-1 mt-0.5">
+                            <User className="w-3 h-3 text-muted-foreground/60" /> {r.user?.email || "No Email"}
                           </div>
-                          <div className="text-foreground/30 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                            <User className="w-2.5 h-2.5" /> {r.user?.email}
-                          </div>
-                          <div className="text-foreground/30 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                            <Phone className="w-2.5 h-2.5" /> {r.payerPhone}
+                          <div className="text-muted-foreground text-xs flex items-center gap-1 mt-0.5">
+                            <Phone className="w-3 h-3 text-muted-foreground/60" /> {r.payerPhone}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-6 py-4 text-xs font-medium">
                       <div className="flex flex-col gap-1">
-                        <div className="text-xs font-black text-foreground uppercase tracking-tight flex items-center gap-2">
-                          <CreditCard className="w-3 h-3 text-primary" />
+                        <div className="text-foreground font-semibold flex items-center gap-1.5">
+                          <CreditCard className="w-3.5 h-3.5 text-primary" />
                           {r.planName}
                         </div>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-xs font-bold text-foreground/30 line-through">
-                            $
-                            {r.originalPrice ||
-                              r.price +
-                                r.discountAmount +
-                                (r.autoDiscountAmount || 0)}
+                        <div className="flex items-baseline gap-2 mt-0.5">
+                          <span className="text-muted-foreground/60 line-through scale-90 origin-left decoration-muted-foreground/30">
+                            ${r.originalPrice || (r.price + r.discountAmount + (r.autoDiscountAmount || 0))}
                           </span>
-                          <div className="text-sm font-black text-primary italic">
-                            ${r.price}{" "}
-                            <span className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest">
-                              / {r.billingCycle}
-                            </span>
-                          </div>
+                          <span className="text-sm font-bold text-primary">
+                            ${r.price}
+                            <span className="text-[10px] text-muted-foreground/60 font-medium ml-1">/ {r.billingCycle}</span>
+                          </span>
                         </div>
-                        <div className="flex flex-wrap gap-1.5 mt-1">
+                        <div className="flex flex-wrap gap-1 mt-1.5">
                           {r.autoDiscountAmount > 0 && (
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/5 border border-primary/20 w-fit">
-                              <Tag className="w-2.5 h-2.5 text-primary" />
-                              <span className="text-[9px] font-black text-primary uppercase tracking-tighter">
-                                - ${r.autoDiscountAmount} (AUTO)
-                              </span>
-                            </div>
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-primary/5 text-primary border border-primary/10 text-[9px] font-bold">
+                              <Tag className="w-2.5 h-2.5 mr-1" /> -${r.autoDiscountAmount} (AUTO)
+                            </span>
                           )}
                           {r.discountAmount > 0 && (
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 w-fit">
-                              <Tag className="w-2.5 h-2.5 text-emerald-500" />
-                              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter">
-                                - ${r.discountAmount} ({r.promoCode})
-                              </span>
-                            </div>
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/10 text-[9px] font-bold">
+                              <Tag className="w-2.5 h-2.5 mr-1" /> -${r.discountAmount} ({r.promoCode})
+                            </span>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="px-3 py-1.5 rounded-lg bg-foreground/5 border border-border inline-block">
-                        <span className="text-[10px] font-black uppercase text-foreground/60 tracking-widest italic">
-                          {r.paymentMethod}
-                        </span>
+                    <td className="px-6 py-4">
+                      <span className="px-2.5 py-1 rounded-md bg-muted border border-border text-[10px] font-bold text-muted-foreground uppercase tracking-wide">
+                        {r.paymentMethod}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-foreground">{new Date(r.createdAt).toLocaleDateString()}</span>
+                        <span className="text-[10px] text-muted-foreground mt-0.5">{new Date(r.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-3.5 h-3.5 text-primary/40" />
-                          <span className="text-xs font-bold text-foreground/60 tracking-tight">
-                            {new Date(r.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="text-[9px] font-bold text-foreground/20 uppercase tracking-widest">
-                          {new Date(r.createdAt).toLocaleTimeString()}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-8 py-6 text-right">
+                    <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {r.status === "PENDING" ? (
                           <>
                             {r.paymentProof && (
                               <button
-                                onClick={() =>
-                                  setShowScreenshot(r.paymentProof)
-                                }
-                                className="w-9 h-9 flex items-center justify-center rounded-xl bg-foreground/5 border border-border text-foreground/40 hover:text-primary hover:border-primary/20 transition-all"
+                                onClick={() => setShowScreenshot(r.paymentProof)}
+                                className="w-9 h-9 flex items-center justify-center rounded-lg bg-muted border border-border text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors shadow-sm"
                                 title="View Proof"
                               >
                                 <Eye className="w-4 h-4" />
@@ -271,17 +231,17 @@ export default function AdminPayments() {
                             )}
                             <button
                               onClick={() => setSelectedRequest(r)}
-                              className="px-4 h-9 flex items-center gap-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-all tactical-glow shadow-primary/10"
+                              className="px-4 h-9 flex items-center gap-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-all shadow-sm active:scale-95"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
-                              VERIFY
+                              Verify
                             </button>
                           </>
                         ) : (
                           <span
-                            className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                               r.status === "APPROVED"
-                                ? "bg-green-500/10 text-green-500 border-green-500/20"
+                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                                 : "bg-red-500/10 text-red-500 border-red-500/20"
                             }`}
                           >
@@ -299,162 +259,153 @@ export default function AdminPayments() {
       </div>
 
       {/* Review Modal */}
-      <TacticalModal
-        isOpen={!!selectedRequest}
-        onClose={() => {
-          setSelectedRequest(null);
-          setAdminNote("");
-        }}
-        title="Payment"
-        highlight="Verification"
-        subtitle={`Verify Payment from ${selectedRequest?.payerName || "User"}`}
-      >
+      <AnimatePresence>
         {selectedRequest && (
-          <div className="space-y-6">
-            <div className="p-4 bg-foreground/5 border border-border rounded-2xl space-y-4">
-              <div className="grid grid-cols-2 gap-6">
+          <div className="fixed inset-0 z-[2000] flex items-start justify-center overflow-y-auto p-4 md:py-20">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedRequest(null)}
+              className="fixed inset-0 bg-black/50"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-lg bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl z-10"
+            >
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <label className="text-[9px] font-black text-foreground/30 uppercase tracking-[0.2em] block mb-1">
-                    Plan Tier
-                  </label>
-                  <div className="text-xs font-black text-foreground uppercase italic">
-                    {selectedRequest.planName}
-                  </div>
+                  <h2 className="text-xl font-bold text-foreground">Verify <span className="text-primary">Payment</span></h2>
+                  <p className="text-sm text-muted-foreground font-medium mt-1">Reviewing submission from {selectedRequest.payerName}</p>
                 </div>
-                <div>
-                  <label className="text-[9px] font-black text-foreground/30 uppercase tracking-[0.2em] block mb-1">
-                    Billing Cycle
-                  </label>
-                  <div className="text-xs font-black text-foreground/60 uppercase">
-                    {selectedRequest.billingCycle}
-                  </div>
-                </div>
+                <button
+                  onClick={() => setSelectedRequest(null)}
+                  className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-all"
+                >
+                  <XCircle className="w-5 h-5" />
+                </button>
               </div>
 
-              <div className="grid grid-cols-4 gap-4 pt-4 border-t border-white/5">
-                <div>
-                  <label className="text-[9px] font-black text-foreground/30 uppercase tracking-[0.2em] block mb-1">
-                    Subtotal
-                  </label>
-                  <div className="text-xs font-bold text-foreground/40 line-through">
-                    $
-                    {selectedRequest.originalPrice ||
-                      selectedRequest.price +
-                        selectedRequest.discountAmount +
-                        (selectedRequest.autoDiscountAmount || 0)}
-                  </div>
-                </div>
-                {selectedRequest.autoDiscountAmount > 0 && (
-                  <div>
-                    <label className="text-[9px] font-black text-primary/50 uppercase tracking-[0.2em] block mb-1">
-                      Auto Disc.
-                    </label>
-                    <div className="text-xs font-black text-primary italic">
-                      -${selectedRequest.autoDiscountAmount}
+              <div className="space-y-6">
+                <div className="p-4 bg-muted/40 rounded-xl border border-border space-y-4 shadow-inner">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Plan Tier</label>
+                      <div className="text-sm font-bold text-foreground">{selectedRequest.planName}</div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Billing Cycle</label>
+                      <div className="text-sm font-semibold text-muted-foreground">{selectedRequest.billingCycle}</div>
                     </div>
                   </div>
-                )}
-                {selectedRequest.discountAmount > 0 && (
-                  <div>
-                    <label className="text-[9px] font-black text-emerald-500/50 uppercase tracking-[0.2em] block mb-1">
-                      Promo ({selectedRequest.promoCode})
-                    </label>
-                    <div className="text-xs font-black text-emerald-500 italic">
-                      -${selectedRequest.discountAmount}
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-border/50">
+                    <div>
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Subtotal</label>
+                      <div className="text-xs font-medium text-muted-foreground/60 line-through">${selectedRequest.originalPrice || (selectedRequest.price + selectedRequest.discountAmount + (selectedRequest.autoDiscountAmount || 0))}</div>
+                    </div>
+                    {selectedRequest.autoDiscountAmount > 0 && (
+                      <div>
+                        <label className="text-[10px] font-bold text-primary/60 uppercase tracking-wider block mb-1">Auto Disc.</label>
+                        <div className="text-xs font-bold text-primary">-${selectedRequest.autoDiscountAmount}</div>
+                      </div>
+                    )}
+                    {selectedRequest.discountAmount > 0 && (
+                      <div>
+                        <label className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-wider block mb-1">Promo</label>
+                        <div className="text-xs font-bold text-emerald-600">-${selectedRequest.discountAmount}</div>
+                      </div>
+                    )}
+                    <div>
+                      <label className="text-[10px] font-bold text-primary/60 uppercase tracking-wider block mb-1">Final Total</label>
+                      <div className="text-base font-black text-primary">${selectedRequest.price}</div>
                     </div>
                   </div>
-                )}
-                <div>
-                  <label className="text-[9px] font-black text-primary/50 uppercase tracking-[0.2em] block mb-1">
-                    Final Total
-                  </label>
-                  <div className="text-sm font-black text-primary italic">
-                    ${selectedRequest.price}
+
+                  <div className="pt-4 border-t border-border/50">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Admin Remarks / Notes</label>
+                    <textarea
+                      value={adminNote}
+                      onChange={(e) => setAdminNote(e.target.value)}
+                      placeholder="Add notes or rejection reason..."
+                      className={`w-full h-24 bg-background border rounded-lg p-3 text-sm font-medium text-foreground outline-none transition-all placeholder:text-muted-foreground/30 ${
+                        !adminNote.trim() ? "border-red-500/20 focus:border-red-500/30" : "border-border focus:border-primary/50"
+                      }`}
+                    />
+                    {!adminNote.trim() && (
+                      <p className="text-[10px] font-semibold text-red-500/80 mt-1.5 flex items-center gap-1">
+                        Required for rejection / ပယ်ဖျက်ရန် အကြောင်းပြချက် လိုအပ်ပါသည်။
+                      </p>
+                    )}
                   </div>
                 </div>
-              </div>
 
-              <div className="pt-4 border-t border-border mt-4">
-                <label className="text-[9px] font-black text-foreground/30 uppercase tracking-[0.2em] block mb-2">
-                  Admin Remarks / Rejection Reason
-                </label>
-                <textarea
-                  value={adminNote}
-                  onChange={(e) => setAdminNote(e.target.value)}
-                  placeholder="ENTER OVERRIDE NOTES OR REJECTION REASON..."
-                  className={`w-full h-32 bg-background border rounded-xl p-4 text-xs font-bold text-foreground outline-none transition-all placeholder:text-foreground/10 uppercase ${
-                    !adminNote.trim() ? "border-rose-500/20 focus:border-rose-500/50" : "border-border focus:border-primary/50"
-                  }`}
-                />
-                {!adminNote.trim() && (
-                  <p className="text-[9px] font-bold text-rose-500/60 uppercase tracking-widest mt-1">
-                    Required for rejection / ပယ်ဖျက်ရန် အကြောင်းပြချက် လိုအပ်ပါသည်။
-                  </p>
-                )}
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    onClick={() => handleReview(selectedRequest.id, "REJECTED")}
+                    disabled={reviewMutation.isPending || !adminNote.trim()}
+                    variant="outline"
+                    className="h-11 border-red-500/20 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-500/50 font-bold transition-all disabled:opacity-40"
+                  >
+                    {reviewMutation.isPending && reviewMutation.variables?.status === "REJECTED" ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-red-500" />
+                    ) : (
+                      <>
+                        <XCircle className="w-4 h-4 mr-2" /> Reject
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => handleReview(selectedRequest.id, "APPROVED")}
+                    disabled={reviewMutation.isPending}
+                    className="h-11 bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-sm active:scale-95 transition-all"
+                  >
+                    {reviewMutation.isPending && reviewMutation.variables?.status === "APPROVED" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 mr-2" /> Approve
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                onClick={() => handleReview(selectedRequest.id, "REJECTED")}
-                disabled={reviewMutation.isPending || !adminNote.trim()}
-                className="h-12 bg-zinc-800 text-rose-500 border border-rose-500/30 font-black uppercase italic tracking-widest text-[10px] rounded-xl hover:bg-rose-500/10 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                {reviewMutation.isPending &&
-                reviewMutation.variables?.status === "REJECTED" ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                    <XCircle className="w-4 h-4 mr-2" /> REJECT
-                  </>
-                )}
-              </Button>
-              <Button
-                onClick={() => handleReview(selectedRequest.id, "APPROVED")}
-                disabled={reviewMutation.isPending}
-                className="h-12 bg-primary text-black font-black uppercase italic tracking-widest text-[10px] rounded-xl hover:scale-[1.02] transition-all tactical-glow shadow-xl shadow-primary/20"
-              >
-                {reviewMutation.isPending &&
-                reviewMutation.variables?.status === "APPROVED" ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-4 h-4 mr-2" /> APPROVE
-                  </>
-                )}
-              </Button>
-            </div>
+            </motion.div>
           </div>
         )}
-      </TacticalModal>
+      </AnimatePresence>
 
-      {/* Screenshot Modal */}
+      {/* Screenshot Viewer */}
       <AnimatePresence>
         {showScreenshot && (
-          <div className="fixed inset-0 z-[3000] flex items-center justify-center p-8">
+          <div className="fixed inset-0 z-[3000] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowScreenshot(null)}
-              className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center gap-6"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative max-w-4xl w-full flex flex-col items-center gap-4"
             >
-              <img
-                src={showScreenshot}
-                alt="Payment Proof"
-                className="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-white/10"
-              />
+              <div className="bg-card p-2 rounded-xl shadow-2xl border border-white/10 w-full overflow-hidden">
+                <img
+                  src={showScreenshot}
+                  alt="Payment Proof"
+                  className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                />
+              </div>
               <button
                 onClick={() => setShowScreenshot(null)}
-                className="px-8 py-3 bg-white text-black font-black uppercase italic tracking-widest text-[10px] rounded-full hover:scale-110 active:scale-95 transition-all"
+                className="px-6 py-2 bg-white text-black font-bold text-sm rounded-full hover:bg-gray-100 transition-colors shadow-lg active:scale-95"
               >
-                CLOSE VIEWER
+                Close Viewer
               </button>
             </motion.div>
           </div>

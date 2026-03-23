@@ -1,5 +1,5 @@
-import { CreditCard, Trash2, Save, Loader2 } from "lucide-react";
-import TacticalModal from "@/components/ui/TacticalModal";
+import { Trash2, Save, Loader2 } from "lucide-react";
+import SimpleModal from "@/components/ui/SimpleModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,82 +30,63 @@ export default function MembershipEditModal({
   if (!membership) return null;
 
   return (
-    <TacticalModal
+    <SimpleModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Membership"
-      highlight="Override"
+      title="Edit"
+      highlight="Membership"
       subtitle={`ID: #${membership.id} | User: ${membership.user?.name}`}
-      icon={<CreditCard className="w-24 h-24" />}
       maxWidth="max-w-xl"
     >
-      <form onSubmit={onSave} className="space-y-3 relative z-10">
+      <form onSubmit={onSave} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
-              Tier Assignment
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Membership Tier
             </Label>
             <select
               value={formData.planTier}
               onChange={(e) =>
                 setFormData({ ...formData, planTier: e.target.value })
               }
-              className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-xs font-bold text-foreground focus:outline-none focus:border-primary/50 transition-all appearance-none"
+              className="w-full h-10 bg-muted/50 border border-border rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all appearance-none"
             >
-              <option value="Basic" className="bg-card">
-                Basic Tier
-              </option>
-              <option value="Standard" className="bg-card">
-                Standard Tier
-              </option>
-              <option value="Premium" className="bg-card">
-                Premium Tier
-              </option>
+              <option value="Basic">Basic Plan</option>
+              <option value="Standard">Standard Plan</option>
+              <option value="Premium">Premium Plan</option>
             </select>
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
-              Status Protocol
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Status
             </Label>
             <select
               value={formData.status}
               onChange={(e) =>
                 setFormData({ ...formData, status: e.target.value })
               }
-              className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-xs font-bold text-foreground focus:outline-none focus:border-primary/50 transition-all appearance-none"
+              className="w-full h-10 bg-muted/50 border border-border rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all appearance-none"
             >
-              <option
-                value="ACTIVE"
-                className="bg-card text-green-500 font-black"
-              >
-                ACTIVE
+              <option value="ACTIVE" className="text-emerald-600">
+                Active
               </option>
-              <option
-                value="EXPIRED"
-                className="bg-card text-red-500 font-black"
-              >
-                EXPIRED
+              <option value="EXPIRED" className="text-destructive">
+                Expired
               </option>
-              <option
-                value="CANCELLED"
-                className="bg-card text-foreground/50 font-black"
-              >
-                CANCELLED
+              <option value="CANCELLED" className="text-muted-foreground">
+                Cancelled
               </option>
-              <option
-                value="PENDING_DOWNGRADE"
-                className="bg-card text-amber-500 font-black"
-              >
-                PENDING DOWNGRADE
+              <option value="PENDING_DOWNGRADE" className="text-amber-600">
+                Pending Downgrade
               </option>
             </select>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
-              Protocol Pricing ($)
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Price ($)
             </Label>
             <Input
               type="number"
@@ -113,11 +94,11 @@ export default function MembershipEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, price: e.target.value })
               }
-              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
+              className="bg-muted/50 border-border rounded-lg h-10 text-sm font-medium focus:ring-1 focus:ring-primary/50"
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Billing Cycle
             </Label>
             <select
@@ -128,22 +109,18 @@ export default function MembershipEditModal({
                   billingCycle: e.target.value,
                 })
               }
-              className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-xs font-bold text-foreground focus:outline-none focus:border-primary/50 transition-all appearance-none"
+              className="w-full h-10 bg-muted/50 border border-border rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all appearance-none"
             >
-              <option value="Monthly" className="bg-card">
-                Monthly Cycle
-              </option>
-              <option value="Yearly" className="bg-card">
-                Yearly Cycle
-              </option>
+              <option value="Monthly">Monthly</option>
+              <option value="Yearly">Yearly</option>
             </select>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
-              Daily Capacity Override
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Daily Class Limit
             </Label>
             <Input
               type="number"
@@ -154,12 +131,12 @@ export default function MembershipEditModal({
                   dailyClassLimit: e.target.value,
                 })
               }
-              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
+              className="bg-muted/50 border-border rounded-lg h-10 text-sm font-medium focus:ring-1 focus:ring-primary/50"
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
-              Monthly Capacity Override
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Monthly Class Limit
             </Label>
             <Input
               type="number"
@@ -170,15 +147,15 @@ export default function MembershipEditModal({
                   monthlyClassLimit: e.target.value,
                 })
               }
-              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
+              className="bg-muted/50 border-border rounded-lg h-10 text-sm font-medium focus:ring-1 focus:ring-primary/50"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
-              Activation Date
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Start Date
             </Label>
             <Input
               type="date"
@@ -186,12 +163,12 @@ export default function MembershipEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, startDate: e.target.value })
               }
-              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
+              className="bg-muted/50 border-border rounded-lg h-10 text-sm font-medium focus:ring-1 focus:ring-primary/50"
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-foreground/60">
-              Deactivation Date
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              End Date
             </Label>
             <Input
               type="date"
@@ -199,49 +176,49 @@ export default function MembershipEditModal({
               onChange={(e) =>
                 setFormData({ ...formData, endDate: e.target.value })
               }
-              className="bg-white/[0.03] border-white/10 rounded-xl h-11 text-xs font-black transition-all focus:border-primary/50 text-foreground"
+              className="bg-muted/50 border-border rounded-lg h-10 text-sm font-medium focus:ring-1 focus:ring-primary/50"
             />
           </div>
         </div>
 
         {statusMessage && (
           <div
-            className={`text-xs font-bold rounded-xl px-4 py-3 ${
+            className={`text-xs font-semibold rounded-lg px-4 py-3 ${
               statusMessage.type === "error"
-                ? "bg-red-500/10 border border-red-500/20 text-red-400"
-                : "bg-green-500/10 border border-green-500/20 text-green-400"
+                ? "bg-destructive/10 border border-destructive/20 text-destructive"
+                : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600"
             }`}
           >
             {statusMessage.text}
           </div>
         )}
 
-        <div className="flex gap-3 pt-2">
+        <div className="flex justify-end gap-3 pt-6 border-t border-border mt-6">
           <Button
             type="button"
             variant="outline"
             onClick={() => onPurge(membership.id)}
-            className="flex-1 h-10 rounded-xl border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 font-black uppercase tracking-widest text-[10px] text-foreground"
+            className="px-6 h-10 rounded-lg border border-border text-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 font-bold text-xs transition-all"
           >
             <Trash2 className="w-4 h-4 mr-2" />
-            Purge
+            Delete
           </Button>
           <Button
             type="submit"
             disabled={isLoading}
-            className="flex-[2] h-10 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all"
+            className="px-6 h-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-bold text-xs shadow-sm disabled:opacity-50 flex items-center gap-2"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <Save className="w-4 h-4 mr-2" />
-                Synchronize
+                <Save className="w-4 h-4" />
+                Save Changes
               </>
             )}
           </Button>
         </div>
       </form>
-    </TacticalModal>
+    </SimpleModal>
   );
 }

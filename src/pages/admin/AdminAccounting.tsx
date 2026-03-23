@@ -2,22 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { useState } from "react";
 import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
   Plus,
   Trash2,
   Calendar,
   Tag,
+  Search,
+  ArrowUpRight,
+  ArrowDownRight,
+  Wallet,
 } from "lucide-react";
-// Chart imports removed
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import TacticalSelect from "@/components/ui/TacticalSelect";
-import TacticalSearch from "@/components/admin/TacticalSearch";
-import TacticalConfirmModal from "@/components/admin/TacticalConfirmModal";
-import TacticalModal from "@/components/ui/TacticalModal";
-import TacticalCombobox from "@/components/ui/TacticalCombobox";
-import { motion } from "framer-motion";
+import SimpleModal from "@/components/ui/SimpleModal";
+import SimpleCombobox from "@/components/ui/SimpleCombobox";
+import SimpleSelect from "@/components/ui/SimpleSelect";
+import ConfirmModal from "@/components/admin/ConfirmModal";
 import type {
   AccountingSummary,
   Transaction,
@@ -32,6 +29,7 @@ export default function AdminAccounting() {
   const [typeFilter, setTypeFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [deletingTransactionId, setDeletingTransactionId] = useState<
@@ -102,7 +100,7 @@ export default function AdminAccounting() {
     },
     onError: (error: any) => {
       console.error("CREATE MUTATION ERROR:", error);
-      alert("Failed to confirm protocol. Ensure valid inputs.");
+      alert("Failed to create transaction. Ensure valid inputs.");
     },
   });
 
@@ -130,7 +128,6 @@ export default function AdminAccounting() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      console.log("DELETING TRANSACTION ID:", id);
       const res = await fetch(`http://localhost:3000/accounting/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -142,24 +139,18 @@ export default function AdminAccounting() {
           const errData = await res.text();
           errorMsg = errData || errorMsg;
         } catch (e) {}
-        console.error("DELETE ERROR:", errorMsg);
         throw new Error(errorMsg);
-      }
-
-      const contentType = res.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        return res.json();
       }
       return { success: true };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-transactions"] })
+      queryClient.invalidateQueries({ queryKey: ["admin-transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounting-summary"] });
+      setDeletingTransactionId(null);
+      setIsConfirmOpen(false);
     },
     onError: (err: any) => {
-      alert(
-        "PURGE FAILURE: PROTOCOL REJECTED\n" + (err.message || "Unknown error"),
-      );
+      alert("Delete failed: " + (err.message || "Unknown error"));
     },
   });
 
@@ -167,7 +158,7 @@ export default function AdminAccounting() {
     setFormData({
       amount: 0,
       type: "INCOME",
-      category: categoriesData?.[0] || "",
+      category: categoriesData?.[0] || "" as TransactionCategory,
       description: "",
       date: new Date().toISOString().split("T")[0],
     });
@@ -192,313 +183,197 @@ export default function AdminAccounting() {
       return matchesSearch && matchesType && matchesCategory;
     }) || [];
 
-  const categories: TransactionCategory[] = categoriesData || [];
+  const categories = categoriesData || [];
 
   return (
-    <div className="space-y-4 pb-0">
-      <div className="flex justify-between items-center">
-        <AdminPageHeader
-          title="Financial"
-          highlight="Intel"
-          subtitle="Treasury & Command Expenditure Operations"
-        />
+    <div className="max-w-[1400px] mx-auto space-y-8 pb-10">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Accounting</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Manage and track your gym's financial health</p>
+        </div>
         <button
           onClick={() => {
             setEditingTransaction(null);
             resetForm();
             setIsModalOpen(true);
           }}
-          className="h-12 px-8 bg-primary text-black font-black uppercase italic tracking-widest text-[10px] rounded-xl hover:opacity-90 transition-all flex items-center gap-3 tactical-glow"
+          className="bg-primary text-primary-foreground h-11 px-6 rounded-full font-bold flex items-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
         >
-          <Plus className="w-4 h-4" />
-          Create Transaction
+          <Plus className="w-5 h-5 font-bold" />
+          New Transaction
         </button>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           {
-            label: "Total Revenue",
-            value: `$ ${summary?.totalIncome.toLocaleString() || "0"}`,
-            icon: TrendingUp,
-            color: "text-emerald-500",
-            bg: "bg-emerald-500/5",
-            border: "border-emerald-500/20",
+            label: "Total Income",
+            value: `$${summary?.totalIncome.toLocaleString() || "0"}`,
+            icon: ArrowUpRight,
+            color: "text-emerald-600 dark:text-emerald-400",
+            bg: "bg-emerald-100 dark:bg-emerald-950/30",
+            trend: "Revenue stream",
           },
           {
-            label: "Operational Costs",
-            value: `$ ${summary?.totalExpenses.toLocaleString() || "0"}`,
-            icon: TrendingDown,
-            color: "text-rose-500",
-            bg: "bg-rose-500/5",
-            border: "border-rose-500/20",
+            label: "Total Expenses",
+            value: `$${summary?.totalExpenses.toLocaleString() || "0"}`,
+            icon: ArrowDownRight,
+            color: "text-rose-600 dark:text-rose-400",
+            bg: "bg-rose-100 dark:bg-rose-950/30",
+            trend: "Operational costs",
           },
           {
             label: "Net Balance",
-            value: `$ ${summary?.balance.toLocaleString() || "0"}`,
-            icon: DollarSign,
-            color: "text-primary",
-            bg: "bg-primary/5",
-            border: "border-primary/20",
+            value: `$${summary?.balance.toLocaleString() || "0"}`,
+            icon: Wallet,
+            color: "text-blue-600 dark:text-blue-400",
+            bg: "bg-blue-100 dark:bg-blue-950/30",
+            trend: "Current treasury",
           },
-        ].map((stat, i) => (
-          <motion.div
+        ].map((stat) => (
+          <div
             key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className={`p-3 rounded-[2rem] border bg-card/40 backdrop-blur-2xl ${stat.border} relative overflow-hidden group`}
+            className="bg-card border border-border p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
           >
-            <div className="flex justify-between items-start relative z-10">
-              <div
-                className={`p-2 rounded-2xl ${stat.bg} ${stat.color} border ${stat.border}`}
-              >
-                <stat.icon className="w-5 h-5" />
+            <div className="flex justify-between items-start">
+              <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
+                <stat.icon className="w-6 h-6" />
               </div>
               <div className="text-right">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-1">
-                  {stat.label}
-                </p>
-                <h3 className="text-xl font-black tracking-tighter text-foreground">
-                  {stat.value}
-                </h3>
+                <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
+                <p className="text-2xl font-bold mt-1 text-foreground">{stat.value}</p>
               </div>
             </div>
-            <div
-              className={`absolute bottom-0 left-0 right-0 h-1 ${stat.bg} opacity-20`}
-            />
-          </motion.div>
+            <div className="mt-4 pt-4 border-t border-border/50 flex items-center gap-2">
+              <div className={`w-1.5 h-1.5 rounded-full ${stat.color.split(' ')[0]} bg-current`} />
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{stat.trend}</span>
+            </div>
+          </div>
         ))}
       </div>
 
-      {/* Chart Section */}
-      {/* <div className="bg-card/50 backdrop-blur-2xl border border-border p-8 rounded-[2rem]">
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <h2 className="text-xl font-black uppercase italic tracking-tighter text-foreground flex items-center gap-3">
-              <BarChart3 className="w-5 h-5 text-primary" />
-              Deployment Velocity
-            </h2>
-            <p className="text-[8px] font-black text-foreground/30 uppercase tracking-[0.4em]">
-              Monthly Income vs Expenditure Telemetry
-            </p>
-          </div>
-        </div>
-
-        <div className="h-80 w-full">
-          {summary?.monthly && (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={summary.monthly}>
-                <defs>
-                  <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient
-                    id="colorExpenses"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.05)"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="month"
-                  stroke="rgba(255,255,255,0.2)"
-                  fontSize={10}
-                  tickFormatter={(val) => {
-                    const [y, m] = val.split("-");
-                    return new Date(
-                      parseInt(y),
-                      parseInt(m) - 1,
-                    ).toLocaleDateString("default", { month: "short" });
-                  }}
-                />
-                <YAxis stroke="rgba(255,255,255,0.2)" fontSize={10} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#111",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "1rem",
-                  }}
-                  itemStyle={{
-                    fontSize: "10px",
-                    fontWeight: "bold",
-                    textTransform: "uppercase",
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="income"
-                  stroke="#10b981"
-                  fillOpacity={1}
-                  fill="url(#colorIncome)"
-                  name="REVENUE"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="expenses"
-                  stroke="#f43f5e"
-                  fillOpacity={1}
-                  fill="url(#colorExpenses)"
-                  name="EXPENDITURE"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-      </div> */}
-
-      {/* Transactions Container */}
-      <div className="bg-card/50 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] shadow-2xl relative z-[50]">
-        {/* Unified Filter Header */}
-        <div className="p-8 border-b border-white/5 bg-white/[0.01]">
-          <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
-            <div className="relative w-full md:w-96 group">
-              <TacticalSearch
+      {/* Filter & Table Container */}
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+        {/* Filters */}
+        <div className="p-6 border-b border-border bg-muted/20">
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search description or category..."
                 value={searchTerm}
-                onChange={setSearchTerm}
-                placeholder="SEARCH TRANSACTIONS..."
-                className="w-full  !rounded-full"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
               />
             </div>
-            <div className="flex gap-4 w-full md:w-auto">
-              <TacticalSelect
+            <div className="flex gap-4 w-full lg:w-auto">
+              <SimpleSelect
                 value={typeFilter}
                 onChange={setTypeFilter}
                 options={[
-                  { label: "ALL TYPES", value: "" },
-                  { label: "INCOME", value: "INCOME" },
-                  { label: "EXPENSE", value: "EXPENSE" },
+                  { value: "", label: "All Types" },
+                  { value: "INCOME", label: "Income" },
+                  { value: "EXPENSE", label: "Expense" },
                 ]}
-                placeholder="ALL TYPES"
-                className="w-full bg-green-300 md:w-48 !rounded-full"
+                placeholder="All Types"
               />
-              <TacticalSelect
+              <SimpleSelect
                 value={categoryFilter}
                 onChange={setCategoryFilter}
                 options={[
-                  { label: "ALL CATEGORIES", value: "" },
+                  { value: "", label: "All Categories" },
                   ...categories.map((c) => ({
-                    label: c.replace("_", " "),
                     value: c,
+                    label: c.replace("_", " "),
                   })),
                 ]}
-                placeholder="ALL CATEGORIES"
-                className="w-full bg-blue-300 md:w-56 !rounded-full"
+                placeholder="All Categories"
               />
             </div>
           </div>
         </div>
 
-        {/* Tactical Table */}
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-white/5 bg-white/[0.02]">
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
-                  Date
-                </th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
-                  Category
-                </th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-center">
-                  Type
-                </th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">
-                  Amount
-                </th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">
-                  Actions
-                </th>
+              <tr className="bg-muted/30 border-b border-border">
+                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Date</th>
+                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Details</th>
+                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-center">Type</th>
+                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Amount</th>
+                <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {isTransactionsLoading ? (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="px-10 py-24 text-center animate-pulse text-foreground/10 uppercase tracking-[0.5em] text-[10px] font-black"
-                  >
-                    Establishing Uplink...
+                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                      <span className="text-sm">Loading transactions...</span>
+                    </div>
                   </td>
                 </tr>
               ) : filteredTransactions.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="px-10 py-24 text-center text-foreground/10 uppercase tracking-[0.5em] text-[10px] font-black italic"
-                  >
-                    No Telemetry Detected
+                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground italic">
+                    No transactions found
                   </td>
                 </tr>
               ) : (
                 filteredTransactions.map((tx) => (
-                  <tr
-                    key={tx.id}
-                    className="hover:bg-white/[0.01] transition-all duration-300"
-                  >
-                    <td className="px-10 py-8">
-                      <div className="text-[11px] font-bold text-foreground/40 uppercase tracking-widest tabular-nums font-mono">
-                        {new Date(tx.date).toLocaleDateString()}
-                      </div>
+                  <tr key={tx.id} className="hover:bg-muted/10 transition-colors group">
+                    <td className="px-6 py-4 text-sm font-medium text-muted-foreground">
+                      {new Date(tx.date).toLocaleDateString()}
                     </td>
-                    <td className="px-10 py-8">
+                    <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <div className="text-[13px] font-black uppercase tracking-tighter text-foreground/50">
+                        <span className="text-sm font-bold text-foreground capitalize">
                           {tx.category.replace("_", " ")}
-                        </div>
-                        <div className="text-[9px] font-bold text-foreground/20 uppercase tracking-widest mt-1">
-                          {tx.description || "no details"}
-                        </div>
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {tx.description || "No description"}
+                        </span>
                         {tx.description?.includes("Promo:") && (
-                          <div className="flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-md bg-primary/5 border border-primary/10 w-fit">
-                            <Tag className="w-2 h-2 text-primary" />
-                            <span className="text-[8px] font-black text-primary uppercase tracking-tighter">
-                               {tx.description.split("Promo:")[1].trim()}
+                          <div className="flex items-center gap-1 mt-1 px-2 py-0.5 rounded bg-primary/10 w-fit">
+                            <Tag className="w-3 h-3 text-primary" />
+                            <span className="text-[10px] font-semibold text-primary">
+                              {tx.description.split("Promo:")[1].trim()}
                             </span>
                           </div>
                         )}
                       </div>
                     </td>
-                    <td className="px-10 py-8 text-center">
+                    <td className="px-6 py-4 text-center">
                       <span
-                        className={`inline-block px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border ${
+                        className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
                           tx.type === "INCOME"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]"
-                            : "bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.05)]"
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400"
+                            : "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400"
                         }`}
                       >
                         {tx.type}
                       </span>
                     </td>
-                    <td className="px-10 py-8 text-right">
-                      <div
-                        className={`text-xl font-black tabular-nums ${
-                          tx.type === "INCOME"
-                            ? "text-emerald-400"
-                            : "text-rose-400"
+                    <td className="px-6 py-4 text-right">
+                      <span
+                        className={`text-sm font-bold ${
+                          tx.type === "INCOME" ? "text-emerald-600" : "text-rose-600"
                         }`}
                       >
-                        {tx.type === "INCOME" ? "+$" : "-$"}
-                        {tx.amount.toLocaleString(undefined, {
+                        {tx.type === "INCOME" ? "+" : "-"}${tx.amount.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                         })}
-                      </div>
+                      </span>
                     </td>
-                    <td className="px-10 py-8 text-right">
-                      <div className="flex justify-end gap-3 transition-all duration-300">
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-2 transition-opacity">
                         <button
-                          type="button"
                           onClick={() => {
                             setEditingTransaction(tx);
                             setFormData({
@@ -510,15 +385,18 @@ export default function AdminAccounting() {
                             });
                             setIsModalOpen(true);
                           }}
-                          className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-foreground/40 hover:text-primary hover:border-primary/50 transition-all shadow-xl"
+                          className="p-2 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-all duration-200"
+                          title="Edit Transaction"
                         >
                           <Calendar className="w-4 h-4" />
                         </button>
                         <button
-                          type="button"
-                          onClick={() => setDeletingTransactionId(tx.id)}
-                          className="w-10 h-10 rounded-full bg-rose-500/10 border border-rose-500/40 flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-xl"
-                          title="Purge Record"
+                          onClick={() => {
+                            setDeletingTransactionId(tx.id);
+                            setIsConfirmOpen(true);
+                          }}
+                          className="p-2 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-950/30 text-rose-600 transition-all duration-200"
+                          title="Delete Transaction"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -532,146 +410,116 @@ export default function AdminAccounting() {
         </div>
       </div>
 
-      <TacticalConfirmModal
-        isOpen={deletingTransactionId !== null}
-        onClose={() => setDeletingTransactionId(null)}
-        onConfirm={() => {
-          if (deletingTransactionId !== null) {
-            deleteMutation.mutate(deletingTransactionId);
-          }
-        }}
-        title="Delete Transaction"
-        message={`Confirm permanent removal of transaction record. This action cannot be reversed.`}
-        type="danger"
-        confirmText="Confirm"
-        cancelText="Cancel"
-      />
-
-      <TacticalModal
+      {/* Entry Modal */}
+      <SimpleModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingTransaction ? "Edit" : "Add"}
-        highlight="Transaction"
-        subtitle="Log Financial Movement Data"
-        maxWidth="max-w-xl"
+        title={editingTransaction ? "Edit Transaction" : "New Transaction"}
+        subtitle="Log income or expense details for accounting"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
               onClick={() => setFormData({ ...formData, type: "INCOME" })}
-              className={`flex-1 py-4 rounded-2xl border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+              className={`py-2 rounded-lg border text-xs font-bold uppercase transition-all ${
                 formData.type === "INCOME"
-                  ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.2)]"
-                  : "bg-white/[0.03] border-white/5 text-foreground/40 hover:border-white/20"
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
+                  : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/50"
               }`}
             >
-              INCOME
+              Income
             </button>
             <button
               type="button"
               onClick={() => setFormData({ ...formData, type: "EXPENSE" })}
-              className={`flex-1 py-4 rounded-2xl border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+              className={`py-2 rounded-lg border text-xs font-bold uppercase transition-all ${
                 formData.type === "EXPENSE"
-                  ? "bg-rose-500/10 border-rose-500 text-rose-400 shadow-[0_0_30px_rgba(244,63,94,0.2)]"
-                  : "bg-white/[0.03] border-white/5 text-foreground/40 hover:border-white/20"
+                  ? "bg-rose-500/10 border-rose-500/20 text-rose-600"
+                  : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/50"
               }`}
             >
-              EXPENSE
+              Expense
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-foreground/60 uppercase tracking-[0.2em] ml-1">
-                Magnitude (₮)
-              </label>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-foreground">Transaction Amount ($)</label>
               <input
                 type="number"
+                step="0.01"
                 value={formData.amount}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    amount: parseFloat(e.target.value),
-                  })
-                }
-                className="w-full h-12 bg-white/[0.03] border border-white/10 rounded-2xl px-5 text-foreground font-black italic text-base outline-none focus:border-primary/50 transition-all"
-                placeholder="0.00"
+                onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
+                className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:ring-1 focus:ring-primary/50 outline-none transition-all placeholder:text-muted-foreground/40 font-medium"
                 required
+                placeholder="0.00"
               />
             </div>
-
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-foreground/60 uppercase tracking-[0.2em] ml-1">
-                Protocol Date
-              </label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-foreground">Transaction Date</label>
               <input
                 type="date"
                 value={formData.date}
-                onChange={(e) =>
-                  setFormData({ ...formData, date: e.target.value })
-                }
-                className="w-full h-12 bg-white/[0.03] border border-white/10 rounded-2xl px-5 text-foreground font-black uppercase text-[10px] outline-none focus:border-primary/50 transition-all"
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:ring-1 focus:ring-primary/50 outline-none transition-all font-medium"
                 required
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[9px] font-black text-foreground/60 uppercase tracking-[0.2em] ml-1">
-              Sector Category
-            </label>
-            <TacticalCombobox
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-foreground">Category</label>
+            <SimpleCombobox
               value={formData.category}
-              onChange={(val) =>
-                setFormData({
-                  ...formData,
-                  category: val as TransactionCategory,
-                })
-              }
+              onChange={(val) => setFormData({ ...formData, category: val as TransactionCategory })}
               suggestions={categories}
-              placeholder="TYPE OR SELECT CATEGORY"
+              placeholder="Select or type a category"
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[9px] font-black text-foreground/60 uppercase tracking-[0.2em] ml-1">
-              Mission Intel
-            </label>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-foreground">Description</label>
             <textarea
               value={formData.description}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  description: e.target.value,
-                })
-              }
-              className="w-full h-24 bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-foreground font-bold text-xs outline-none focus:border-primary/50 transition-all resize-none"
-              placeholder="ENTER PROTOCOL DETAILS..."
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full h-24 bg-muted/30 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:ring-1 focus:ring-primary/50 outline-none transition-all resize-none placeholder:text-muted-foreground/40 font-medium"
+              placeholder="Enter specific details about this transaction..."
             />
           </div>
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex justify-end gap-3 pt-6 border-t border-border mt-6">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="flex-1 h-12 rounded-2xl border border-white/10 text-foreground/50 font-black uppercase text-[10px] tracking-widest hover:bg-white/5 transition-all"
+              className="px-6 h-10 rounded-lg border border-border text-foreground hover:bg-muted font-bold text-xs transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createMutation.isPending || updateMutation.isPending}
-              className="flex-[2] h-12 bg-primary text-black font-black uppercase italic tracking-widest text-[10px] rounded-2xl hover:scale-[1.02] transition-all tactical-glow disabled:opacity-50 shadow-lg shadow-primary/20"
+              className="px-6 h-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-bold text-xs shadow-sm disabled:opacity-50"
             >
-              {createMutation.isPending || updateMutation.isPending
-                ? "PROCESSING..."
-                : "CONFIRM"}
+              {createMutation.isPending || updateMutation.isPending ? "Saving..." : "Save Transaction"}
             </button>
           </div>
         </form>
-      </TacticalModal>
+      </SimpleModal>
+
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={() => {
+          if (deletingTransactionId !== null) {
+            deleteMutation.mutate(deletingTransactionId);
+          }
+        }}
+        title="Delete Transaction"
+        message="Are you sure you want to delete this transaction? This action cannot be undone."
+        type="danger"
+      />
     </div>
   );
 }

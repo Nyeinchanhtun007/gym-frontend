@@ -135,19 +135,19 @@ export default function AdminUsers() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <AdminPageHeader
-        title="Operative"
-        highlight="Database"
-        subtitle="Central Intelligence & Access Control"
+        title="Users"
+        highlight="Management"
+        subtitle="View and manage gym members and staff"
       />
 
-      <div className="bg-card/50 backdrop-blur-2xl border border-border p-6 rounded-[2rem] relative z-[50]">
-        <div className="flex flex-col md:flex-row gap-6 justify-between items-center relative z-10">
+      <div className="bg-card border border-border p-5 rounded-xl">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
           <TacticalSearch
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="SEARCH OPERATIVES..."
+            placeholder="Search users..."
             className="w-full md:w-96"
           />
 
@@ -157,75 +157,73 @@ export default function AdminUsers() {
               value={roleFilter}
               onChange={setRoleFilter}
               options={[
-                { label: "ALL ROLES", value: "" },
-                { label: "ADMIN", value: "ADMIN" },
-                { label: "TRAINER", value: "TRAINER" },
-                { label: "USER", value: "USER" },
+                { label: "All Roles", value: "" },
+                { label: "Admin", value: "ADMIN" },
+                { label: "Trainer", value: "TRAINER" },
+                { label: "User", value: "USER" },
               ]}
               accentColor="primary"
               className="flex-1 md:flex-none md:w-44"
-              placeholder="ALL ROLES"
             />
 
             <TacticalSelect
               value={planFilter}
               onChange={setPlanFilter}
               options={[
-                { label: "ALL PLANS", value: "" },
+                { label: "All Plans", value: "" },
                 { label: "Basic", value: "Basic" },
                 { label: "Standard", value: "Standard" },
                 { label: "Premium", value: "Premium" },
               ]}
               accentColor="blue"
               className="flex-1 md:flex-none md:w-44"
-              placeholder="ALL PLANS"
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-card/50 border border-border rounded-3xl overflow-hidden backdrop-blur-sm">
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/50">
               <tr className="border-b border-border">
                 <th
-                  className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 cursor-pointer hover:text-foreground transition-colors"
+                  className="px-6 py-4 font-semibold text-muted-foreground cursor-pointer hover:text-foreground transition-colors group"
                   onClick={() => handleSort("name")}
                 >
                   <div className="flex items-center gap-2">
                     User
                     <ArrowUpDown
-                      className={`w-3 h-3 ${sortBy === "name" ? "text-primary" : "text-foreground/10"}`}
+                      className={`w-3.5 h-3.5 transition-colors ${sortBy === "name" ? "text-primary" : "text-muted-foreground/50 group-hover:text-muted-foreground"}`}
                     />
                   </div>
                 </th>
                 <th
-                  className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 cursor-pointer hover:text-foreground transition-colors"
+                  className="px-6 py-4 font-semibold text-muted-foreground cursor-pointer hover:text-foreground transition-colors group"
                   onClick={() => handleSort("role")}
                 >
                   <div className="flex items-center gap-2">
                     Role
                     <ArrowUpDown
-                      className={`w-3 h-3 ${sortBy === "role" ? "text-primary" : "text-foreground/10"}`}
+                      className={`w-3.5 h-3.5 transition-colors ${sortBy === "role" ? "text-primary" : "text-muted-foreground/50 group-hover:text-muted-foreground"}`}
                     />
                   </div>
                 </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30">
+                <th className="px-6 py-4 font-semibold text-muted-foreground">
                   Membership
                 </th>
                 <th
-                  className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 cursor-pointer hover:text-foreground transition-colors"
+                  className="px-6 py-4 font-semibold text-muted-foreground cursor-pointer hover:text-foreground transition-colors group"
                   onClick={() => handleSort("createdAt")}
                 >
                   <div className="flex items-center gap-2">
                     Joined
                     <ArrowUpDown
-                      className={`w-3 h-3 ${sortBy === "createdAt" ? "text-primary" : "text-foreground/10"}`}
+                      className={`w-3.5 h-3.5 transition-colors ${sortBy === "createdAt" ? "text-primary" : "text-muted-foreground/50 group-hover:text-muted-foreground"}`}
                     />
                   </div>
                 </th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">
+                <th className="px-6 py-4 font-semibold text-muted-foreground text-right">
                   Actions
                 </th>
               </tr>
@@ -235,38 +233,41 @@ export default function AdminUsers() {
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-8 py-20 text-center animate-pulse text-foreground/20 uppercase font-black text-xs tracking-widest"
+                    className="px-6 py-10 text-center text-muted-foreground"
                   >
-                    Scanning Network...
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                      Loading users...
+                    </div>
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-8 py-20 text-center text-red-500 uppercase font-black text-xs tracking-widest"
+                    className="px-6 py-10 text-center text-red-500"
                   >
-                    Uplink Error: {error.message}
+                    Error: {error.message}
                   </td>
                 </tr>
               ) : userData.length === 0 ? (
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-8 py-20 text-center text-foreground/20 uppercase font-black text-xs tracking-widest"
+                    className="px-6 py-10 text-center text-muted-foreground"
                   >
-                    No Users Found
+                    No users found matching your criteria.
                   </td>
                 </tr>
               ) : (
                 userData.map((user: any) => (
                   <tr
                     key={user.id}
-                    className="hover:bg-foreground/[0.01] transition-colors group"
+                    className="hover:bg-muted/50 transition-colors group"
                   >
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-border flex items-center justify-center font-black text-primary overflow-hidden italic text-sm">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-medium text-primary overflow-hidden text-sm shrink-0">
                           {user.photo ? (
                             <img
                               src={user.photo}
@@ -274,53 +275,53 @@ export default function AdminUsers() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            user.name?.[0] || "U"
+                            user.name?.[0]?.toUpperCase() || "U"
                           )}
                         </div>
                         <div>
-                          <div className="font-black text-foreground text-sm uppercase tracking-tight">
+                          <div className="font-medium text-foreground text-sm">
                             {user.name}
                           </div>
-                          <div className="text-foreground/30 text-[10px] font-bold uppercase tracking-widest">
+                          <div className="text-muted-foreground text-xs">
                             {user.email}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-6 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all ${
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
                           user.role === "ADMIN"
-                            ? "bg-primary/10 text-primary border-primary/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+                            ? "bg-primary/10 text-primary border-primary/20"
                             : user.role === "TRAINER"
-                              ? "bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
-                              : "bg-foreground/10 text-foreground/70 border-border"
+                              ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                              : "bg-muted text-muted-foreground border-border"
                         }`}
                       >
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-6 py-4">
                       {user.memberships?.[0] ? (
-                        <span className="px-3 py-1 rounded-lg bg-foreground/5 border border-border text-[9px] font-black uppercase tracking-widest text-foreground/60">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-muted border border-border text-xs font-medium text-foreground">
                           {user.memberships[0].planTier}
                         </span>
                       ) : (
-                        <span className="text-[9px] font-black uppercase tracking-widest text-foreground/10 italic">
+                        <span className="text-xs text-muted-foreground/60 italic">
                           No Active Plan
                         </span>
                       )}
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-foreground/40">
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-muted-foreground">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-right font-outfit">
-                      <div className="flex items-center justify-end gap-2 transition-all">
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => setViewingUser(user)}
-                          className="w-9 h-9 flex items-center justify-center rounded-xl bg-foreground/5 border border-border text-foreground/40 hover:text-primary hover:border-primary/20 transition-all font-outfit"
+                          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                           title="View Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -335,14 +336,14 @@ export default function AdminUsers() {
                               photo: user.photo || "",
                             });
                           }}
-                          className="w-9 h-9 flex items-center justify-center rounded-xl bg-foreground/5 border border-border text-foreground/40 hover:text-blue-500 hover:border-blue-500/20 transition-all"
+                          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors"
                           title="Edit User"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeletingUser(user)}
-                          className="w-9 h-9 flex items-center justify-center rounded-xl bg-foreground/5 border border-border text-foreground/40 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 transition-all"
+                          className="p-2 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
                           title="Delete User"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -358,15 +359,23 @@ export default function AdminUsers() {
 
         {/* Pagination */}
         {meta.totalPages > 1 && (
-          <div className="px-8 py-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="px-6 py-4 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-col md:flex-row items-center gap-4">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-foreground/20 font-outfit">
-                Showing {userData.length} of {meta.total} Users
+              <div className="text-sm text-muted-foreground">
+                Showing{" "}
+                <span className="font-medium text-foreground">
+                  {userData.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium text-foreground">
+                  {meta.total}
+                </span>{" "}
+                users
               </div>
 
-              <div className="flex items-center gap-2 ml-2">
-                <span className="text-[8px] font-black uppercase text-foreground/10 tracking-widest">
-                  ROWS PER PAGE:
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  Rows per page:
                 </span>
                 <select
                   value={limit}
@@ -374,7 +383,7 @@ export default function AdminUsers() {
                     setLimit(Number(e.target.value));
                     setPage(1);
                   }}
-                  className="tactical-select !py-1 !px-2 h-8 !bg-foreground/5 text-foreground border border-border"
+                  className="h-8 rounded-md bg-muted border border-border px-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -384,28 +393,28 @@ export default function AdminUsers() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="group h-10 px-4 flex items-center gap-2 rounded-xl bg-foreground/5 border border-border disabled:opacity-20 hover:bg-foreground/10 hover:border-border transition-all font-bold text-[10px] uppercase tracking-widest text-foreground/60 hover:text-foreground"
+                className="h-9 px-3 flex items-center gap-1 rounded-md bg-card border border-border disabled:opacity-50 hover:bg-muted transition-colors text-sm font-medium text-foreground"
               >
-                <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                <ChevronLeft className="w-4 h-4" />
                 Previous
               </button>
 
-              <div className="px-4 py-2 bg-foreground/5 rounded-xl border border-border text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">
-                Page <span className="text-primary">{page}</span> OF{" "}
+              <div className="px-3 py-1.5 text-sm font-medium text-muted-foreground">
+                Page <span className="text-foreground">{page}</span> of{" "}
                 {meta.totalPages}
               </div>
 
               <button
                 onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
                 disabled={page === meta.totalPages}
-                className="group h-10 px-4 flex items-center gap-2 rounded-xl bg-foreground/5 border border-border disabled:opacity-20 hover:bg-foreground/10 hover:border-border transition-all font-bold text-[10px] uppercase tracking-widest text-foreground/60 hover:text-foreground"
+                className="h-9 px-3 flex items-center gap-1 rounded-md bg-card border border-border disabled:opacity-50 hover:bg-muted transition-colors text-sm font-medium text-foreground"
               >
                 Next
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>

@@ -86,68 +86,66 @@ export default function AdminLayout({
         color: "var(--foreground)",
       }}
     >
-      {/* Top Banner - Fixed */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-card/80 backdrop-blur-md border-b border-border flex justify-between items-center px-6 md:px-10 z-[1000]">
-        <div className="flex items-center gap-6">
+      {/* Top Banner - Clean and Professional */}
+      <div className="fixed top-0 left-0 right-0 h-16 bg-card border-b border-border flex justify-between items-center px-6 md:px-8 z-[1000]">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl bg-foreground/5 border border-border text-foreground/40 hover:text-primary transition-all hover:bg-foreground/10"
+            className="w-9 h-9 flex items-center justify-center rounded-lg bg-muted text-muted-foreground hover:text-primary hover:bg-muted/80 transition-all border border-border"
           >
-            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
 
           <Link
             to="/"
-            className="text-xl md:text-2xl font-black tracking-tighter text-foreground flex items-center gap-1 hover:opacity-80 transition-opacity"
+            className="text-lg md:text-xl font-bold text-foreground flex items-center gap-1.5 hover:opacity-80 transition-opacity"
           >
-            YGN<span className="text-primary italic">GYM</span>{" "}
-            <span className="hidden md:inline text-foreground/40 ml-1">
+            <span className="text-primary">YGN</span>GYM
+            <span className="hidden md:inline text-muted-foreground font-medium text-sm ml-1 px-2 py-0.5 bg-muted rounded-full">
               ADMIN
             </span>
           </Link>
         </div>
 
-        <div className="flex items-center gap-4 md:gap-6">
-          {/* Theme Toggle */}
+        <div className="flex items-center gap-4">
+          {/* Theme Toggle - Simple */}
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-all duration-500 hover:scale-110 active:scale-95 ${
-              theme === "dark"
-                ? "bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-                : "bg-blue-500/10 border-blue-500/20 text-blue-500 hover:bg-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]"
-            }`}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all"
             title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
           >
             <AnimatePresence mode="wait">
               <motion.div
                 key={theme}
-                initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
               >
                 {theme === "dark" ? (
-                  <Sun className="w-5 h-5" />
+                  <Sun className="w-4 h-4" />
                 ) : (
-                  <Moon className="w-5 h-5" />
+                  <Moon className="w-4 h-4" />
                 )}
               </motion.div>
             </AnimatePresence>
           </button>
+
           <div className="text-right hidden sm:block">
-            <div className="text-[9px] font-bold text-foreground/30 tracking-[0.2em] uppercase">
-              USER IDENTIFIED
+            <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+              Logged in as
             </div>
-            <div className="text-[12px] font-bold text-foreground uppercase italic">
+            <div className="text-sm font-bold text-foreground">
               {user?.name}
             </div>
           </div>
+
           <button
             onClick={() => {
               logout();
               navigate("/login");
             }}
-            className="h-10 px-6 bg-foreground/5 text-primary border border-primary/20 rounded-xl text-[10px] font-black tracking-widest hover:bg-primary hover:text-primary-foreground transition-all"
+            className="h-9 px-4 bg-primary text-primary-foreground rounded-lg text-xs font-bold hover:bg-primary/90 transition-all shadow-sm"
           >
             LOGOUT
           </button>
@@ -163,78 +161,81 @@ export default function AdminLayout({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[800]"
+              className="fixed inset-0 bg-background/60 z-[800]"
             />
           )}
         </AnimatePresence>
 
-        {/* Sidebar Nav - Fixed */}
+        {/* Sidebar Nav - Clean and Structured */}
         <motion.div
           initial={isMobile ? { x: -260 } : { width: 240 }}
           animate={
-            isMobile ? { x: isOpen ? 0 : -260 } : { width: isOpen ? 240 : 80 }
+            isMobile ? { x: isOpen ? 0 : -260 } : { width: isOpen ? 240 : 72 }
           }
-          transition={{ type: "spring", damping: 30, stiffness: 250 }}
-          className={`fixed top-16 bottom-0 left-0 border-r border-border z-[900] transition-colors duration-500 shadow-sm scrollbar-hide ${isOpen ? "overflow-y-auto overflow-x-hidden" : "overflow-visible"}`}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          className={`fixed top-16 bottom-0 left-0 border-r border-border z-[900] transition-colors duration-500 shadow-sm ${isOpen ? "overflow-y-auto" : "overflow-visible"} scrollbar-thin`}
           style={{ backgroundColor: "var(--sidebar)" }}
         >
           <div
-            className={`${isOpen ? "w-[240px]" : "w-[80px]"} min-h-full flex flex-col p-4 transition-all duration-300`}
+            className={`${isOpen ? "w-[240px]" : "w-[72px]"} min-h-full flex flex-col p-3 transition-all duration-300`}
           >
-            <nav className="flex flex-col gap-2">
-              {menuItems.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => {
-                    navigate(item.path);
-                    if (isMobile) setIsOpen(false);
-                  }}
-                  className={`
-                    flex items-center rounded-xl text-[10px] font-black tracking-[0.1em] transition-all group relative
-                    ${isOpen ? "px-5 py-3.5 gap-3" : "p-3.5 justify-center"}
-                    ${
-                      pathname === item.path
-                        ? "bg-primary/10 border border-primary/30 text-primary italic shadow-[0_0_15px_rgba(59,130,246,0.1)]"
-                        : "text-foreground/40 hover:text-primary hover:bg-foreground/5"
-                    }
-                  `}
-                >
-                  <item.icon
-                    className={`w-5 h-5 shrink-0 transition-colors ${pathname === item.path ? "text-primary" : "text-foreground/30 group-hover:text-primary"}`}
-                  />
+            <nav className="flex flex-col gap-1">
+              {menuItems.map((item) => {
+                const isActive = pathname === item.path;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => {
+                      navigate(item.path);
+                      if (isMobile) setIsOpen(false);
+                    }}
+                    className={`
+                      flex items-center rounded-lg text-xs font-semibold transition-all group relative
+                      ${isOpen ? "px-4 py-3 gap-3" : "p-3 justify-center"}
+                      ${
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-md"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      }
+                    `}
+                  >
+                    <item.icon
+                      className={`w-5 h-5 shrink-0 transition-colors ${isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"}`}
+                    />
 
-                  {isOpen && (
-                    <motion.span
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="whitespace-nowrap flex items-center justify-between w-full"
-                    >
-                      {item.label}
-                      {item.badge && pendingData?.count > 0 && (
-                        <span className="bg-primary text-black text-[9px] font-black w-5 h-5 rounded-lg flex items-center justify-center tactical-glow">
-                          {pendingData.count}
-                        </span>
-                      )}
-                    </motion.span>
-                  )}
+                    {isOpen && (
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="whitespace-nowrap flex items-center justify-between w-full"
+                      >
+                        {item.label}
+                        {item.badge && pendingData?.count > 0 && (
+                          <span className={`${isActive ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"} text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center`}>
+                            {pendingData.count}
+                          </span>
+                        )}
+                      </motion.span>
+                    )}
 
-                  {!isOpen && item.badge && pendingData?.count > 0 && (
-                    <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-primary rounded-full border-2 border-sidebar animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-                  )}
+                    {!isOpen && item.badge && pendingData?.count > 0 && (
+                      <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-sidebar" />
+                    )}
 
-                  {!isOpen && (
-                    <div className="absolute left-full ml-4 px-3 py-2 bg-card border border-border text-foreground text-[9px] font-black rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[1000] tracking-widest uppercase italic shadow-xl">
-                      {item.label} {item.badge && pendingData?.count > 0 && `(${pendingData.count})`}
-                    </div>
-                  )}
-                </button>
-              ))}
+                    {!isOpen && (
+                      <div className="absolute left-full ml-3 px-2 py-1.5 bg-popover border border-border text-popover-foreground text-xs font-medium rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[1000] shadow-lg">
+                        {item.label} {item.badge && pendingData?.count > 0 && `(${pendingData.count})`}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-border">
+            <div className="mt-auto pt-4 border-t border-border">
               <Link
                 to="/"
-                className={`flex items-center group text-[9px] font-black text-foreground/30 hover:text-primary transition-colors tracking-widest uppercase italic ${isOpen ? "gap-2" : "justify-center"}`}
+                className={`flex items-center group text-xs font-medium text-muted-foreground hover:text-primary transition-colors ${isOpen ? "px-4 gap-2" : "justify-center"}`}
               >
                 <ChevronLeft
                   className={`w-4 h-4 group-hover:-translate-x-1 transition-transform ${isOpen ? "" : "rotate-180"}`}
@@ -245,13 +246,13 @@ export default function AdminLayout({
           </div>
         </motion.div>
 
-        {/* Content Area - Offset for Fixed elements */}
+        {/* Content Area - Clean Spacing */}
         <motion.div
           animate={{
-            marginLeft: isMobile ? 0 : isOpen ? 240 : 80,
-            padding: isMobile ? "12px" : "16px",
+            marginLeft: isMobile ? 0 : isOpen ? 240 : 72,
+            padding: "24px",
           }}
-          transition={{ type: "spring", damping: 30, stiffness: 250 }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className="flex-1 min-h-[calc(100vh-64px)] overflow-x-hidden"
         >
           <div className="max-w-7xl mx-auto h-full">{children}</div>
