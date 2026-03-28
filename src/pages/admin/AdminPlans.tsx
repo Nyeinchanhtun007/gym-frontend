@@ -437,7 +437,7 @@ export default function AdminPlans() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative max-w-xl w-full bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl z-10"
+              className="relative max-w-xl w-full bg-card border border-border rounded-2xl p-6 md:p-8 shadow-2xl z-10"
             >
               <div className="flex justify-between items-center mb-6">
                 <div>
@@ -455,7 +455,7 @@ export default function AdminPlans() {
                     setEditingPlan(null);
                     setIsCreating(false);
                   }}
-                  className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-all"
+                  className="p-1.5 rounded-full border border-border hover:bg-muted text-muted-foreground transition-all shadow-sm"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -464,7 +464,7 @@ export default function AdminPlans() {
               <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-sm font-medium text-foreground">
                       Tier Name
                     </Label>
                     <Input
@@ -473,7 +473,7 @@ export default function AdminPlans() {
                         setFormData({ ...formData, name: e.target.value })
                       }
                       placeholder="e.g. Premium"
-                      className="rounded-lg h-10"
+                      className="rounded-xl h-10 bg-background border border-border px-4 transition-all focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                   <div className="space-y-2 flex items-center pt-5 gap-4 px-4">
@@ -500,7 +500,7 @@ export default function AdminPlans() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className="text-sm font-medium text-foreground">
                     Description
                   </Label>
                   <Textarea
@@ -509,13 +509,13 @@ export default function AdminPlans() {
                       setFormData({ ...formData, description: e.target.value })
                     }
                     placeholder="Describe what this tier offers..."
-                    className="rounded-lg min-h-[52px]"
+                    className="rounded-xl min-h-[52px] bg-background border border-border px-4 py-2 transition-all focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-sm font-medium text-foreground">
                       Monthly ($)
                     </Label>
                     <Input
@@ -527,11 +527,11 @@ export default function AdminPlans() {
                           monthlyPrice: e.target.value,
                         })
                       }
-                      className="rounded-lg h-10"
+                      className="rounded-xl h-10 bg-background border border-border px-4 transition-all focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-sm font-medium text-foreground">
                       Yearly ($)
                     </Label>
                     <Input
@@ -543,14 +543,14 @@ export default function AdminPlans() {
                           yearlyPrice: e.target.value,
                         })
                       }
-                      className="rounded-lg h-10"
+                      className="rounded-xl h-10 bg-background border border-border px-4 transition-all focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-sm font-medium text-foreground">
                       Daily Class Limit
                     </Label>
                     <Input
@@ -562,11 +562,11 @@ export default function AdminPlans() {
                           dailyClassLimit: e.target.value,
                         })
                       }
-                      className="rounded-lg h-10"
+                      className="rounded-xl h-10 bg-background border border-border px-4 transition-all focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-sm font-medium text-foreground">
                       Monthly Class Limit
                     </Label>
                     <Input
@@ -578,13 +578,13 @@ export default function AdminPlans() {
                           monthlyClassLimit: e.target.value,
                         })
                       }
-                      className="rounded-lg h-10"
+                      className="rounded-xl h-10 bg-background border border-border px-4 transition-all focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className="text-sm font-medium text-foreground">
                     Tier Features (One per line)
                   </Label>
                   <Textarea
@@ -593,7 +593,7 @@ export default function AdminPlans() {
                       setFormData({ ...formData, features: e.target.value })
                     }
                     placeholder="Unlimited gym access&#10;Personal trainer session&#10;Nutrition plan"
-                    className="rounded-lg min-h-[80px]"
+                    className="rounded-xl min-h-[80px] bg-background border border-border px-4 py-2 transition-all focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
 

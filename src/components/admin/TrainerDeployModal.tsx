@@ -43,10 +43,10 @@ export default function TrainerDeployModal({
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-xl font-bold text-foreground">
-                  Assign <span className="text-primary">Class</span>
+                  Assign Class
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1 font-medium italic">
-                  Assigning trainer: <span className="font-semibold text-primary">{trainer.name}</span>
+                  Assigning classes to {trainer.name}
                 </p>
               </div>
               <button

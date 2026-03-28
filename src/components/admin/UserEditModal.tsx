@@ -50,7 +50,7 @@ export default function UserEditModal({
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-xl font-bold text-foreground">
-                  Edit <span className="text-primary">Profile</span>
+                  Edit Profile
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1 font-medium">
                   Update personal details and system roles
@@ -109,7 +109,7 @@ export default function UserEditModal({
                 </div>
 
                 <div className="flex-1 space-y-1.5">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                  <label className="text-xs font-semibold text-foreground block">
                     Photo URL (Optional)
                   </label>
                   <div className="relative">
@@ -131,7 +131,7 @@ export default function UserEditModal({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                <label className="text-xs font-semibold text-foreground block">
                   Full Name
                 </label>
                 <input
@@ -145,7 +145,7 @@ export default function UserEditModal({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                <label className="text-xs font-semibold text-foreground block">
                   Email Address
                 </label>
                 <input
@@ -162,7 +162,7 @@ export default function UserEditModal({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                <label className="text-xs font-semibold text-foreground block">
                   Access Level
                 </label>
                 <div className="relative">

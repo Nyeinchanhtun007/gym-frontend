@@ -18,6 +18,9 @@ import AdminPlans from "./pages/admin/AdminPlans";
 import AdminAccounting from "./pages/admin/AdminAccounting";
 import AdminDiscounts from "./pages/admin/AdminDiscounts";
 import AdminPayments from "./pages/admin/AdminPayments";
+import AdminProducts from "./pages/admin/AdminProducts";
+import Store from "./pages/Store";
+
 import Layout from "./components/layout/Layout";
 import AdminLayout from "./components/layout/AdminLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -44,6 +47,8 @@ function App() {
                   <Route path="discounts" element={<AdminDiscounts />} />
                   <Route path="accounting" element={<AdminAccounting />} />
                   <Route path="payments" element={<AdminPayments />} />
+                  <Route path="products" element={<AdminProducts />} />
+
                 </Routes>
               </AdminLayout>
             </ProtectedRoute>
@@ -74,6 +79,8 @@ function App() {
                 <Route path="/classes" element={<Classes />} />
                 <Route path="/trainers" element={<Trainers />} />
                 <Route path="/memberships" element={<Memberships />} />
+                <Route path="/store" element={<Store />} />
+
                 <Route
                   path="/payment"
                   element={

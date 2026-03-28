@@ -70,6 +70,7 @@ export default function Navbar() {
     { label: "Trainers", path: "/trainers" },
     { label: "Workouts", path: "/#workouts" },
     { label: "Classes", path: "/classes" },
+    { label: "Store", path: "/store" },
     { label: "Plans", path: "/#pricing" },
   ];
 

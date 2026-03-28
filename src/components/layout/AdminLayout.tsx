@@ -18,6 +18,7 @@ import {
   Moon,
   Wallet,
   Tag,
+  Package,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -60,6 +61,7 @@ export default function AdminLayout({
     { label: "PLANS", path: "/admin/plans", icon: Layers },
     { label: "DISCOUNTS", path: "/admin/discounts", icon: Tag },
     { label: "PAYMENTS", path: "/admin/payments", icon: ClipboardList, badge: true },
+    { label: "PRODUCTS", path: "/admin/products", icon: Package },
     { label: "ACCOUNTING", path: "/admin/accounting", icon: Wallet },
   ];
 

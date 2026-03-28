@@ -37,13 +37,12 @@ export default function SimpleModal({
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className={`relative ${maxWidth} w-full bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl z-10 transition-all`}
+            className={`relative ${maxWidth} w-full bg-card border border-border rounded-2xl p-6 md:p-8 shadow-2xl z-10 transition-all`}
           >
             <div className="flex justify-between items-start mb-6 relative z-10">
               <div>
                 <h2 className="text-xl font-bold text-foreground">
-                  {title}{" "}
-                  {highlight && <span className="text-primary">{highlight}</span>}
+                  {title} {highlight}
                 </h2>
                 {subtitle && (
                   <p className="text-sm text-muted-foreground mt-1 font-medium italic">
@@ -53,7 +52,7 @@ export default function SimpleModal({
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-all"
+                  className="p-1.5 rounded-full border border-border hover:bg-muted text-muted-foreground transition-all shadow-sm"
               >
                 <X className="w-5 h-5" />
               </button>

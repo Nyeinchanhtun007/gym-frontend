@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
-import { Calendar, Edit3, X, Save, Users, Plus, User } from "lucide-react";
+import { Calendar, Edit3, X, Users, Plus, User } from "lucide-react";
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -437,13 +437,12 @@ export default function AdminClasses() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative max-w-lg w-full bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl z-10"
+              className="relative max-w-lg w-full bg-card border border-border rounded-2xl p-6 md:p-8 shadow-2xl z-10"
             >
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2 className="text-xl font-bold text-foreground">
-                    {isCreating ? "New" : "Edit"}{" "}
-                    <span className="text-primary tracking-tight">Class</span>
+                    {isCreating ? "New" : "Edit"} Class
                   </h2>
                   <p className="text-sm text-muted-foreground mt-1 font-medium italic">
                     {isCreating
@@ -464,7 +463,7 @@ export default function AdminClasses() {
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-muted-foreground">
+                  <Label className="text-xs font-semibold text-foreground">
                     Class Name
                   </Label>
                   <Input
@@ -473,13 +472,13 @@ export default function AdminClasses() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full h-10 bg-muted/30 border-border rounded-lg px-4 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                    className="w-full h-10 bg-background border border-border rounded-xl px-4 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium transition-colors"
                     placeholder="e.g. Morning Yoga Flow"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-muted-foreground">
+                  <Label className="text-xs font-semibold text-foreground">
                     Description
                   </Label>
                   <Textarea
@@ -488,14 +487,14 @@ export default function AdminClasses() {
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    className="min-h-[100px] w-full bg-muted/30 border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none font-medium"
+                    className="min-h-[100px] w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none font-medium contrast-more:border-primary/20"
                     placeholder="Provide a brief overview..."
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-xs font-semibold text-muted-foreground">
+                    <Label className="text-xs font-semibold text-foreground">
                       Student Capacity
                     </Label>
                     <div className="relative">
@@ -506,13 +505,13 @@ export default function AdminClasses() {
                         onChange={(e) =>
                           setFormData({ ...formData, capacity: e.target.value })
                         }
-                        className="w-full h-10 bg-muted/30 border-border rounded-lg pl-10 pr-4 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-bold"
+                        className="w-full h-10 bg-background border border-border rounded-xl pl-10 pr-4 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-bold"
                       />
                       <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-semibold text-muted-foreground">
+                    <Label className="text-xs font-semibold text-foreground">
                       Instructor
                     </Label>
                     <div className="relative">
@@ -525,7 +524,7 @@ export default function AdminClasses() {
                             trainerId: e.target.value,
                           })
                         }
-                        className="w-full h-10 bg-muted/30 border border-border rounded-lg pl-10 pr-4 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer font-medium"
+                        className="w-full h-10 bg-background border border-border rounded-xl pl-10 pr-4 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer font-medium"
                       >
                         {trainers?.items?.map((t: any) => (
                           <option key={t.id} value={t.id} className="bg-card">
@@ -539,7 +538,7 @@ export default function AdminClasses() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-muted-foreground">
+                  <Label className="text-xs font-semibold text-foreground">
                     Schedule Date & Time
                   </Label>
                   <div className="relative">
@@ -550,7 +549,7 @@ export default function AdminClasses() {
                       onChange={(e) =>
                         setFormData({ ...formData, schedule: e.target.value })
                       }
-                      className="w-full h-10 bg-muted/30 border-border rounded-lg pl-10 pr-4 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                      className="w-full h-10 bg-background border border-border rounded-xl pl-10 pr-4 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
                     />
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
@@ -564,7 +563,7 @@ export default function AdminClasses() {
                       setEditingClass(null);
                       setIsCreating(false);
                     }}
-                    className="px-6 h-10 rounded-lg border border-border text-foreground hover:bg-muted font-bold text-xs transition-all"
+                    className="px-6 h-10 rounded-xl border border-border text-foreground hover:bg-muted font-bold text-xs transition-all shadow-sm"
                   >
                     Cancel
                   </Button>
@@ -573,7 +572,7 @@ export default function AdminClasses() {
                     disabled={
                       updateMutation.isPending || createMutation.isPending
                     }
-                    className="px-6 h-10 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-bold text-xs shadow-sm disabled:opacity-50"
+                    className="px-6 h-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-bold text-xs shadow-md shadow-primary/10 disabled:opacity-50 active:scale-95"
                   >
                     {updateMutation.isPending || createMutation.isPending
                       ? "Saving..."

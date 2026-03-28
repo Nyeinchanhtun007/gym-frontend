@@ -273,16 +273,16 @@ export default function AdminPayments() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-lg bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl z-10"
+              className="relative w-full max-w-lg bg-card border border-border rounded-2xl p-6 md:p-8 shadow-2xl z-10"
             >
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Verify <span className="text-primary">Payment</span></h2>
+                  <h2 className="text-xl font-bold text-foreground">Verify Payment</h2>
                   <p className="text-sm text-muted-foreground font-medium mt-1">Reviewing submission from {selectedRequest.payerName}</p>
                 </div>
                 <button
                   onClick={() => setSelectedRequest(null)}
-                  className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-all"
+                  className="p-1.5 rounded-full border border-border hover:bg-muted text-muted-foreground transition-all shadow-sm"
                 >
                   <XCircle className="w-5 h-5" />
                 </button>
@@ -308,29 +308,29 @@ export default function AdminPayments() {
                     </div>
                     {selectedRequest.autoDiscountAmount > 0 && (
                       <div>
-                        <label className="text-[10px] font-bold text-primary/60 uppercase tracking-wider block mb-1">Auto Disc.</label>
+                        <label className="text-xs font-semibold text-foreground block mb-1">Auto Disc.</label>
                         <div className="text-xs font-bold text-primary">-${selectedRequest.autoDiscountAmount}</div>
                       </div>
                     )}
                     {selectedRequest.discountAmount > 0 && (
                       <div>
-                        <label className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-wider block mb-1">Promo</label>
+                        <label className="text-xs font-semibold text-foreground block mb-1">Promo</label>
                         <div className="text-xs font-bold text-emerald-600">-${selectedRequest.discountAmount}</div>
                       </div>
                     )}
                     <div>
-                      <label className="text-[10px] font-bold text-primary/60 uppercase tracking-wider block mb-1">Final Total</label>
+                      <label className="text-xs font-semibold text-foreground block mb-1">Final Total</label>
                       <div className="text-base font-black text-primary">${selectedRequest.price}</div>
                     </div>
                   </div>
 
                   <div className="pt-4 border-t border-border/50">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Admin Remarks / Notes</label>
+                    <label className="text-xs font-semibold text-foreground block mb-2">Admin Remarks / Notes</label>
                     <textarea
                       value={adminNote}
                       onChange={(e) => setAdminNote(e.target.value)}
                       placeholder="Add notes or rejection reason..."
-                      className={`w-full h-24 bg-background border rounded-lg p-3 text-sm font-medium text-foreground outline-none transition-all placeholder:text-muted-foreground/30 ${
+                      className={`w-full h-24 bg-background border rounded-xl p-3 text-sm font-medium text-foreground outline-none transition-all placeholder:text-muted-foreground/30 shadow-inner ${
                         !adminNote.trim() ? "border-red-500/20 focus:border-red-500/30" : "border-border focus:border-primary/50"
                       }`}
                     />
@@ -360,7 +360,7 @@ export default function AdminPayments() {
                   <Button
                     onClick={() => handleReview(selectedRequest.id, "APPROVED")}
                     disabled={reviewMutation.isPending}
-                    className="h-11 bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-sm active:scale-95 transition-all"
+                    className="h-11 bg-primary text-primary-foreground font-bold hover:bg-primary/90 rounded-xl shadow-md active:scale-95 transition-all"
                   >
                     {reviewMutation.isPending && reviewMutation.variables?.status === "APPROVED" ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
