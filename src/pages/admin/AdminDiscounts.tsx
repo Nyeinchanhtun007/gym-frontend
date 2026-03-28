@@ -621,7 +621,7 @@ export default function AdminDiscounts() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative max-w-lg w-full bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl overflow-y-auto"
+              className="relative max-w-lg w-full bg-card border border-border rounded-xl p-6 md:p-8 shadow-2xl overflow-y-auto scrollbar-hide"
               style={{ maxHeight: "90vh" }}
             >
               {/* Modal Header */}

@@ -36,7 +36,7 @@ export default function UserDeleteModal({
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative w-full max-w-md bg-card border border-border rounded-xl p-6 shadow-lg overflow-y-auto"
+            className="relative w-full max-w-md bg-card border border-border rounded-xl p-6 shadow-lg overflow-y-auto scrollbar-hide"
           >
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-3">

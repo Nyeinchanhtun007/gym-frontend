@@ -261,7 +261,7 @@ export default function AdminPayments() {
       {/* Review Modal */}
       <AnimatePresence>
         {selectedRequest && (
-          <div className="fixed inset-0 z-[2000] flex items-start justify-center overflow-y-auto p-4 md:py-20">
+          <div className="fixed inset-0 z-[2000] flex items-start justify-center overflow-y-auto p-4 md:py-20 scrollbar-hide">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

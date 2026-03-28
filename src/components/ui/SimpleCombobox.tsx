@@ -60,7 +60,7 @@ export default function SimpleCombobox({
             initial={{ opacity: 0, y: -4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
-            className="absolute top-full left-0 w-full mt-2 bg-card border border-border rounded-xl p-1.5 shadow-lg z-[500] max-h-52 overflow-y-auto"
+            className="absolute top-full left-0 w-full mt-2 bg-card border border-border rounded-xl p-1.5 shadow-lg z-[500] max-h-52 overflow-y-auto scrollbar-hide"
           >
             {filtered.map((s) => {
               const isSelected = value === s;
